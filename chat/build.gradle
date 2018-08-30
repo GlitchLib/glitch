@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":kraken")
+    compile "com.neovisionaries:nv-websocket-client:2.5"
+}

@@ -1,0 +1,7 @@
+dependencies {
+    compile project(":auth")
+    compile project(":kraken")
+    compile project(":helix")
+    compile project(":chat")
+    compile project(":pubsub")
+}

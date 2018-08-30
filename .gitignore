@@ -1,0 +1,30 @@
+# IntelliJ
+.idea
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings
+
+# Netbeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Build artifacts
+*.jar
+out/
+build/
+**/bin/
+
+# Gradle
+.gradle
+!gradle-wrapper.jar
+
+# Misc
+logs/

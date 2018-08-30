@@ -1,0 +1,57 @@
+plugins {
+}
+
+allprojects {
+    group = "com.github.stachu540"
+    version = "0.1.0-SNAPSHOT"
+
+    repositories {
+        jcenter()
+    }
+
+    tasks.withType(Javadoc) {
+        options {
+            encoding = "UTF-8"
+        }
+    }
+}
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "maven"
+    apply plugin: "jacoco"
+
+    ext."project.name" = "${rootProject.name}-${project.name}".toLowerCase()
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.7
+
+    dependencies {
+        compile "org.slf4j:slf4j-api:1.7.25"
+        compile "com.google.guava:guava:26.0-jre"
+        compile "io.reactivex.rxjava2:rxjava:2.2.1"
+        compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+    }
+}
+
+task codeCoverageReport(type: JacocoReport, dependsOn: subprojects*.test) {
+    executionData = fileTree(rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.configure {
+            enabled = true
+            destination = file("${buildDir}/reports/jacoco/report.xml")
+        }
+        html.enabled = false
+        csv.enabled = false
+    }
+}
+
+wrapper {
+    gradleVersion = "4.9"
+    distributionType = Wrapper.DistributionType.ALL
+}

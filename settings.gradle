@@ -1,0 +1,9 @@
+rootProject.name = 'Glitch'
+
+include("auth")
+include("common")
+include("chat")
+include("kraken")
+include("helix")
+include("pubsub")
+include("core")
