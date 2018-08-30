@@ -24,7 +24,7 @@ subprojects {
     ext."project.name" = "${rootProject.name}-${project.name}".toLowerCase()
 
     sourceCompatibility = 1.8
-    targetCompatibility = 1.7
+    targetCompatibility = 1.8
 
     dependencies {
         compile "org.slf4j:slf4j-api:1.7.25"
