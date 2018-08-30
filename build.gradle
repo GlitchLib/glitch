@@ -2,6 +2,7 @@ plugins {
 }
 
 allprojects {
+
     group = "com.github.stachu540"
     version = "0.1.0-SNAPSHOT"
 
@@ -19,7 +20,6 @@ allprojects {
 subprojects {
     apply plugin: "java"
     apply plugin: "maven"
-    apply plugin: "jacoco"
 
     ext."project.name" = "${rootProject.name}-${project.name}".toLowerCase()
 
@@ -34,11 +34,7 @@ subprojects {
     }
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
+wrapper {
+    gradleVersion = "4.10"
+    distributionType = Wrapper.DistributionType.ALL
 }
-
-check.dependsOn jacocoTestReport
