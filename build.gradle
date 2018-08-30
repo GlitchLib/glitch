@@ -34,24 +34,11 @@ subprojects {
     }
 }
 
-task codeCoverageReport(type: JacocoReport, dependsOn: subprojects*.test) {
-    executionData = fileTree(rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-    subprojects.each {
-        sourceSets it.sourceSets.main
-    }
-
+jacocoTestReport {
     reports {
-        xml.configure {
-            enabled = true
-            destination = file("${buildDir}/reports/jacoco/report.xml")
-        }
-        html.enabled = false
-        csv.enabled = false
+        xml.enabled = true
+        html.enabled = true
     }
 }
 
-wrapper {
-    gradleVersion = "4.9"
-    distributionType = Wrapper.DistributionType.ALL
-}
+check.dependsOn jacocoTestReport
