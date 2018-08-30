@@ -32,6 +32,19 @@ subprojects {
         compile "io.reactivex.rxjava2:rxjava:2.2.1"
         compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
     }
+
+    task copyDependencies(type: Copy) {
+        from(sourceSets.main.compileClasspath)
+        into("${rootDir}/${rootProject.name.toLowerCase()}")
+    }
+
+    task copyArtifacts(type: Copy) {
+        dependsOn copyDependencies
+        from("${buildDir}/libs") {
+            include("**/*.jar")
+        }
+        into("${rootDir}/${rootProject.name.toLowerCase()}")
+    }
 }
 
 wrapper {
