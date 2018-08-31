@@ -5,20 +5,25 @@ jdk:
   - openjdk10
   - openjdk11
 
-before_install:
-  - chmod +x ./gradlew
-install:
-  - ./gradlew assemble
-script:
-  - ./gradlew check
+before_install: chmod +x ./gradlew
+install: ./gradlew assemble
+script: ./gradlew check
+
+jobs:
+  include:
+  - &code-coverage
+    stage: code coverage
+    jdk: openjdk8
+    script: ./gradlew jacocoTestReport
+  - <<: *code-coverage
+    script: bash <(curl -s https://codecov.io/bash)
+  - stage: deploy
+    jdk: openjdk8
+    script: ./gradlew deploy
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
-after_success:
-- ./gradlew jacocoTestReport deploy
-- bash <(curl -s https://codecov.io/bash)
 
 cache:
   directories:
