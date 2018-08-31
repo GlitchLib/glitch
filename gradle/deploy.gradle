@@ -73,7 +73,6 @@ publishing {
             artifactId archivesBaseName
             artifact sourcesJar
             artifact javadocJar
-            artifact shadowJar
         }
     }
 }
