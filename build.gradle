@@ -1,4 +1,7 @@
 plugins {
+    id "com.jfrog.bintray" version "1.8.4"
+    id "com.jfrog.artifactory" version "4.7.5"
+    id "com.github.johnrengelman.shadow" version "2.0.4"
 }
 
 allprojects {
@@ -21,7 +24,7 @@ subprojects {
     apply plugin: "java"
     apply plugin: "maven"
 
-    ext."project.name" = "${rootProject.name}-${project.name}".toLowerCase()
+    archivesBaseName = "${rootProject.name}-${project.name}".toLowerCase()
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -33,17 +36,30 @@ subprojects {
         compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
     }
 
-    task copyDependencies(type: Copy) {
-        from(sourceSets.main.compileClasspath)
-        into("${rootDir}/${rootProject.name.toLowerCase()}")
+    apply from: "${rootDir}/gradle/deploy.gradle"
+}
+
+task aggregateJavadoc(type: Javadoc,
+        description: "Generate javadocs from all child projects as if it was a single project",
+        group: JavaBasePlugin.DOCUMENTATION_GROUP
+) {
+    destinationDir file("${rootProject.buildDir}/docs/javadoc")
+    failOnError false
+    title = "${rootProject.name} ${rootProject.version} API"
+
+    options {
+        windowTitle = "${rootProject.name} ${rootProject.version}"
+        addStringOption("Xdoclint:none", "-quiet")
+        author = true
     }
 
-    task copyArtifacts(type: Copy) {
-        dependsOn copyDependencies
-        from("${buildDir}/libs") {
-            include("**/*.jar")
+    subprojects.each { project ->
+        project.tasks.withType(Javadoc.class).each { doc ->
+            source += doc.source
+            classpath += doc.classpath
+            excludes += doc.excludes
+            includes += doc.includes
         }
-        into("${rootDir}/${rootProject.name.toLowerCase()}")
     }
 }
 
