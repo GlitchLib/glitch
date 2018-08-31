@@ -3,7 +3,6 @@ import java.text.SimpleDateFormat
 apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
-apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "com.gorylenko.gradle-git-properties"
 
 private static def timestamp() {
@@ -48,11 +47,6 @@ jar {
     }
 }
 
-shadowJar{
-    configurations = [ project.configurations.compile ]
-    manifest = jar.manifest
-}
-
 task sourcesJar(type: Jar, dependsOn: classes, description: 'Builds the sourcesJar.', group: 'build') {
     from sourceSets.main.allSource
     classifier = "sources"
@@ -69,7 +63,6 @@ task javadocJar(type: Jar,
 artifacts {
     archives sourcesJar
     archives javadocJar
-    archives shadowJar
 }
 
 
