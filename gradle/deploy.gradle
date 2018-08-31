@@ -4,6 +4,7 @@ apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "com.gorylenko.gradle-git-properties"
 
 private static def timestamp() {
     SimpleDateFormat sdf = new SimpleDateFormat("MMM dd yyyy HH:mm:ss zzz")
@@ -15,6 +16,24 @@ def bintrayUser = findProperty("bintrayUser").toString() ?: System.getenv("BINTR
 def bintrayApiKey = findProperty("bintrayApiKey").toString() ?: System.getenv("BINTRAY_API_KEY")
 def sonatypeUser = findProject("sonatypeUser").toString() ?: System.getenv("CENTRAL_USER")
 def sonatypePassword = findProject("sonatypePassword").toString() ?: System.getenv("CENTRAL_PASSWORD")
+def branch = System.getenv("TRAVIS_BRANCH")
+def hasTags = System.getenv("TRAVIS_TAG") != null
+
+gitProperties {
+    extProperty = "gitProperty"
+    keys = [
+            "git.commit.id",
+            "git.commit.id.abbrev",
+            "git.closest.tag.name",
+            "git.closest.tag.commit.count",
+            "git.commit.id.describe"
+    ]
+    dateFormatTimeZone = "GMT"
+    customProperty("application.name", rootProject.name)
+    customProperty("application.module", project.name)
+    customProperty("application.version", project.version)
+    customProperty("application.description", project.description ?: rootProject.description)
+}
 
 jar {
     manifest {
@@ -102,21 +121,12 @@ artifactory {
     }
 }
 
-task copyDependencies(type: Copy) {
-    from(sourceSets.main.compileClasspath)
-    into("${rootProject.buildDir}/archives/${archivesBaseName}/libs")
-}
-
-task localPublish(type: Copy, group: "publishing", dependsOn: copyDependencies) {
-    from("${buildDir}/libs") {
-        include("**/*.jar")
-    }
-    into("${rootProject.buildDir}/archives/${archivesBaseName}")
-}
-
-task deployPublication(group: "publishing") {
-    dependsOn localPublish
-    if (findProperty("project.deploy") == true) {
-        dependsOn(rootProject.version.toString().endsWith("-SNAPSHOT")) ? artifactoryPublish : bintrayUpload
+task deploy(group: "publishing") {
+    if (rootProject.version.toString().endsWith("-SNAPSHOT")) {
+        dependsOn artifactoryPublish
+    } else if (branch == "master" && hasTags) {
+        dependsOn bintrayUpload
+    } else {
+        enabled = false
     }
 }

@@ -2,15 +2,26 @@ plugins {
     id "com.jfrog.bintray" version "1.8.4"
     id "com.jfrog.artifactory" version "4.7.5"
     id "com.github.johnrengelman.shadow" version "2.0.4"
+    id "com.gorylenko.gradle-git-properties" version "1.5.1"
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
-allprojects {
+def jackson = ext["jackson.version"]
 
-    group = "com.github.stachu540"
-    version = "0.1.0-SNAPSHOT"
+allprojects {
+    apply plugin: "io.spring.dependency-management"
+
+    group = ext["project.publications.groupId"]
+    version = ext["project.version"]
 
     repositories {
         jcenter()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "com.fasterxml.jackson:jackson-bom:$jackson"
+        }
     }
 
     tasks.withType(Javadoc) {
@@ -22,21 +33,38 @@ allprojects {
 
 subprojects {
     apply plugin: "java"
-    apply plugin: "maven"
+    apply plugin: "jacoco"
 
     archivesBaseName = "${rootProject.name}-${project.name}".toLowerCase()
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
+    def slf4j = ext["slf4j.version"]
+    def guava = ext["guava.version"]
+    def rxjava = ext["rxjava.version"]
+
     dependencies {
-        compile "org.slf4j:slf4j-api:1.7.25"
-        compile "com.google.guava:guava:26.0-jre"
-        compile "io.reactivex.rxjava2:rxjava:2.2.1"
-        compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+        compile "org.slf4j:slf4j-api:$slf4j"
+        compile "com.google.guava:guava:$guava"
+        compile "io.reactivex.rxjava2:rxjava:$rxjava"
+        compile "com.fasterxml.jackson.core:jackson-databind"
+        compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
     }
 
     apply from: "${rootDir}/gradle/deploy.gradle"
+
+    test {
+        useJUnitPlatform()
+    }
+
+    jacocoTestReport {
+        reports {
+            csv.enabled false
+            html.enabled true
+            xml.enabled true
+        }
+    }
 }
 
 task aggregateJavadoc(type: Javadoc,
