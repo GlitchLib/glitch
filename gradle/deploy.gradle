@@ -82,7 +82,7 @@ bintray {
     key = bintrayApiKey
     publications = [ 'maven' ]
     dryRun = false
-    publish = true
+    publish = false
     override = false
     pkg {
         userOrg = bintrayUser
