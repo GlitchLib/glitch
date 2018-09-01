@@ -27,5 +27,5 @@ jobs:
       - bash <(curl -s https://codecov.io/bash)
   - stage: deploy
     jdk: openjdk8
-    allow_failures:
-      script: ./gradlew deploy
+    env: TRAVIS_ALLOW_FAILURE=true
+    script: ./gradlew deploy
