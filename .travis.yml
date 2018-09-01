@@ -15,11 +15,10 @@ cache:
   - $HOME/.gradle/wrapper/
 
 before_install: chmod +x ./gradlew
+script: ./gradlew check
 
 jobs:
   include:
-  - stage: test
-    script: ./gradlew check
   - stage: code coverage
     jdk: openjdk8
     script:
