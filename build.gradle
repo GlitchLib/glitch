@@ -9,6 +9,8 @@ plugins {
 def jackson = ext["jackson.version"]
 
 allprojects {
+    apply plugin: "java"
+    apply plugin: "jacoco"
     apply plugin: "io.spring.dependency-management"
 
     group = ext["project.publications.groupId"]
@@ -32,8 +34,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: "java"
-    apply plugin: "jacoco"
 
     archivesBaseName = "${rootProject.name}-${project.name}".toLowerCase()
 
@@ -57,13 +57,18 @@ subprojects {
     test {
         useJUnitPlatform()
     }
+}
 
-    jacocoTestReport {
-        reports {
-            csv.enabled false
-            html.enabled true
-            xml.enabled true
-        }
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
     }
 }
 
@@ -90,6 +95,8 @@ task aggregateJavadoc(type: Javadoc,
         }
     }
 }
+
+codeCoverageReport.dependsOn(subprojects*.test)
 
 wrapper {
     gradleVersion = "4.10"

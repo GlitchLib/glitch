@@ -6,7 +6,7 @@ apply plugin: "com.jfrog.artifactory"
 apply plugin: "com.gorylenko.gradle-git-properties"
 
 private static def timestamp() {
-    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd yyyy HH:mm:ss zzz")
+    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd yyyy HH:mm:ss zzz", Locale.ENGLISH)
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"))
     return sdf.format(new Date())
 }
@@ -29,7 +29,7 @@ gitProperties {
     ]
     dateFormatTimeZone = "GMT"
     customProperty("application.name", rootProject.name)
-    customProperty("application.module", project.name)
+    customProperty("application.module", archivesBaseName)
     customProperty("application.version", project.version)
     customProperty("application.description", project.description ?: rootProject.description)
 }
@@ -39,8 +39,8 @@ jar {
         attributes([
                 'Manifest-Version': '1.0',
                 'Created-By': "Gradle ${gradle.gradleVersion} - JDK ${System.getProperty("java.specification.version")} (${System.getProperty("java.version")})",
-                'Implementation-Title': group,
-                'Implementation-Vendor': rootProject.name,
+                'Implementation-Title': rootProject.name,
+                'Implementation-Vendor': archivesBaseName,
                 'Implementation-Version': version,
                 'Implementation-Date': timestamp()
         ])
