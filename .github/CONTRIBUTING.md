@@ -106,25 +106,21 @@ To get started we need first a [Gradle Support](http://plugins.netbeans.org/plug
 Now IDE will automatically finds a Gradle project and will execute tasks for preparing project to start coding. No configuration of Annotation processing, no more adding Lombok plugins stuffs like. Everything is on the Gradle Plugin.
 
 ## How to contribute to Twitch4J
-Of course you can contribute to our repository in 3 ways:
+Of course you can contribute to our repository in 2 ways:
 * Creating Issue
-* Joining to our [Discord Server](https://discord.gg/FQ5vgW3)
 * Create Pull Request
 
 ### Issue
-All your ideas, features, bug reports, etc. must be documented in following comments on [issue](https://github.com/twitch4j/twitch4j/issues/new) tab.
+All your ideas, features, bug reports, etc. must be documented in following comments on [issue](https://github.com/stachu540/glitch/issues/new) tab.
 Questions in issue are not welcome. Use Discord server below to asking developers for your question.
-
-### Discord Server
-Your problem is a hardest to reproduce? Having a questions, how to and where? Come, join to our [Discord Server](https://discord.gg/FQ5vgW3)
 
 ### Pull Requests
 So, you are thinking about sending a pull request? Awesome! But... before starting on your pull request, you should read up on
-the [pull request](https://github.com/twitch4j/twitch4j/compare) comment.
+the [pull request](https://github.com/stachu540/glitch/compare) comment.
 
 Before starting pull request make sure if:
 
-1. All your code will be subject to the project's licence, in this case [MIT](https://github.com/twitch4j/twitch4j/blob/master/LICENSE).
+1. All your code will be subject to the project's licence, in this case [LGPL-3.0](https://github.com/stachu540/glitch/blob/master/LICENSE).
 2. Your code follows a style requirements mentioned below, and you didn't modified project style (ex. indentation style, bracket style, naming, comments, etc). 
 Rewrites of certain systems are kindly welcome too.
 3. *Your pull-request must be created **ONLY** against the `develop` branch!* 
@@ -136,7 +132,7 @@ line if statements do not need brackets.
 * All object instances, methods and fields must be documented for getting sure what does things are doing.
 * Documented notes (backslashes `//` or slashed stars `/* */`) is optional into inside methods for getting sure what does things are doing.
 * If some parts of code is unofficial and they are using non-documented part of [Twitch API](https://dev.twitch.tv/docs), mark them using `@Unofficial("<link to source>")` annotation adding inside the source
-* Documenting object instances (classes, interfaces, enums) must have a same format below:
+* Documenting object instances (classes, interfaces, enums) must have a same format (no matter what accessible it is) below:
 ```java
 /**
  * {Your short description}
@@ -146,5 +142,21 @@ line if statements do not need brackets.
  * @version %I%, %G%
  * @since {next minor version (eg. 0.11.0)}
  */
-public class Example {}
+public class Example { 
+    /**
+     * {Your short description}
+     * <p>
+     * {Your longest description}
+     */
+    private final String field;
+    /**
+     * {Your short description}
+     * <p>
+     * {Your longest description}
+     * @return (what method returns)
+     */
+    public String getField() {
+        return field;
+    }
+}
 ```

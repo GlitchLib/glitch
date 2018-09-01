@@ -7,14 +7,11 @@ about: Create a report to help us improve
 <!--
 	Thanks to using Glitch
  	Before you submit pull request/issue read Contributing guidelines.
- 	We do not anwser the questions. If you have ask, go to https://discord.gg/FQ5vgW3
- 	Issue is not a place for questions and spam.
 -->
 ### Prerequisites
-* [ ] If this is a question/suggestion, I have already considered discuss it on [Discord Server](https://discord.gg/FQ5vgW3)
-* [ ] This issue specifically has something to do with Twitch4J
-* [ ] I have attempted to [look for similar issues](https://github.com/twitch4j/twitch4j/issues) already
-* [ ] I have read and understood the [contribution guidelines](https://github.com/twitch4j/twitch4j/blob/master/.github/CONTRIBUTING.md) and I accept them.
+* [ ] This issue specifically has something to do with this library
+* [ ] I have attempted to [look for similar issues](https://github.com/stachu540/glitch/issues) already
+* [ ] I have read and understood the [contribution guidelines](https://github.com/stachu540/glitch/blob/master/.github/CONTRIBUTING.md) and I accept them.
 
 <!-- Without marking last checkbox, your issue will be declined -->
 

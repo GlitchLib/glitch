@@ -1,8 +1,6 @@
 <!--
-	Thanks to using Twitch4J
+	Thanks to using Glitch
  	Before you submit pull request read Contributing guidelines.
- 	We do not anwser the questions. If you have ask, go to https://discord.gg/FQ5vgW3
- 	Issue is not a place for questions and spam.
 -->
 ### Prerequisites
 * [ ] I have read and understood the [contribution guidelines](https://github.com/twitch4j/twitch4j/blob/master/.github/CONTRIBUTING.md) and I accept them.
