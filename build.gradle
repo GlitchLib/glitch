@@ -1,7 +1,8 @@
 plugins {
+    id "net.ltgt.apt" version "0.18"
     id "com.jfrog.bintray" version "1.8.4"
     id "com.jfrog.artifactory" version "4.7.5"
-    id "com.github.johnrengelman.shadow" version "2.0.4"
+    id "de.lukaskoerfer.gradle.delombok" version "0.2"
     id "com.gorylenko.gradle-git-properties" version "1.5.1"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
@@ -11,6 +12,11 @@ def jackson = ext["jackson.version"]
 allprojects {
     apply plugin: "java"
     apply plugin: "jacoco"
+    apply plugin: "net.ltgt.apt"
+    apply plugin: "maven-publish"
+    apply plugin: "net.ltgt.apt-idea"
+    apply plugin: "net.ltgt.apt-eclipse"
+    apply plugin: "de.lukaskoerfer.gradle.delombok"
     apply plugin: "io.spring.dependency-management"
 
     group = ext["project.publications.groupId"]
@@ -27,6 +33,9 @@ allprojects {
     }
 
     tasks.withType(Javadoc) {
+        if (project != rootProject) {
+            source = delombok
+        }
         options {
             encoding = "UTF-8"
         }
@@ -34,15 +43,16 @@ allprojects {
 }
 
 subprojects {
-
     archivesBaseName = "${rootProject.name}-${project.name}".toLowerCase()
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    def slf4j = ext["slf4j.version"]
-    def guava = ext["guava.version"]
-    def rxjava = ext["rxjava.version"]
+    def slf4j = ext."slf4j.version"
+    def guava = ext."guava.version"
+    def rxjava = ext."rxjava.version"
+    def immutables = ext."immutables.version"
+    def lombok = ext."lombok.version"
 
     dependencies {
         compile "org.slf4j:slf4j-api:$slf4j"
@@ -50,6 +60,12 @@ subprojects {
         compile "io.reactivex.rxjava2:rxjava:$rxjava"
         compile "com.fasterxml.jackson.core:jackson-databind"
         compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
+
+        compileOnly "org.immutables:value:$immutables"
+        annotationProcessor "org.immutables:value:$immutables"
+
+        compileOnly "org.projectlombok:lombok:$lombok"
+        annotationProcessor "org.projectlombok:lombok:$lombok"
     }
 
     apply from: "${rootDir}/gradle/deploy.gradle"
@@ -92,6 +108,19 @@ task aggregateJavadoc(type: Javadoc,
             classpath += doc.classpath
             excludes += doc.excludes
             includes += doc.includes
+        }
+    }
+}
+
+task aggregateJavadocJar(type: Jar, dependsOn: aggregateJavadoc) {
+    classifier = 'javadoc'
+    from aggregateJavadoc.destinationDir
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact aggregateJavadocJar
         }
     }
 }
