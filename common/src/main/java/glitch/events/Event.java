@@ -1,21 +1,18 @@
 package glitch.events;
 
+import glitch.utils.Immutable;
 import java.time.Instant;
+import java.util.UUID;
+import org.immutables.value.Value;
 
-public abstract class Event {
-    private final Instant createdAt;
-    private final String eventId;
-
-    protected Event(Instant createdAt, String eventId) {
-        this.createdAt = createdAt;
-        this.eventId = eventId;
+@Immutable
+@Value.Immutable
+public interface Event {
+    default Instant getCreatedAt() {
+        return Instant.now();
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getEventId() {
-        return eventId;
+    default String getEventId() {
+        return UUID.randomUUID().toString();
     }
 }

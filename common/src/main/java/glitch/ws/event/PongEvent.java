@@ -1,10 +1,9 @@
 package glitch.ws.event;
 
+import glitch.utils.Immutable;
 import glitch.ws.WebSocketClient;
-import java.time.Instant;
+import org.immutables.value.Value;
 
-public class PongEvent<S extends WebSocketClient> extends ConnectionEvent<S> {
-    public PongEvent(S client, Instant createdAt, String eventId) {
-        super(client, createdAt, eventId);
-    }
-}
+@Immutable
+@Value.Immutable
+public interface PongEvent<S extends WebSocketClient> extends SocketEvent<S> {}

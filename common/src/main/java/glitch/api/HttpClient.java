@@ -4,41 +4,49 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.reactivex.Single;
-import io.reactivex.functions.Consumer;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpClient {
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
+    // TODO: Use logger to debugging stuff
     private final Logger logger = LoggerFactory.getLogger("glitch.http.client");
-
-    private HttpClient(OkHttpClient httpClient, ObjectMapper mapper) {
-        this.httpClient = httpClient;
-        this.mapper = mapper;
-    }
 
     String buildBody(Object body) throws IOException {
         return mapper.writeValueAsString(body);
     }
 
     @SuppressWarnings("unchecked")
-    <R> Single<R> exchange(Request request, Class<R> responseType) {
-        return (Single<R>) Single.create(source -> {
-            Response response = httpClient.newCall(request).execute();
+    <R> R exchange(Request request, Class<R> responseType) throws Exception {
+        Response response = httpClient.newCall(request).execute();
 
+        if (responseType == Response.class) {
+            return (R) response;
+        } else if (responseType == ResponseBody.class) {
+            return (R) response.body();
+        } else if (responseType == Void.class) {
+            return null;
+        } else {
             if (!response.isSuccessful()) {
-                ResponseError error = mapper.readValue(response.body().bytes(), ResponseError.class);
+                ResponseError error = (response.body() != null) ?
+                        mapper.readValue(response.body().bytes(), ResponseError.class) :
+                        new ResponseError(null, 0, null);
 
                 if (error.getMessage() == null || error.getMessage().equals("")) {
                     error.setMessage(response.message());
@@ -52,21 +60,13 @@ public class HttpClient {
                     error.setError(response.message());
                 }
 
-                source.onError(new ResponseException(error));
-            }
-
-            if (responseType == Response.class) {
-                source.onSuccess(response);
+                throw new ResponseException(error);
             } else {
                 if (response.body() != null && response.body().contentLength() > 0)
-                    source.onSuccess(mapper.readValue(response.body().bytes(), responseType));
-                else source.onSuccess(null);
+                    return mapper.readValue(response.body().bytes(), responseType);
+                else return null;
             }
-        }).doOnError(e -> logger.error(e.getMessage(), e));
-    }
-
-    <R> R exchangeAsync(Request request, Class<R> responseType) {
-        return exchange(request, responseType).blockingGet();
+        }
     }
 
     public static Builder builder() {

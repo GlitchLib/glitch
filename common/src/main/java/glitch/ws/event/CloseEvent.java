@@ -1,15 +1,12 @@
 package glitch.ws.event;
 
+import glitch.utils.Immutable;
 import glitch.ws.WebSocketClient;
-import java.time.Instant;
+import org.immutables.value.Value;
 
-public class CloseEvent<S extends WebSocketClient> extends ConnectionEvent<S> {
-    private final int code;
-    private final String reason;
-
-    public CloseEvent(int code, String reason, S client, Instant createdAt, String eventId) {
-        super(client, createdAt, eventId);
-        this.code = code;
-        this.reason = reason;
-    }
+@Immutable
+@Value.Immutable
+public interface CloseEvent<S extends WebSocketClient> extends SocketEvent<S> {
+    int getCode();
+    String getReason();
 }
