@@ -1,7 +1,12 @@
 dependencies {
-    compile project(":auth")
-    compile project(":kraken")
-    compile project(":helix")
-    compile project(":chat")
-    compile project(":pubsub")
+    // glitch.api
+    compileOnly "com.squareup.okhttp3:okhttp:3.11.0"
+    // glitch.ws
+    compileOnly "com.neovisionaries:nv-websocket-client:2.5"
+
+    subprojects.each {
+        if (it != project) {
+            implementationOnly it
+        }
+    }
 }
