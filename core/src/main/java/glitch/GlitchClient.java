@@ -1,25 +1,18 @@
 package glitch;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import glitch.api.AbstractAPI;
-import glitch.auth.Credential;
 import glitch.auth.CredentialCreator;
 import glitch.auth.CredentialManager;
 import glitch.common.api.HttpClient;
 import glitch.common.events.EventManager;
 import io.reactivex.Single;
-import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import lombok.experimental.Wither;
 
 @Getter
 @RequiredArgsConstructor

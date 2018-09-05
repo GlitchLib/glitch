@@ -1,0 +1,35 @@
+dependencies {
+    subprojects.each {
+        if (it != project) {
+            compile it
+        }
+    }
+}
+
+tasks.withType(Javadoc) {
+    destinationDir file("${rootProject.buildDir}/docs/javadoc")
+    failOnError false
+    title = "${rootProject.name} ${rootProject.version} API"
+
+    options {
+        windowTitle = "${rootProject.name} ${rootProject.version}"
+        addStringOption("Xdoclint:none", "-quiet")
+        author = true
+    }
+
+    subprojects.each {
+        if (it != project && it != project(":bom")) {
+            it.tasks.withType(Javadoc.class).each { doc ->
+                source += doc.source
+                classpath += doc.classpath
+                excludes += doc.excludes
+                includes += doc.includes
+            }
+        }
+    }
+}
+
+tasks.getByName("javadocJar") {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
