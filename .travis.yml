@@ -20,10 +20,11 @@ script: ./gradlew check
 jobs:
   include:
   - stage: code coverage
-    jdk: openjdk8
+    jdk: openjdk10
     script:
       - ./gradlew codeCoverageReport
       - bash <(curl -s https://codecov.io/bash)
   - stage: deploy
-    jdk: openjdk8
-    script: ./gradlew deploy
+    jdk: openjdk10
+    script: ./gradlew bintrayUpload -x test
+    if: (tag =~ ^v) AND (branch = master)

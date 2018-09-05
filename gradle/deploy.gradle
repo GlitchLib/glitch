@@ -69,9 +69,11 @@ artifacts {
 publishing {
     publications {
         maven(MavenPublication) {
-            from components.java
             artifactId archivesBaseName
-            artifact sourcesJar
+            if (project != project(":all")) {
+                from components.java
+                artifact sourcesJar
+            }
             artifact javadocJar
         }
     }
@@ -96,29 +98,5 @@ bintray {
             vcsTag = "v${rootProject.version}"
             released = Calendar.getInstance(TimeZone.getTimeZone("GMT")).time
         }
-    }
-}
-
-artifactory {
-    contextUrl = 'https://oss.jfrog.org/artifactory'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = bintrayUser
-            password = bintrayApiKey
-        }
-        defaults {
-            publications 'maven'
-        }
-    }
-}
-
-task deploy(group: "publishing") {
-    if (rootProject.version.toString().endsWith("-SNAPSHOT")) {
-        dependsOn artifactoryPublish
-    } else if (branch == "master" && hasTags) {
-        dependsOn bintrayUpload
-    } else {
-        enabled = false
     }
 }

@@ -4,12 +4,18 @@ plugins {
     id "com.jfrog.artifactory" version "4.7.5"
     id "de.lukaskoerfer.gradle.delombok" version "0.2"
     id "com.gorylenko.gradle-git-properties" version "1.5.1"
-    id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
-def jackson = ext["jackson.version"]
-
 allprojects {
+    group = ext["project.publications.groupId"]
+    version = ext["project.version"]
+
+    repositories {
+        jcenter()
+    }
+}
+
+subprojects {
     apply plugin: "java"
     apply plugin: "jacoco"
     apply plugin: "net.ltgt.apt"
@@ -17,19 +23,10 @@ allprojects {
     apply plugin: "net.ltgt.apt-idea"
     apply plugin: "net.ltgt.apt-eclipse"
     apply plugin: "de.lukaskoerfer.gradle.delombok"
-    apply plugin: "io.spring.dependency-management"
 
-    group = ext["project.publications.groupId"]
-    version = ext["project.version"]
-
-    repositories {
-        jcenter()
-    }
-
-    dependencyManagement {
-        imports {
-            mavenBom "com.fasterxml.jackson:jackson-bom:$jackson"
-        }
+    tasks.withType(JavaCompile) {
+        options.incremental = true
+        options.encoding = "UTF-8"
     }
 
     tasks.withType(Javadoc) {
@@ -38,12 +35,11 @@ allprojects {
         }
         options {
             encoding = "UTF-8"
+            addBooleanOption "html5", true
         }
     }
-}
 
-subprojects {
-    archivesBaseName = "${rootProject.name}-${project.name}".toLowerCase()
+    archivesBaseName = "${rootProject.name}-${project.name.replace(':', '-')}".toLowerCase()
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -53,12 +49,13 @@ subprojects {
     def rxjava = ext."rxjava.version"
     def immutables = ext."immutables.version"
     def lombok = ext."lombok.version"
+    def jackson = ext."jackson.version"
 
     dependencies {
         compile "org.slf4j:slf4j-api:$slf4j"
         compile "com.google.guava:guava:$guava"
         compile "io.reactivex.rxjava2:rxjava:$rxjava"
-        compile "com.fasterxml.jackson.core:jackson-databind"
+        compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
         compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
 
         compileOnly "org.immutables:value:$immutables"
@@ -85,43 +82,6 @@ task codeCoverageReport(type: JacocoReport) {
         html.enabled = true
         xml.enabled = true
         xml.destination file("${buildDir}/reports/jacoco/report.xml")
-    }
-}
-
-task aggregateJavadoc(type: Javadoc,
-        description: "Generate javadocs from all child projects as if it was a single project",
-        group: JavaBasePlugin.DOCUMENTATION_GROUP
-) {
-    destinationDir file("${rootProject.buildDir}/docs/javadoc")
-    failOnError false
-    title = "${rootProject.name} ${rootProject.version} API"
-
-    options {
-        windowTitle = "${rootProject.name} ${rootProject.version}"
-        addStringOption("Xdoclint:none", "-quiet")
-        author = true
-    }
-
-    subprojects.each { project ->
-        project.tasks.withType(Javadoc.class).each { doc ->
-            source += doc.source
-            classpath += doc.classpath
-            excludes += doc.excludes
-            includes += doc.includes
-        }
-    }
-}
-
-task aggregateJavadocJar(type: Jar, dependsOn: aggregateJavadoc) {
-    classifier = 'javadoc'
-    from aggregateJavadoc.destinationDir
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifact aggregateJavadocJar
-        }
     }
 }
 

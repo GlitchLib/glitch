@@ -1,4 +1,4 @@
-rootProject.name = 'Glitch'
+rootProject.name = "glitch"
 
 include("auth")
 include("core")
@@ -6,3 +6,4 @@ include("chat")
 include("kraken")
 include("helix")
 include("pubsub")
+include("all")
