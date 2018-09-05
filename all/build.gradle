@@ -7,7 +7,6 @@ dependencies {
 }
 
 tasks.withType(Javadoc) {
-    destinationDir file("${rootProject.buildDir}/docs/javadoc")
     failOnError false
     title = "${rootProject.name} ${rootProject.version} API"
 
@@ -18,7 +17,7 @@ tasks.withType(Javadoc) {
     }
 
     subprojects.each {
-        if (it != project && it != project(":bom")) {
+        if (it != project) {
             it.tasks.withType(Javadoc.class).each { doc ->
                 source += doc.source
                 classpath += doc.classpath
