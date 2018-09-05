@@ -26,7 +26,7 @@ public class HttpRequest<R> {
         this.responseType = responseType;
     }
 
-    private final Multimap<String, ? extends Serializable> queryParameters = MultimapBuilder
+    private final Multimap<String, Object> queryParameters = MultimapBuilder
             .linkedHashKeys()
             .linkedHashSetValues()
             .build();
@@ -38,11 +38,17 @@ public class HttpRequest<R> {
 
     private final AtomicReference<Object> body = new AtomicReference<>();
 
-    public R exchangeAsync(HttpClient httpClient) {
-        return exchange(httpClient).blockingGet();
+    public HttpRequest<R> header(String key, String value) {
+        headers.put(key, value);
+        return this;
     }
 
-    public Single<R> exchange(final HttpClient httpClient) {
+    public HttpRequest<R> queryParam(String key, Object value) {
+        queryParameters.put(key, value);
+        return this;
+    }
+
+    public R exchange(HttpClient httpClient) throws Exception {
         StringBuilder url = new StringBuilder(uri);
 
         if (!queryParameters.isEmpty()) {
@@ -51,19 +57,14 @@ public class HttpRequest<R> {
                     .map(e -> e.getKey() + "=" + e.getValue())
                     .collect(Collectors.joining("&", "?", "")));
         }
-        
-        try {
-            Request.Builder request = new Request.Builder()
-                    .method(method.name(),
-                            (body.get() == null) ?
-                                    null :
-                                    RequestBody.create(
-                                            MediaType.parse("application/json"),
-                                            httpClient.buildBody(body.get()))
-                    ).url(url.toString());
-            return httpClient.exchange(request.build(), responseType);
-        } catch (IOException e) {
-            return Single.error(e);
-        }
+        Request.Builder request = new Request.Builder()
+                .method(method.name(),
+                        (body.get() == null) ?
+                                null :
+                                RequestBody.create(
+                                        MediaType.parse("application/json"),
+                                        httpClient.buildBody(body.get()))
+                ).url(url.toString());
+        return httpClient.exchange(request.build(), responseType);
     }
 }

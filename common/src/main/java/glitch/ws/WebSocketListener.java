@@ -4,19 +4,17 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFrame;
-import glitch.ws.event.CloseEvent;
-import glitch.ws.event.ConnectionEvent;
-import glitch.ws.event.PingEvent;
-import glitch.ws.event.PongEvent;
-import glitch.ws.event.RawByteMessageRecieved;
-import glitch.ws.event.RawByteMessageSend;
-import glitch.ws.event.RawMessageRecieved;
-import glitch.ws.event.RawMessageSend;
-import glitch.ws.event.ThrowableEvent;
-import java.time.Instant;
+import glitch.ws.event.CloseEventBuilder;
+import glitch.ws.event.PingEventBuilder;
+import glitch.ws.event.PongEventBuilder;
+import glitch.ws.event.SocketEventBuilder;
+import glitch.ws.event.ThrowableEventBuilder;
+import glitch.ws.event.message.RawByteMessageReceivedBuilder;
+import glitch.ws.event.message.RawByteMessageSendBuilder;
+import glitch.ws.event.message.RawMessageReceivedBuilder;
+import glitch.ws.event.message.RawMessageSendBuilder;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class WebSocketListener<S extends WebSocketClient> extends WebSocketAdapter {
     private final S client;
@@ -26,40 +24,40 @@ public class WebSocketListener<S extends WebSocketClient> extends WebSocketAdapt
 
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
-        client.eventBus.dispatch(new ConnectionEvent<>(client, Instant.now(), UUID.randomUUID().toString()));
+        client.manager.dispatch(new SocketEventBuilder<>().client(client).build());
     }
 
     @Override
     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-        client.eventBus.dispatch(new ThrowableEvent<>(cause, client, Instant.now(), UUID.randomUUID().toString()));
+        client.manager.dispatch(new ThrowableEventBuilder<>().throwable(cause).client(client).build());
     }
 
     @Override
     public void onFrameSent(WebSocket websocket, WebSocketFrame frame) throws Exception {
         if (frame.isCloseFrame()) {
-            client.eventBus.dispatch(new CloseEvent<>(frame.getCloseCode(), frame.getCloseReason(), client, Instant.now(), UUID.randomUUID().toString()));
+            client.manager.dispatch(new CloseEventBuilder<>().code(frame.getCloseCode()).reason(frame.getCloseReason()).client(client).build());
         }
         if (frame.isPingFrame()) {
-            client.eventBus.dispatch(new PingEvent<>(client, Instant.now(), UUID.randomUUID().toString()));
+            client.manager.dispatch(new PingEventBuilder<>().client(client).build());
         }
         if (frame.isPongFrame()) {
-            client.eventBus.dispatch(new PongEvent<>(client, Instant.now(), UUID.randomUUID().toString()));
+            client.manager.dispatch(new PongEventBuilder<>().client(client).build());
         }
         if (frame.isTextFrame()) {
-            client.eventBus.dispatch(new RawMessageSend<>(frame.getPayloadText(), client, Instant.now(), UUID.randomUUID().toString()));
+            client.manager.dispatch(new RawMessageSendBuilder<>().client(client).build());
         }
         if (frame.isBinaryFrame()) {
-            client.eventBus.dispatch(new RawByteMessageSend<>(frame.getPayload(), client, Instant.now(), UUID.randomUUID().toString()));
+            client.manager.dispatch(new RawByteMessageSendBuilder<>().client(client).build());
         }
     }
 
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws Exception {
-        client.eventBus.dispatch(new RawByteMessageRecieved<>(binary, client, Instant.now(), UUID.randomUUID().toString()));
+        client.manager.dispatch(new RawByteMessageReceivedBuilder<>().client(client).build());
     }
 
     @Override
     public void onTextMessage(WebSocket websocket, String text) throws Exception {
-        client.eventBus.dispatch(new RawMessageRecieved<>(text, client, Instant.now(), UUID.randomUUID().toString()));
+        client.manager.dispatch(new RawMessageReceivedBuilder<>().client(client).build());
     }
 }

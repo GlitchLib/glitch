@@ -15,18 +15,18 @@ public class BaseURL {
         return this;
     }
 
+    boolean hasEndpoint() {
+        return endpoint.get() != null && endpoint.get().matches("^/(.+)$");
+    }
+
     String generate(Object... values) {
-        StringBuilder sb = new StringBuilder(baseUrl);
-
-        if (!baseUrl.endsWith("/") || !endpoint.get().startsWith("/")) {
-            sb.append("/");
-        }
-        sb.append(String.format(endpoint.get(), values));
-
-        return sb.toString();
+        return baseUrl + String.format(endpoint.get(), values);
     }
 
     public static BaseURL create(String baseUrl) {
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        }
         return new BaseURL(baseUrl);
     }
 }

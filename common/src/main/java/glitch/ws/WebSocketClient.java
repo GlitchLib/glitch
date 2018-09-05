@@ -4,70 +4,75 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import glitch.events.EventManager;
 import io.reactivex.Single;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class WebSocketClient {
     private final String url;
-    final EventManager eventBus;
+    protected final EventManager manager;
     private final AtomicReference<WebSocket> ws = new AtomicReference<>();
 
-    public WebSocketClient(String url, EventManager eventBus) throws MalformedURLException {
+    public WebSocketClient(String url, EventManager manager) throws MalformedURLException {
         if (url.matches("^(ws|wss)://(.+)")) {
             this.url = url;
         } else throw new MalformedURLException("The URL must be a WebSocket prefix path (ws:// or wss://)");
 
-        this.eventBus = eventBus;
+        this.manager = manager;
     }
 
     protected Single<Void> send(String message) {
-        return Single.create(sub -> {
-            if (ws.get() == null) throw new RuntimeException("Socket is not connected!!!");
-            ws.get().sendText(message);
-        });
-    }
-
-    protected void sendAsync(String message) {
-        send(message).blockingGet();
-    }
-
-    public Single<WebSocket> connect() {
-        return Single.fromPublisher(publisher -> {
-            if (this.ws.get() != null) publisher.onError(new RuntimeException("Socket is already connected!!!"));
+        return Single.fromPublisher(pub -> {
             try {
-                WebSocket ws = new WebSocketFactory().createSocket(url);
-                ws.addListener(new WebSocketListener<>(this));
-                this.ws.set(ws);
-                publisher.onNext(ws);
-            } catch (IOException e) {
-                publisher.onError(e);
+                sendAsync(message);
+                pub.onComplete();
+            } catch (Exception e) {
+                pub.onError(e);
             }
         });
     }
 
-    public void connectAsync() {
-        connect().subscribe(ws -> {
-            if (this.ws.get() == null) {
-                this.ws.set(ws);
+    protected void sendAsync(String message) throws Exception {
+        if (ws.get() == null) throw new RuntimeException("Socket is not connected!!!");
+        ws.get().sendText(message);
+    }
+
+    public Single<Void> connect() {
+        return Single.fromPublisher(pub -> {
+            try {
+                connectAsync();
+                pub.onComplete();
+            } catch (Exception e) {
+                pub.onError(e);
             }
-        }).dispose();
+        });
+    }
+
+    public void connectAsync() throws Exception {
+        if (this.ws.get() != null) throw new RuntimeException("Socket is already connected!!!");
+        WebSocket ws = new WebSocketFactory().createSocket(url);
+        ws.addListener(new WebSocketListener<>(this));
+        this.ws.set(ws);
     }
 
     public Single<Void> close(boolean retry) {
-        return Single.fromPublisher(publisher -> {
-            WebSocket ws = this.ws.get();
-            if (ws != null) {
-                ws.sendClose(1000, (retry) ? "Reconnecting..." : "Disconnected!");
-                this.ws.set(null);
-                if (retry) {
-                    connect().doOnError(publisher::onError).subscribe(socket -> publisher.onComplete()).dispose();
-                } else publisher.onComplete();
-            } else publisher.onError(new RuntimeException("Socket is not connected!!!"));
+        return Single.fromPublisher(pub -> {
+            try {
+                closeAsync(retry);
+                pub.onComplete();
+            } catch (Exception e) {
+                pub.onError(e);
+            }
         });
     }
 
-    public void closeAsync(boolean retry) {
-        close(retry).subscribe().dispose();
+    public void closeAsync(boolean retry) throws Exception {
+        WebSocket ws = this.ws.get();
+        if (ws != null) {
+            ws.sendClose(1000, (retry) ? "Reconnecting..." : "Disconnected!");
+            this.ws.set(null);
+            if (retry) {
+                connectAsync();
+            }
+        } else throw new RuntimeException("Socket is not connected!!!");
     }
 }
