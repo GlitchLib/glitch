@@ -1,6 +1,6 @@
 package glitch.kraken.json;
 
-import glitch.utils.Immutable;
+import glitch.common.utils.Immutable;
 import java.time.Instant;
 import org.immutables.value.Value;
 

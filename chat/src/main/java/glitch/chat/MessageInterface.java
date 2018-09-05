@@ -1,8 +1,8 @@
 package glitch.chat;
 
-import glitch.events.EventManager;
-import glitch.ws.WebSocketClient;
-import glitch.ws.event.message.RawMessageReceived;
+import glitch.common.events.EventManager;
+import glitch.common.ws.WebSocketClient;
+import glitch.common.ws.event.message.RawMessageReceived;
 import java.net.MalformedURLException;
 
 public class MessageInterface extends WebSocketClient {

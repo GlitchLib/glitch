@@ -1,7 +1,7 @@
 package glitch.kraken.json;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import glitch.utils.Immutable;
+import glitch.common.utils.Immutable;
 import java.io.Serializable;
 import org.immutables.value.Value;
 

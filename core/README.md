@@ -1,75 +1,32 @@
 # Glitch Core Package
 
-This is a core package maintained from all modules in one place.
-
-# Dependencies
-
-## Gradle
-
-### Development Build
-```groovy
-repositories {
-    maven { url "https://jitpack.io/" }
-}
-
-dependencies {
-    compile "com.github.stachu540.Glitch:glitch-core:dev-SNAPSHOT"
-}
-```
-
-### Release
-```groovy
-repositories {
-    jcenter()
-}
-
-dependencies {
-    compile "com.github.stachu540:glitch-core:$version"
-}
-```
-
-## Maven
-
-### Development Build
-```xml
-<repositories>
-    <repository>
-        <id>jitpack</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-
-<dependencies>
-    <dependency>
-          <groupId>com.github.stachu540.Glitch</groupId>
-          <artifactId>glitch-core</artifactId>
-          <version>dev-SNAPSHOT</version>
-     </dependency>
-</dependencies>
-```
+This is a core package maintained for all modules.
 
 
-### Release
-```xml
-<repositories>
-    <repository>
-        <id>jcenter</id>
-        <url>https://jcenter.bintray.com</url>
-    </repository>
-</repositories>
+# Modules
 
-<dependencies>
-    <dependency>
-          <groupId>com.github.stachu540</groupId>
-          <artifactId>glitch-core</artifactId>
-          <version>${glitch.version}</version>
-     </dependency>
-</dependencies>
-```
+- [Auth](../auth)
+- [Chat](../chat)
+- [Kraken](../kraken)
+- [Helix](../helix)
+- [PubSub](../pubsub)
 
 # TODO
 
-* [ ] [Chat](../chat)
-* [ ] [Kraken](../kraken)
-* [ ] [Helix](../helix)
-* [ ] [PubSub](../pubsub)
+- [ ] Twitch Credentials
+  - [x] OAuth2 with Validation
+  - [ ] Credential Storage
+    - [ ] [JPA / Hibernate](http://hibernate.org/)
+    - [ ] [JDBI](https://jdbi.org/)
+    - [ ] File store
+      - [ ] Multi-file credential
+    - [ ] Cached
+- [ ] Event Manager
+  - [ ] Reactive Events
+  - [ ] Annotated Events
+    - [ ] with custom arguments - using annotated parameters
+  - [ ] Command API
+- [x] Customized REST Client
+- [x] Customized WebSocket Client
+  - [ ] Multiple instance for [PubSub](../pubsub)
+
