@@ -3,10 +3,4 @@ dependencies {
     compileOnly "com.squareup.okhttp3:okhttp:3.11.0"
     // glitch.ws
     compileOnly "com.neovisionaries:nv-websocket-client:2.5"
-
-    subprojects.each {
-        if (it != project) {
-            implementationOnly it
-        }
-    }
 }

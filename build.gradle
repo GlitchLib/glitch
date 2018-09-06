@@ -30,12 +30,9 @@ subprojects {
     }
 
     tasks.withType(Javadoc) {
-        if (project != rootProject) {
-            source = delombok
-        }
+        source = delombok
         options {
             encoding = "UTF-8"
-            addBooleanOption "html5", true
         }
     }
 
@@ -52,17 +49,22 @@ subprojects {
     def jackson = ext."jackson.version"
 
     dependencies {
-        compile "org.slf4j:slf4j-api:$slf4j"
-        compile "com.google.guava:guava:$guava"
-        compile "io.reactivex.rxjava2:rxjava:$rxjava"
-        compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
-        compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
+        if (project != project(":bom")) {
+            compile "org.slf4j:slf4j-api:$slf4j"
+            compile "com.google.guava:guava:$guava"
+            compile "io.reactivex.rxjava2:rxjava:$rxjava"
+            compile "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson"
+            compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson"
+            compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson"
+            compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
+            compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
 
-        compileOnly "org.immutables:value:$immutables"
-        annotationProcessor "org.immutables:value:$immutables"
+            compileOnly "org.immutables:value:$immutables"
+            annotationProcessor "org.immutables:value:$immutables"
 
-        compileOnly "org.projectlombok:lombok:$lombok"
-        annotationProcessor "org.projectlombok:lombok:$lombok"
+            compileOnly "org.projectlombok:lombok:$lombok"
+            annotationProcessor "org.projectlombok:lombok:$lombok"
+        }
     }
 
     apply from: "${rootDir}/gradle/deploy.gradle"
