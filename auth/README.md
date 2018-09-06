@@ -1,5 +1,3 @@
-**WARNING:** Module is empty, but in time will be added some [features](#Features) below.
-
 # Glitch Authorization
 
 This module contains **Ready to use** classes for authorization servers.
