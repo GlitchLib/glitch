@@ -1,0 +1,29 @@
+plugins {
+    id "ru.vyarus.pom" version "1.3.0"
+}
+
+description = "Bills of Materials (BOM) for Glitch packages"
+
+generateGitProperties.enabled = false
+compileJava.enabled = false
+javadoc.enabled = false
+javadocJar.enabled = false
+sourcesJar.enabled = false
+jar.enabled = false
+delombok.enabled = false
+test.enabled = false
+
+withPomXml {
+    it.appendNode("name").value = "Glitch BOM"
+    Node deps = it.appendNode("dependencyManagement").appendNode("dependencies")
+
+    project.rootProject.subprojects.each {
+        if (it.name != 'bom') {
+            Node dep = deps.appendNode('dependency')
+            dep.appendNode('groupId', it.group)
+            dep.appendNode('artifactId', it.archivesBaseName)
+            dep.appendNode('version', it.version)
+        }
+    }
+}
+
