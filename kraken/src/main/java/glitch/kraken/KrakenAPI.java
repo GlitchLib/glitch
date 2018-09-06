@@ -1,7 +1,8 @@
 package glitch.kraken;
 
+import glitch.GlitchClient;
+import glitch.api.AbstractAPI;
 import glitch.common.api.BaseURL;
-import glitch.common.api.HttpClient;
 import glitch.kraken.services.BitsService;
 import glitch.kraken.services.ChannelService;
 import glitch.kraken.services.ChatService;
@@ -16,28 +17,110 @@ import glitch.kraken.services.TeamService;
 import glitch.kraken.services.UserService;
 import glitch.kraken.services.VideoService;
 
-public class KrakenAPI {
-    public static final BaseURL BASE = BaseURL.create("https://api.twitch.tv/kraken");
-    private final HttpClient httpClient;
-
-    public KrakenAPI(HttpClient httpClient) {
-        this.httpClient = httpClient;
+public class KrakenAPI extends AbstractAPI {
+    public KrakenAPI(GlitchClient client) {
+        super(client, client.createClient(KrakenAPI.class), BaseURL.create("https://api.twitch.tv/kraken"));
     }
 
-    public BitsService bits() { return new BitsService(BASE, httpClient); }
-    public ChannelService channel() { return new ChannelService(BASE, httpClient); }
-    public ChatService chat() { return new ChatService(BASE, httpClient); }
-    public ClipService clips() { return new ClipService(BASE, httpClient); }
-    public CollectionService colletions() { return new CollectionService(BASE, httpClient); }
-    public CommunityService communities() { return new CommunityService(BASE, httpClient); }
-    public GameService games() { return new GameService(BASE, httpClient); }
-    public IngestService ingests() { return new IngestService(BASE, httpClient); }
-    public SearchService search() { return new SearchService(BASE, httpClient); }
-    public StreamService streams() { return new StreamService(BASE, httpClient); }
-    public TeamService teams() { return new TeamService(BASE, httpClient); }
-    public UserService users() { return new UserService(BASE, httpClient); }
-    public VideoService videos() { return new VideoService(BASE, httpClient); }
+    /**
+     * @return
+     */
+    public BitsService bitsService() {
+        return new BitsService(client, httpClient, baseURL);
+    }
 
+    /**
+     * @return
+     */
+    public ChannelService channelService() {
+        return new ChannelService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public ChatService chatService() {
+        return new ChatService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public ClipService clipService() {
+        return new ClipService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public CollectionService colletionService() {
+        return new CollectionService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public CommunityService communitieService() {
+        return new CommunityService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public GameService gameService() {
+        return new GameService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public IngestService ingestService() {
+        return new IngestService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public SearchService searchService() {
+        return new SearchService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public StreamService streamService() {
+        return new StreamService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public TeamService teamService() {
+        return new TeamService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public UserService userService() {
+        return new UserService(client, httpClient, baseURL);
+    }
+
+    /**
+     * @return
+     */
+    public VideoService videoService() {
+        return new VideoService(client, httpClient, baseURL);
+    }
+
+    /**
+     * Getting channel feed.
+     *
+     * @throws UnsupportedOperationException Channel Feed has been deprecated
+     * @deprecated Channel Feed and Pulse has been removed from the Twitch.
+     */
     @Deprecated
-    public Object channelFeed() { throw new UnsupportedOperationException("Channel Feed has been deprecated");}
+    public void channelFeed() {
+        throw new UnsupportedOperationException("Channel Feed has been deprecated");
+    }
 }

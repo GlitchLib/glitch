@@ -9,6 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Unofficial {
     /**
      * Source of endpoints
+     *
      * @return Explanation or source of unofficial endpoint
      */
     String value() default "";

@@ -9,5 +9,6 @@ import org.immutables.value.Value;
 @JsonDeserialize(builder = BadgeBuilder.class)
 public interface Badge {
     int getVersion();
+
     String getName();
 }

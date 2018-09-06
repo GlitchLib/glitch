@@ -8,7 +8,7 @@ public enum UserType {
     STAFF;
 
     public static UserType from(String userType) {
-        for (UserType type: values()) {
+        for (UserType type : values()) {
             if (type.name().equalsIgnoreCase(userType)) {
                 return type;
             }

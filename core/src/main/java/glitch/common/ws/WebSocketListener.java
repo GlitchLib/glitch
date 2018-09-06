@@ -4,6 +4,7 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFrame;
+import glitch.GlitchClient;
 import glitch.common.ws.event.CloseEventBuilder;
 import glitch.common.ws.event.PingEventBuilder;
 import glitch.common.ws.event.PongEventBuilder;
@@ -15,49 +16,48 @@ import glitch.common.ws.event.message.RawMessageReceivedBuilder;
 import glitch.common.ws.event.message.RawMessageSendBuilder;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class WebSocketListener<S extends WebSocketClient> extends WebSocketAdapter {
-    private final S client;
-    WebSocketListener(S client) {
-        this.client = client;
-    }
+    private final S ws;
 
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
-        client.manager.dispatch(new SocketEventBuilder<>().client(client).build());
+        ws.getClient().getEventManager().dispatch(new SocketEventBuilder<>().client(ws).build());
     }
 
     @Override
     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-        client.manager.dispatch(new ThrowableEventBuilder<>().throwable(cause).client(client).build());
+        ws.getClient().getEventManager().dispatch(new ThrowableEventBuilder<>().throwable(cause).client(ws).build());
     }
 
     @Override
     public void onFrameSent(WebSocket websocket, WebSocketFrame frame) throws Exception {
         if (frame.isCloseFrame()) {
-            client.manager.dispatch(new CloseEventBuilder<>().code(frame.getCloseCode()).reason(frame.getCloseReason()).client(client).build());
+            ws.getClient().getEventManager().dispatch(new CloseEventBuilder<>().code(frame.getCloseCode()).reason(frame.getCloseReason()).client(ws).build());
         }
         if (frame.isPingFrame()) {
-            client.manager.dispatch(new PingEventBuilder<>().client(client).build());
+            ws.getClient().getEventManager().dispatch(new PingEventBuilder<>().client(ws).build());
         }
         if (frame.isPongFrame()) {
-            client.manager.dispatch(new PongEventBuilder<>().client(client).build());
+            ws.getClient().getEventManager().dispatch(new PongEventBuilder<>().client(ws).build());
         }
         if (frame.isTextFrame()) {
-            client.manager.dispatch(new RawMessageSendBuilder<>().client(client).build());
+            ws.getClient().getEventManager().dispatch(new RawMessageSendBuilder<>().client(ws).build());
         }
         if (frame.isBinaryFrame()) {
-            client.manager.dispatch(new RawByteMessageSendBuilder<>().client(client).build());
+            ws.getClient().getEventManager().dispatch(new RawByteMessageSendBuilder<>().client(ws).build());
         }
     }
 
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws Exception {
-        client.manager.dispatch(new RawByteMessageReceivedBuilder<>().client(client).build());
+        ws.getClient().getEventManager().dispatch(new RawByteMessageReceivedBuilder<>().client(ws).build());
     }
 
     @Override
     public void onTextMessage(WebSocket websocket, String text) throws Exception {
-        client.manager.dispatch(new RawMessageReceivedBuilder<>().client(client).build());
+        ws.getClient().getEventManager().dispatch(new RawMessageReceivedBuilder<>().client(ws).build());
     }
 }

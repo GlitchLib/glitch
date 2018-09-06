@@ -52,12 +52,14 @@ public enum Scope {
     CHANNEL_EDITOR,
     /**
      * Add posts and reactions to a channel feed.
+     *
      * @deprecated <a href="https://discuss.dev.twitch.tv/t/how-the-removal-of-channel-feed-and-pulse-affects-the-twitch-api-v5/16540">Twitch removes Channel Feed and Pulse.</a>
      */
     @Deprecated
     CHANNEL_FEED_EDIT,
     /**
      * View a channel feed.
+     *
      * @deprecated <a href="https://discuss.dev.twitch.tv/t/how-the-removal-of-channel-feed-and-pulse-affects-the-twitch-api-v5/16540">Twitch removes Channel Feed and Pulse.</a>
      */
     @Deprecated

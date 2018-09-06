@@ -10,6 +10,13 @@ public class BaseURL {
         this.baseUrl = baseUrl;
     }
 
+    public static BaseURL create(String baseUrl) {
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        }
+        return new BaseURL(baseUrl);
+    }
+
     public BaseURL endpoint(String endpoint) {
         this.endpoint.set(endpoint);
         return this;
@@ -21,12 +28,5 @@ public class BaseURL {
 
     String generate(Object... values) {
         return baseUrl + String.format(endpoint.get(), values);
-    }
-
-    public static BaseURL create(String baseUrl) {
-        if (baseUrl.endsWith("/")) {
-            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
-        }
-        return new BaseURL(baseUrl);
     }
 }

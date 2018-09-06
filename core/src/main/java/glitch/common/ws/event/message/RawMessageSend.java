@@ -6,4 +6,5 @@ import org.immutables.value.Value;
 
 @Immutable
 @Value.Immutable
-public interface RawMessageSend<S extends WebSocketClient> extends MessageSend<String, S> {}
+public interface RawMessageSend<S extends WebSocketClient> extends MessageSend<String, S> {
+}

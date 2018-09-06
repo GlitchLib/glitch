@@ -2,22 +2,25 @@ package glitch.common.ws;
 
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketFactory;
+import glitch.GlitchClient;
 import glitch.common.events.EventManager;
 import io.reactivex.Single;
 import java.net.MalformedURLException;
 import java.util.concurrent.atomic.AtomicReference;
+import lombok.Getter;
 
 public abstract class WebSocketClient {
+    @Getter
+    private final GlitchClient client;
     private final String url;
-    protected final EventManager manager;
     private final AtomicReference<WebSocket> ws = new AtomicReference<>();
 
-    public WebSocketClient(String url, EventManager manager) throws MalformedURLException {
+    public WebSocketClient(String url, GlitchClient client) throws MalformedURLException {
         if (url.matches("^(ws|wss)://(.+)")) {
             this.url = url;
         } else throw new MalformedURLException("The URL must be a WebSocket prefix path (ws:// or wss://)");
 
-        this.manager = manager;
+        this.client = client;
     }
 
     protected Single<Void> send(String message) {

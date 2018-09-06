@@ -20,10 +20,6 @@ public class Router<R> {
         this.responseType = responseType;
     }
 
-    public HttpRequest<R> request(Object... parameters) {
-        return new HttpRequest<>(method, url.generate(parameters), responseType);
-    }
-
     public static <R> Router<R> create(HttpMethod method, BaseURL url) throws Exception {
         if (!url.hasEndpoint()) throw new NullPointerException("Endpoint is missing!");
         return new Router<>(method, url);
@@ -32,5 +28,9 @@ public class Router<R> {
     public static <R> Router<R> create(HttpMethod method, BaseURL url, Class<R> responseType) throws Exception {
         if (!url.hasEndpoint()) throw new NullPointerException("Endpoint is missing!");
         return new Router<>(method, url, responseType);
+    }
+
+    public HttpRequest<R> request(Object... parameters) {
+        return new HttpRequest<>(method, url.generate(parameters), responseType);
     }
 }

@@ -8,5 +8,6 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface CloseEvent<S extends WebSocketClient> extends SocketEvent<S> {
     int getCode();
+
     String getReason();
 }

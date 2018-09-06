@@ -14,9 +14,12 @@ import org.immutables.value.Value;
 @JsonDeserialize(builder = AccessTokenBuilder.class)
 public interface AccessToken {
     String getAccessToken();
+
     String getRefreshToken();
+
     @JsonDeserialize(using = ExpireInstantDeserializer.class)
     Instant expiresIn();
+
     @JsonProperty("scope")
     Set<Scope> getScopes();
 }

@@ -11,4 +11,5 @@ import org.immutables.value.Value;
         deepImmutablesDetection = true,
         defaults = @Value.Immutable(copy = false)
 )
-public @interface Immutable {}
+public @interface Immutable {
+}

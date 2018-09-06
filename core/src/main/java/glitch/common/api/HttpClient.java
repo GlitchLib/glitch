@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import okhttp3.Headers;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -26,6 +25,10 @@ public class HttpClient {
 
     // TODO: Use logger to debugging stuff
     private final Logger logger = LoggerFactory.getLogger("glitch.http.client");
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     String buildBody(Object body) throws IOException {
         return mapper.writeValueAsString(body);
@@ -68,16 +71,13 @@ public class HttpClient {
         }
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static class Builder {
         private final Map<String, String> headers = new LinkedHashMap<>();
         private final SimpleModule module = new SimpleModule();
         private final ObjectMapper mapper = new ObjectMapper();
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public Builder header(String key, String value) {
             headers.put(key, value);
@@ -106,17 +106,14 @@ public class HttpClient {
 
         public HttpClient build() {
             OkHttpClient httpClient = new OkHttpClient.Builder()
-                    .addInterceptor(new Interceptor() {
-                        @Override
-                        public Response intercept(Chain chain) throws IOException {
-                            Request.Builder request = chain.request().newBuilder();
+                    .addInterceptor(chain -> {
+                        Request.Builder request = chain.request().newBuilder();
 
-                            if (!headers.isEmpty()) {
-                                request.headers(Headers.of(headers));
-                            }
-
-                            return chain.proceed(request.build());
+                        if (!headers.isEmpty()) {
+                            request.headers(Headers.of(headers));
                         }
+
+                        return chain.proceed(request.build());
                     }).build();
 
 

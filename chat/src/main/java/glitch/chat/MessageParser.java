@@ -4,7 +4,6 @@ import glitch.chat.events.RawIRCEvent;
 import glitch.chat.events.RawIRCEventBuilder;
 import glitch.chat.irc.IRCPrefix;
 import glitch.chat.irc.IRCPrefixBuilder;
-import java.time.Instant;
 import java.util.Date;
 import java.util.StringTokenizer;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public final class MessageParser {
 
         boolean lockTrailing = false;
 
-        for (String part: raw.split(" ")) {
+        for (String part : raw.split(" ")) {
             if (part.startsWith("@")) {
                 StringTokenizer tagsTokenizer = new StringTokenizer(part.substring(1), ";");
                 while (tagsTokenizer.hasMoreElements()) {
@@ -51,7 +50,7 @@ public final class MessageParser {
                     lockTrailing = true;
                     irc.addMiddle(part);
                 }
-            }  else if (part.matches("^([A-Z]+|[0-9]{1,3})")) {
+            } else if (part.matches("^([A-Z]+|[0-9]{1,3})")) {
                 irc.command(parseCommand(part));
             } else {
                 if (lockTrailing)
@@ -63,13 +62,14 @@ public final class MessageParser {
 
         return irc.build();
     }
+
     private static IRCPrefix parseRawPrefix(String rawPrefix) {
         IRCPrefixBuilder prefix = new IRCPrefixBuilder().raw(":" + rawPrefix);
         if (rawPrefix.contains("@")) {
             String[] nh = rawPrefix.split("@");
             prefix.host(nh[1]);
             if (nh[0].contains("!")) {
-                String[] nu  = nh[0].split("!");
+                String[] nu = nh[0].split("!");
                 prefix.nick(nu[0])
                         .user(nu[1]);
             } else {
@@ -81,6 +81,7 @@ public final class MessageParser {
 
         return prefix.build();
     }
+
     private static IRCommand parseCommand(String cmd) {
         switch (cmd) {
             case "PRIVMSG":

@@ -9,23 +9,37 @@ import javax.annotation.Nullable;
 public interface Channel extends IDObject<Long> {
     @Nullable
     Locale getBroadcasterLanguage();
+
     String getDisplayName();
+
     Long getFollowers();
+
     String getGame();
+
     Locale getLanguage();
+
     String getLogo();
+
     boolean isMature();
+
     @JsonAlias({"username", "name"})
     String getUsername();
+
     boolean isPartner();
+
     @Nullable
     String getProfileBanner();
+
     @Nullable
     Color getProfileBannerBackgroundColor();
+
     @JsonProperty("status")
     String getTitle();
+
     String getUrl();
+
     @Nullable
     String getVideoBanner();
+
     Long getViews();
 }

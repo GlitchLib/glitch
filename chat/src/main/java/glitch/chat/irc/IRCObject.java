@@ -6,9 +6,14 @@ import glitch.chat.IRCommand;
 
 public interface IRCObject {
     String getRawMessage();
+
     ImmutableMap<String, Object> getTags();
+
     IRCPrefix getPrefix();
+
     IRCommand getCommand();
+
     ImmutableList<String> getTrailing();
+
     ImmutableList<String> getMiddle();
 }

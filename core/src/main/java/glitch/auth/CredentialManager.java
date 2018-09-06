@@ -2,13 +2,17 @@ package glitch.auth;
 
 import glitch.GlitchClient;
 import glitch.auth.json.Validate;
+import glitch.common.utils.HttpUtils;
 import io.reactivex.Single;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public final class CredentialManager {
     private final GlitchClient client;
     private final CredentialAPI api;
+
+    public CredentialManager(GlitchClient client) {
+        this.client = client;
+        this.api = new CredentialAPI(client, HttpUtils.createForCredentials());
+    }
 
     public Credential create(CredentialCreator creator) throws Exception {
         CredentialBuilder cb = new CredentialBuilder()
@@ -20,13 +24,17 @@ public final class CredentialManager {
         return cb.from(validate).build();
     }
 
-    final Single<Credential> rebuild(Credential credential) {
+    final Single<Credential> rebuild(CredentialCreator credential) {
         return Single.create(sub -> sub.onSuccess(rebuildAsync(credential)));
     }
 
-    final Credential rebuildAsync(Credential credential) throws Exception {
-        Validate validate = api.validate(credential);
+    final Credential rebuildAsync(CredentialCreator credential) throws Exception {
+        Validate validate = api.validate(credential.getAccessToken());
 
-        return new CredentialBuilder().from(credential).from(validate).build();
+        return new CredentialBuilder()
+                .from(validate)
+                .accessToken(credential.getAccessToken())
+                .refreshToken(credential.getRefreshToken())
+                .build();
     }
 }

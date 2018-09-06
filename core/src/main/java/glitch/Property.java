@@ -6,6 +6,8 @@ import java.util.Properties;
 public final class Property {
 
     private static final Properties prop = new Properties();
+    public static final String VERSION = prop.getProperty("application.version");
+    public static final String REVISION = prop.getProperty("git.commit.id.abbrev");
 
     static {
         try {
@@ -15,7 +17,4 @@ public final class Property {
         }
 
     }
-
-    public static final String VERSION = prop.getProperty("application.version");
-    public static final String REVISION = prop.getProperty("git.commit.id.abbrev");
 }

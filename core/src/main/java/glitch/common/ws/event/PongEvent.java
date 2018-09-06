@@ -6,4 +6,5 @@ import org.immutables.value.Value;
 
 @Immutable
 @Value.Immutable
-public interface PongEvent<S extends WebSocketClient> extends SocketEvent<S> {}
+public interface PongEvent<S extends WebSocketClient> extends SocketEvent<S> {
+}

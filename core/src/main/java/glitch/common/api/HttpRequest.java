@@ -12,24 +12,21 @@ public class HttpRequest<R> {
     private final String uri;
     private final HttpMethod method;
     private final Class<R> responseType;
+    private final Multimap<String, Object> queryParameters = MultimapBuilder
+            .linkedHashKeys()
+            .linkedHashSetValues()
+            .build();
+    private final Multimap<String, String> headers = MultimapBuilder
+            .linkedHashKeys()
+            .linkedHashSetValues()
+            .build();
+    private final AtomicReference<Object> body = new AtomicReference<>();
 
     HttpRequest(HttpMethod method, String uri, Class<R> responseType) {
         this.method = method;
         this.uri = uri;
         this.responseType = responseType;
     }
-
-    private final Multimap<String, Object> queryParameters = MultimapBuilder
-            .linkedHashKeys()
-            .linkedHashSetValues()
-            .build();
-
-    private final Multimap<String, String> headers = MultimapBuilder
-            .linkedHashKeys()
-            .linkedHashSetValues()
-            .build();
-
-    private final AtomicReference<Object> body = new AtomicReference<>();
 
     public HttpRequest<R> header(String key, String value) {
         headers.put(key, value);

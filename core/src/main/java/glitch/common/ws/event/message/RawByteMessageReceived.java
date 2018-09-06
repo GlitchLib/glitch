@@ -6,4 +6,5 @@ import org.immutables.value.Value;
 
 @Immutable
 @Value.Immutable
-public interface RawByteMessageReceived<S extends WebSocketClient> extends MessageRecieved<Byte[], S> {}
+public interface RawByteMessageReceived<S extends WebSocketClient> extends MessageRecieved<Byte[], S> {
+}

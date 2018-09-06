@@ -1,21 +1,33 @@
 package glitch;
 
-import glitch.chat.BotConfig;
+import glitch.auth.Scope;
 import glitch.common.utils.Immutable;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.Objects;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 @Immutable
 @Value.Immutable
 public interface Config {
+    static Config from(GlitchClient.Builder builder) {
+        return new ConfigBuilder()
+                .clientId(Objects.requireNonNull(builder.clientId()))
+                .clientSecret(Objects.requireNonNull(builder.clientSecret()))
+                .userAgent(builder.userAgent())
+                .defaultScopes(builder.defaultScopes())
+                .redirectUri(builder.redirectUri())
+                .build();
+    }
 
     String getClientId();
+
     String getClientSecret();
-    BotConfig getBotCredentials();
+
     String getUserAgent();
 
-    static Config from(GlitchClient.Builder builder) {
-        return null;
-    }
+    Set<Scope> getDefaultScopes();
+
+    @Nullable
+    String getRedirectUri();
 }
