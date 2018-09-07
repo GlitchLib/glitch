@@ -4,7 +4,6 @@ plugins {
 
 description = "Bills of Materials (BOM) for Glitch packages"
 
-generateGitProperties.enabled = false
 compileJava.enabled = false
 javadoc.enabled = false
 javadocJar.enabled = false
@@ -26,4 +25,3 @@ withPomXml {
         }
     }
 }
-

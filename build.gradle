@@ -3,11 +3,10 @@ plugins {
     id "com.jfrog.bintray" version "1.8.4"
     id "com.jfrog.artifactory" version "4.7.5"
     id "de.lukaskoerfer.gradle.delombok" version "0.2"
-    id "com.gorylenko.gradle-git-properties" version "1.5.1"
 }
 
 allprojects {
-    group = ext["project.publications.groupId"]
+    group = ext["project.groupId"]
     version = ext["project.version"]
 
     repositories {
@@ -41,23 +40,11 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    def slf4j = ext."slf4j.version"
-    def guava = ext."guava.version"
-    def rxjava = ext."rxjava.version"
     def immutables = ext."immutables.version"
     def lombok = ext."lombok.version"
-    def jackson = ext."jackson.version"
 
     dependencies {
         if (project != project(":bom")) {
-            compile "org.slf4j:slf4j-api:$slf4j"
-            compile "com.google.guava:guava:$guava"
-            compile "io.reactivex.rxjava2:rxjava:$rxjava"
-            compile "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson"
-            compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson"
-            compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson"
-            compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
-            compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
 
             compileOnly "org.immutables:value:$immutables"
             annotationProcessor "org.immutables:value:$immutables"

@@ -7,3 +7,5 @@ include("kraken")
 include("helix")
 include("pubsub")
 include("bom")
+
+enableFeaturePreview('STABLE_PUBLISHING')

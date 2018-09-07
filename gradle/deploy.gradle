@@ -3,7 +3,6 @@ import java.text.SimpleDateFormat
 apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
-apply plugin: "com.gorylenko.gradle-git-properties"
 
 private static def timestamp() {
     SimpleDateFormat sdf = new SimpleDateFormat("MMM dd yyyy HH:mm:ss zzz", Locale.ENGLISH)
@@ -17,22 +16,6 @@ def sonatypeUser = System.getenv("CENTRAL_USER") ?: findProject("central.user").
 def sonatypePassword = System.getenv("CENTRAL_PASSWORD") ?: findProject("central.password").toString()
 def branch = System.getenv("TRAVIS_BRANCH")
 def hasTags = System.getenv("TRAVIS_TAG") != null
-
-gitProperties {
-    extProperty = "gitProperty"
-    keys = [
-            "git.commit.id",
-            "git.commit.id.abbrev",
-            "git.closest.tag.name",
-            "git.closest.tag.commit.count",
-            "git.commit.id.describe"
-    ]
-    dateFormatTimeZone = "GMT"
-    customProperty("application.name", rootProject.name)
-    customProperty("application.module", archivesBaseName)
-    customProperty("application.version", project.version)
-    customProperty("application.description", project.description ?: rootProject.description)
-}
 
 jar {
     manifest {

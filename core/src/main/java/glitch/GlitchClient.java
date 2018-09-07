@@ -11,6 +11,7 @@ import io.reactivex.Single;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.Set;
 import javax.annotation.Nullable;
 import lombok.AccessLevel;
@@ -46,7 +47,7 @@ public class GlitchClient {
         @Nullable
         private String redirectUri;
 
-        private String userAgent = String.format("Glitch v%s [Rev. %s]", Property.VERSION, Property.REVISION);
+        private String userAgent;
 
         public Set<Scope> defaultScopes() {
             return defaultScopes;
@@ -66,6 +67,12 @@ public class GlitchClient {
         }
 
         public GlitchClient buildAsync() throws Exception {
+            Properties properties = Versions.getProperties();
+
+            if (userAgent == null || userAgent.equals("")) {
+                userAgent = String.format("Glitch v%s [Rev. %s]", properties.getProperty(Versions.APPLICATION_VERSION), properties.getProperty(Versions.GIT_COMMIT_ID_ABBREV));
+            }
+
             return new GlitchClient(Config.from(this));
         }
     }

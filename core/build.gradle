@@ -1,4 +1,21 @@
+plugins {
+    id "com.gorylenko.gradle-git-properties" version "1.5.2"
+}
+
+def slf4j = ext."slf4j.version"
+def guava = ext."guava.version"
+def rxjava = ext."rxjava.version"
+def jackson = ext."jackson.version"
+
 dependencies {
+    compile "org.slf4j:slf4j-api:$slf4j"
+    compile "com.google.guava:guava:$guava"
+    compile "io.reactivex.rxjava2:rxjava:$rxjava"
+    compile "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
     // glitch.api
     compileOnly "com.squareup.okhttp3:okhttp:3.11.0"
     // glitch.ws
@@ -9,4 +26,18 @@ dependencies {
             compileOnly it
         }
     }
+}
+
+gitProperties {
+    keys = [
+            "git.branch",
+            "git.commit.id",
+            "git.commit.id.abbrev",
+            "git.commit.id.describe"
+    ]
+    dateFormatTimeZone = "GMT"
+    customProperty("application.name", "Glitch")
+    customProperty("application.version", project.version)
+    customProperty("application.url", "https://glitchlib.github.io/")
+    customProperty("application.description", rootProject.description)
 }
