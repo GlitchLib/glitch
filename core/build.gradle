@@ -11,19 +11,19 @@ dependencies {
     compile "org.slf4j:slf4j-api:$slf4j"
     compile "com.google.guava:guava:$guava"
     compile "io.reactivex.rxjava2:rxjava:$rxjava"
+
     compile "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson"
     compile "com.fasterxml.jackson.core:jackson-annotations:$jackson"
     compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
-    // glitch.api
+
     compileOnly "com.squareup.okhttp3:okhttp:3.11.0"
-    // glitch.ws
     compileOnly "com.neovisionaries:nv-websocket-client:2.5"
 
     project.rootProject.subprojects.each {
         if (it != project && it.name != "bom") {
-            compileOnly it
+            runtimeOnly it
         }
     }
 }
