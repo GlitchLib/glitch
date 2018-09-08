@@ -16,7 +16,6 @@ allprojects {
 
 subprojects {
     apply plugin: "java"
-    apply plugin: "jacoco"
     apply plugin: "net.ltgt.apt"
     apply plugin: "maven-publish"
     apply plugin: "net.ltgt.apt-idea"
@@ -60,21 +59,6 @@ subprojects {
         useJUnitPlatform()
     }
 }
-
-task codeCoverageReport(type: JacocoReport) {
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-    subprojects.each {
-        sourceSets it.sourceSets.main
-    }
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        xml.destination file("${buildDir}/reports/jacoco/report.xml")
-    }
-}
-
-codeCoverageReport.dependsOn(subprojects*.test)
 
 wrapper {
     gradleVersion = "4.10"

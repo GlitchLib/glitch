@@ -15,16 +15,17 @@ cache:
   - $HOME/.gradle/wrapper/
 
 before_install: chmod +x ./gradlew
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- ./cc-test-reporter before-build
 script: ./gradlew check
+after_script:
+- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 jobs:
   include:
-  - stage: code coverage
-    jdk: openjdk10
-    script:
-      - ./gradlew codeCoverageReport
-      - bash <(curl -s https://codecov.io/bash)
   - stage: deploy
-    jdk: openjdk10
+    jdk: openjdk8
     script: ./gradlew bintrayUpload -x test
     if: (tag =~ ^v) AND (branch = master)

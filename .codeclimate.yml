@@ -1,0 +1,7 @@
+plugins:
+  sonar-java:
+    config:
+      sonar.java.source: 8
+      test_patterns:
+        - **/src/test/**
+      minimum_severity: critical
