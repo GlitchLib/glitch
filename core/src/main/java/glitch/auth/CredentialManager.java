@@ -2,7 +2,7 @@ package glitch.auth;
 
 import glitch.GlitchClient;
 import glitch.auth.json.Validate;
-import glitch.common.utils.HttpUtils;
+import glitch.core.utils.HttpUtils;
 import io.reactivex.Single;
 
 public final class CredentialManager {

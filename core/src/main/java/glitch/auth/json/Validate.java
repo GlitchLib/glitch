@@ -2,7 +2,7 @@ package glitch.auth.json;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import glitch.auth.Scope;
-import glitch.common.utils.Immutable;
+import glitch.core.utils.Immutable;
 import java.util.Set;
 import org.immutables.value.Value;
 

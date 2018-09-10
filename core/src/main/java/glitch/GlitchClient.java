@@ -1,12 +1,11 @@
 package glitch;
 
-import glitch.api.AbstractAPI;
+import glitch.core.api.AbstractAPI;
 import glitch.auth.CredentialManager;
 import glitch.auth.Scope;
-import glitch.common.api.HttpClient;
-import glitch.common.events.EventManager;
-import glitch.common.utils.HttpUtils;
-import glitch.kraken.KrakenAPI;
+import glitch.core.utils.api.HttpClient;
+import glitch.core.events.EventManager;
+import glitch.core.utils.HttpUtils;
 import io.reactivex.Single;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +32,7 @@ public class GlitchClient {
     }
 
     public <H extends AbstractAPI> HttpClient createClient(Class<H> api) {
-        return HttpUtils.createForApi(configuration, api.equals(KrakenAPI.class));
+        return HttpUtils.createForApi(configuration, api.getSimpleName().equals("KrakenAPI"));
     }
 
     @Setter

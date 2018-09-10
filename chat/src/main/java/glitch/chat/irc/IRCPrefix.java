@@ -1,6 +1,6 @@
 package glitch.chat.irc;
 
-import glitch.common.utils.Immutable;
+import glitch.core.utils.Immutable;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
 

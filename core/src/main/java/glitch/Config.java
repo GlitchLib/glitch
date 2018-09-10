@@ -1,7 +1,7 @@
 package glitch;
 
 import glitch.auth.Scope;
-import glitch.common.utils.Immutable;
+import glitch.core.utils.Immutable;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;

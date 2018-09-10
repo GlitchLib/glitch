@@ -2,6 +2,7 @@ package glitch.kraken.json;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import glitch.core.api.json.IDObject;
 import java.awt.Color;
 import java.util.Locale;
 import javax.annotation.Nullable;

@@ -2,8 +2,7 @@ package glitch.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import glitch.GlitchClient;
-import glitch.common.events.EventManager;
-import glitch.common.ws.WebSocketClient;
+import glitch.core.utils.ws.WebSocketClient;
 import java.net.MalformedURLException;
 
 public class PubSub extends WebSocketClient {

@@ -3,7 +3,7 @@ package glitch.auth;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
-import glitch.common.utils.Immutable;
+import glitch.core.utils.Immutable;
 import org.immutables.value.Value;
 
 @Immutable

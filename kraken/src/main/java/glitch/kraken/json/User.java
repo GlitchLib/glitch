@@ -2,7 +2,10 @@ package glitch.kraken.json;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import glitch.kraken.enums.UserType;
+import glitch.core.api.json.Creation;
+import glitch.core.api.json.IDObject;
+import glitch.core.api.json.Updated;
+import glitch.core.api.json.enums.UserType;
 
 public interface User extends IDObject<Long>, Creation, Updated {
     String getBio();

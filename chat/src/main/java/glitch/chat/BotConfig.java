@@ -4,7 +4,7 @@ import glitch.auth.Credential;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
 import glitch.chat.json.BotInfo;
-import glitch.common.utils.Immutable;
+import glitch.core.utils.Immutable;
 import org.immutables.value.Value;
 
 @Immutable

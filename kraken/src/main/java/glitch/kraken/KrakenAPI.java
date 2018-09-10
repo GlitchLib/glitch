@@ -1,8 +1,8 @@
 package glitch.kraken;
 
 import glitch.GlitchClient;
-import glitch.api.AbstractAPI;
-import glitch.common.api.BaseURL;
+import glitch.core.api.AbstractAPI;
+import glitch.core.utils.api.BaseURL;
 import glitch.kraken.services.BitsService;
 import glitch.kraken.services.ChannelService;
 import glitch.kraken.services.ChatService;
