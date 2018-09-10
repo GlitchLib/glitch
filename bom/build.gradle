@@ -6,9 +6,9 @@ description = "Bills of Materials (BOM) for Glitch packages"
 
 compileJava.enabled = false
 javadoc.enabled = false
-javadocJar.enabled = false
-sourcesJar.enabled = false
-jar.enabled = false
+tasks.withType(Jar) {
+    enabled false
+}
 delombok.enabled = false
 test.enabled = false
 
