@@ -1,0 +1,61 @@
+apply plugin: "maven-publish"
+
+apply from: "${rootDir}/gradle/deploys/sources.gradle"
+apply from: "${rootDir}/gradle/deploys/javadoc.gradle"
+
+artifacts {
+    archives javadocJar
+    if (project.name != "docs") {
+        archives sourcesJar
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId archivesBaseName
+            if (project.name != "bom") {
+                from components.java
+                artifact javadocJar
+                if (project.name != "docs") {
+                    artifact sourcesJar
+                }
+            }
+            pom {
+                url = "https://glitchlib.github.io/"
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/glitchlib/glitch/issues'
+                }
+                ciManagement {
+                    system = "Travis-CI"
+                    url = "https://travis-ci.com/GlitchLib/glitch"
+                }
+                inceptionYear = "2018"
+                developers {
+                    developer {
+                        id = "stachu540"
+                        name = "Damian Staszewski"
+                        url = "https://github.com/stachu540"
+                        timezone = "Europe/Warsaw"
+                    }
+                }
+                licenses {
+                    license {
+                        name = "LGPL-3.0"
+                        url = "https://www.gnu.org/licenses/lgpl-3.0.txt"
+                        distribution = "repo"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/glitchlib/glitch.git"
+                    developerConnection = "scm:git:git@github.com:glitchlib/glitch.git"
+                    url = "https://github.com/glitchlib/glitch"
+                }
+                distributionManagement {
+                    downloadUrl = "https://github.com/glitchlib/glitch/releases"
+                }
+            }
+        }
+    }
+}

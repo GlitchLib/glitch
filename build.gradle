@@ -3,6 +3,7 @@ plugins {
     id "com.jfrog.bintray" version "1.8.4"
     id "com.jfrog.artifactory" version "4.7.5"
     id "de.lukaskoerfer.gradle.delombok" version "0.2"
+    id "org.ajoberstar.grgit" version "3.0.0-beta.1" apply false
 }
 
 allprojects {
@@ -27,15 +28,9 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
-    tasks.withType(Javadoc) {
-        source = delombok
-        options {
-            encoding = "UTF-8"
-        }
+    if (project.name != "docs") {
+        archivesBaseName = "${rootProject.name}-${project.name.replace(':', '-')}".toLowerCase()
     }
-
-    archivesBaseName = "${rootProject.name}-${project.name.replace(':', '-')}".toLowerCase()
-
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
@@ -43,7 +38,7 @@ subprojects {
     def lombok = ext."lombok.version"
 
     dependencies {
-        if (project != project(":bom")) {
+        if (project != project(":bom") && project != project(":docs")) {
 
             compileOnly "org.immutables:value:$immutables"
             annotationProcessor "org.immutables:value:$immutables"

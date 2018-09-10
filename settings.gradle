@@ -7,5 +7,6 @@ include("kraken")
 include("helix")
 include("pubsub")
 include("bom")
+include("docs")
 
 enableFeaturePreview('STABLE_PUBLISHING')

@@ -27,5 +27,7 @@ jobs:
   include:
   - stage: deploy
     jdk: openjdk8
+    before_script: skip
     script: ./gradlew bintrayUpload -x test
+    after_script: skip
     if: (tag =~ ^v) AND (branch = master)

@@ -1,0 +1,4 @@
+task sourcesJar(type: Jar, dependsOn: classes, description: 'Builds the sourcesJar.', group: 'build') {
+    from sourceSets.main.allSource
+    classifier = "sources"
+}

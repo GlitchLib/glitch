@@ -1,0 +1,23 @@
+javadoc {
+    failOnError false
+    title = "Gltich ${rootProject.version} API"
+
+    options {
+        windowTitle = "Glitch ${rootProject.version}"
+        addStringOption "Xdoclint:none", "-quiet"
+        author true
+    }
+
+    rootProject.subprojects.each { project ->
+        project.tasks.withType(Javadoc.class).each { doc ->
+            source += doc.source
+            classpath += doc.classpath
+            excludes += doc.excludes
+            includes += doc.includes
+        }
+    }
+}
+
+compileJava.enabled = false
+bintrayUpload.enabled = false
+test.enabled = false
