@@ -3,6 +3,8 @@ package glitch.core.utils.api;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.LinkedHashMap;
@@ -30,45 +32,46 @@ public class HttpClient {
         return new Builder();
     }
 
-    String buildBody(Object body) throws IOException {
-        return mapper.writeValueAsString(body);
+    Single<String> buildBody(Object body) {
+        return Single.create(s -> s.onSuccess(mapper.writeValueAsString(body)));
     }
 
     @SuppressWarnings("unchecked")
-    <R> R exchange(Request request, Class<R> responseType) throws Exception {
-        Response response = httpClient.newCall(request).execute();
+    <R> Single<R> exchange(Request request, Class<R> responseType) {
+        return Single.create(s -> {
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (responseType == Response.class) {
+                    s.onSuccess((R) response);
+                } else if (responseType == ResponseBody.class && response.body() != null) {
+                    s.onSuccess((R) response.body());
+                } else {
+                    if (!response.isSuccessful()) {
+                        ResponseError error = (response.body() != null) ?
+                                mapper.readValue(response.body().bytes(), ResponseError.class) :
+                                new ResponseError(null, 0, null);
 
-        if (responseType == Response.class) {
-            return (R) response;
-        } else if (responseType == ResponseBody.class) {
-            return (R) response.body();
-        } else if (responseType == Void.class) {
-            return null;
-        } else {
-            if (!response.isSuccessful()) {
-                ResponseError error = (response.body() != null) ?
-                        mapper.readValue(response.body().bytes(), ResponseError.class) :
-                        new ResponseError(null, 0, null);
+                        if (error.getMessage() == null || error.getMessage().equals("")) {
+                            error.setMessage(response.message());
+                        }
 
-                if (error.getMessage() == null || error.getMessage().equals("")) {
-                    error.setMessage(response.message());
+                        if (error.getStatus() == 0) {
+                            error.setStatus(response.code());
+                        }
+
+                        if (error.getError() == null || error.getError().equals("")) {
+                            error.setError(response.message());
+                        }
+
+                        throw new ResponseException(error);
+                    } else {
+                        if (response.body() != null && response.body().contentLength() > 0 && responseType != Void.class)
+                            s.onSuccess(mapper.readValue(response.body().bytes(), responseType));
+                    }
                 }
-
-                if (error.getStatus() == 0) {
-                    error.setStatus(response.code());
-                }
-
-                if (error.getError() == null || error.getError().equals("")) {
-                    error.setError(response.message());
-                }
-
-                throw new ResponseException(error);
-            } else {
-                if (response.body() != null && response.body().contentLength() > 0)
-                    return mapper.readValue(response.body().bytes(), responseType);
-                else return null;
+            } catch (IOException io) {
+                s.onError(io);
             }
-        }
+        });
     }
 
     public static class Builder {

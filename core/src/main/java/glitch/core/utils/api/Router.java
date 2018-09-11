@@ -20,12 +20,12 @@ public class Router<R> {
         this.responseType = responseType;
     }
 
-    public static <R> Router<R> create(HttpMethod method, BaseURL url) throws Exception {
+    public static <R> Router<R> create(HttpMethod method, BaseURL url) {
         if (!url.hasEndpoint()) throw new NullPointerException("Endpoint is missing!");
         return new Router<>(method, url);
     }
 
-    public static <R> Router<R> create(HttpMethod method, BaseURL url, Class<R> responseType) throws Exception {
+    public static <R> Router<R> create(HttpMethod method, BaseURL url, Class<R> responseType) {
         if (!url.hasEndpoint()) throw new NullPointerException("Endpoint is missing!");
         return new Router<>(method, url, responseType);
     }

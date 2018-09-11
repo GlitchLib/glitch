@@ -15,4 +15,8 @@ public abstract class AbstractService extends AbstractAPI {
     protected boolean hasRequiredScope(Credential credential, Scope requiredScope) {
         return credential.getScopes().contains(requiredScope);
     }
+
+    protected String authorization(String typeToken, Credential credential) {
+        return String.format("%s %s", typeToken, credential.getAccessToken());
+    }
 }

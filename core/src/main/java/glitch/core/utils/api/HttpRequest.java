@@ -2,6 +2,7 @@ package glitch.core.utils.api;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import io.reactivex.Single;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import okhttp3.MediaType;
@@ -38,7 +39,7 @@ public class HttpRequest<R> {
         return this;
     }
 
-    public R exchange(HttpClient httpClient) throws Exception {
+    public Single<R> exchange(HttpClient httpClient) {
         StringBuilder url = new StringBuilder(uri);
 
         if (!queryParameters.isEmpty()) {
@@ -47,14 +48,12 @@ public class HttpRequest<R> {
                     .map(e -> e.getKey() + "=" + e.getValue())
                     .collect(Collectors.joining("&", "?", "")));
         }
-        Request.Builder request = new Request.Builder()
-                .method(method.name(),
-                        (body.get() == null) ?
-                                null :
-                                RequestBody.create(
-                                        MediaType.parse("application/json"),
-                                        httpClient.buildBody(body.get()))
-                ).url(url.toString());
-        return httpClient.exchange(request.build(), responseType);
+        Single<RequestBody> requestBody = (body.get() != null) ?
+                httpClient.buildBody(body.get()).map(body -> RequestBody.create(MediaType.parse("application/json"), body)) :
+                Single.never();
+
+        return requestBody.map(body -> new Request.Builder()
+                .method(method.name(), body).url(url.toString()).build())
+                .flatMap(request -> httpClient.exchange(request, responseType));
     }
 }
