@@ -9,6 +9,7 @@ import glitch.core.utils.api.HttpRequest;
 import glitch.core.utils.api.Router;
 import glitch.kraken.json.Channel;
 import glitch.kraken.json.Cheermote;
+import glitch.kraken.json.lists.AbstractList;
 import glitch.kraken.json.lists.CheermoteList;
 import io.reactivex.Observable;
 
@@ -17,14 +18,14 @@ public class BitsService extends AbstractService {
         super(client, httpClient, baseURL);
     }
 
-    private HttpRequest<CheermoteList> request() throws Exception {
-        return Router.<CheermoteList>create(HttpMethod.GET, baseURL.endpoint("/bits/actions"))
+    private HttpRequest<CheermoteList> request() {
+        return Router.create(HttpMethod.GET, baseURL.endpoint("/bits/actions"), CheermoteList.class)
                 .request();
     }
 
     public Observable<Cheermote> getCheermotes() {
-        return Observable.fromCallable(() -> request().exchange(httpClient).getData())
-                .flatMap(Observable::fromIterable);
+        return request().exchange(httpClient)
+                .flatMapObservable(cheers -> Observable.fromIterable(cheers.getData()));
     }
 
     public Observable<Cheermote> getCheermotes(Channel channel) {
@@ -32,8 +33,8 @@ public class BitsService extends AbstractService {
     }
 
     public Observable<Cheermote> getCheermotes(Long channelId) {
-        return Observable.fromCallable(() -> request().queryParam("channel_id", channelId)
-                .exchange(httpClient).getData())
-                .flatMap(Observable::fromIterable);
+        return request().queryParam("channel_id", channelId)
+                .exchange(httpClient)
+                .flatMapObservable(cheers -> Observable.fromIterable(cheers.getData()));
     }
 }

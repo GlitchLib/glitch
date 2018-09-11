@@ -7,6 +7,7 @@ import glitch.core.utils.api.BaseURL;
 import glitch.core.utils.api.HttpClient;
 import glitch.core.utils.api.HttpMethod;
 import glitch.core.utils.api.Router;
+import io.reactivex.Single;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +18,19 @@ public final class CredentialAPI {
     private final HttpClient httpClient;
     private final BaseURL baseURL = BaseURL.create("https://id.twitch.tv/oauth2");
 
-    public Validate validate(Credential credential) throws Exception {
+    public Single<Validate> validate(Credential credential) {
         return validate(credential.getAccessToken());
     }
 
-    Validate validate(String accessToken) throws Exception {
-        return Router.<Validate>create(HttpMethod.GET, baseURL.endpoint("/validate"))
+    Single<Validate> validate(String accessToken) {
+        return Router.create(HttpMethod.GET, baseURL.endpoint("/validate"), Validate.class)
                 .request()
                 .header("Authorization", "OAuth " + accessToken)
                 .exchange(httpClient);
     }
 
-    public Credential create(String code, @Nullable String redirectUri) throws Exception {
-        AccessToken token = Router.<AccessToken>create(HttpMethod.POST, baseURL.endpoint("/token"))
+    public Single<Credential> create(String code, @Nullable String redirectUri) throws Exception {
+        Single<AccessToken> token = Router.create(HttpMethod.POST, baseURL.endpoint("/token"), AccessToken.class)
                 .request()
                 .queryParam("client_id", client.getConfiguration().getClientId())
                 .queryParam("client_secret", client.getConfiguration().getClientSecret())
@@ -38,15 +39,15 @@ public final class CredentialAPI {
                 .queryParam("redirect_uri", Objects.requireNonNull((redirectUri != null) ? redirectUri : client.getConfiguration().getRedirectUri(), "redirect_uri"))
                 .exchange(httpClient);
 
-        CredentialBuilder cb = new CredentialBuilder().from(token);
+        Single<CredentialBuilder> cb = token.map(new CredentialBuilder()::from);
 
-        Validate validate = validate(cb.build());
+        Single<Validate> validate = cb.flatMap(b -> validate(b.build()));
 
-        return cb.from(validate).build();
+        return cb.zipWith(validate, (b, v) -> b.from(v).build());
     }
 
-    public Credential refresh(Credential credential) throws Exception {
-        AccessToken token = Router.<AccessToken>create(HttpMethod.POST, baseURL.endpoint("/token"))
+    public Single<Credential> refresh(Credential credential) {
+        Single<AccessToken> token = Router.create(HttpMethod.POST, baseURL.endpoint("/token"), AccessToken.class)
                 .request()
                 .queryParam("client_id", client.getConfiguration().getClientId())
                 .queryParam("client_secret", client.getConfiguration().getClientSecret())
@@ -54,15 +55,16 @@ public final class CredentialAPI {
                 .queryParam("refresh_token", credential.getRefreshToken())
                 .exchange(httpClient);
 
-        CredentialBuilder cb = new CredentialBuilder().from(token);
 
-        Validate validate = validate(cb.build());
+        Single<CredentialBuilder> cb = token.map(new CredentialBuilder()::from);
 
-        return cb.from(validate).build();
+        Single<Validate> validate = cb.flatMap(b -> validate(b.build()));
+
+        return cb.zipWith(validate, (b, v) -> b.from(v).build());
     }
 
-    public void revoke(Credential credential) throws Exception {
-        Router.<Void>create(HttpMethod.POST, baseURL.endpoint("/revoke"))
+    public Single<Void> revoke(Credential credential) {
+        return Router.create(HttpMethod.POST, baseURL.endpoint("/revoke"), Void.class)
                 .request()
                 .queryParam("client_id", credential.getClientId())
                 .queryParam("token", credential.getAccessToken())

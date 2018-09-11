@@ -14,27 +14,17 @@ public final class CredentialManager {
         this.api = new CredentialAPI(client, HttpUtils.createForCredentials());
     }
 
-    public Credential create(CredentialCreator creator) throws Exception {
-        CredentialBuilder cb = new CredentialBuilder()
-                .accessToken(creator.getAccessToken())
-                .refreshToken(creator.getRefreshToken());
-
-        Validate validate = api.validate(cb.build());
-
-        return cb.from(validate).build();
+    public Single<Credential> create(CredentialCreator creator) {
+       return rebuild(creator);
     }
 
     final Single<Credential> rebuild(CredentialCreator credential) {
-        return Single.create(sub -> sub.onSuccess(rebuildAsync(credential)));
-    }
+        Single<Validate> validate = api.validate(credential.getAccessToken());
 
-    final Credential rebuildAsync(CredentialCreator credential) throws Exception {
-        Validate validate = api.validate(credential.getAccessToken());
-
-        return new CredentialBuilder()
-                .from(validate)
+        return validate.map(v -> new CredentialBuilder()
+                .from(v)
                 .accessToken(credential.getAccessToken())
                 .refreshToken(credential.getRefreshToken())
-                .build();
+                .build());
     }
 }

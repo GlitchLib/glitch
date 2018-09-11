@@ -43,30 +43,19 @@ public class MessageInterface extends WebSocketClient {
             return botCredential(Credential.from(accessToken, refreshToken));
         }
 
-        public MessageInterface buildAsync() throws Exception {
-            return new MessageInterface(client, createBotConfig(client));
-        }
+        private Single<BotConfig> createBotConfig() {
+            Single<Credential> credential = client.getCredentialManager().create(botCredential);
 
-        private BotConfig createBotConfig(GlitchClient client) throws Exception {
-            Credential credential = client.getCredentialManager().create(botCredential);
+            Single<BotInfo> botInfo = credential
+                    .flatMap(c -> Router.create(HttpMethod.GET, BaseURL.create("https://api.twitch.tv/kraken").endpoint("/users/%s/chat"), BotInfo.class)
+                    .request(c.getUserId())
+                    .exchange(HttpUtils.createForApi(client.getConfiguration(), true)));
 
-            BotInfo botInfo = Router.<BotInfo>create(HttpMethod.GET, BaseURL.create("https://api.twitch.tv/kraken")
-                    .endpoint("/users/%s/chat"))
-                    .request(credential.getUserId())
-                    .exchange(HttpUtils.createForApi(client.getConfiguration(), true));
-
-            return BotConfig.from(credential, botInfo);
+            return botInfo.zipWith(credential, (b, c) -> BotConfig.from(c, b));
         }
 
         public Single<MessageInterface> build() {
-            return Single.fromCallable(this::buildAsync);
-        }
-
-        public MessageInterface loginAsync() throws Exception {
-            MessageInterface tmi = buildAsync();
-            tmi.connectAsync();
-
-            return tmi;
+            return createBotConfig().map(config -> new MessageInterface(client, config));
         }
 
         public Single<MessageInterface> login() {
