@@ -1,4 +1,4 @@
 dependencies {
-    compile project(":helix")
-    compile "com.neovisionaries:nv-websocket-client:2.5"
+    compileOnly project(":core")
+    testCompile project(":core")
 }

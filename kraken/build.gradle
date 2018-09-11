@@ -1,4 +1,4 @@
 dependencies {
-    compile project(":core")
-    compile "com.squareup.okhttp3:okhttp:3.11.0"
+    compileOnly project(":core")
+    testCompile project(":core")
 }
