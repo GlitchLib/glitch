@@ -8,8 +8,5 @@
 # Glitch
 A hybrid-reactive Java wrapper for the Twitch
 
-Built with [Project Reactor](), and focus on on flexibility, Glitch provides and effective, non-blocking interface for creating custom scripts for your ordinal JVM (1.8) and Android (SDK API 24).
-Project Reactor will not contain a Netty stuff, cause thinking of dynamic responses.
-
 # Work in Progress
 This project is working in progress. 
