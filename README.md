@@ -14,11 +14,11 @@ A hybrid-reactive Java wrapper for the Twitch. Supports using:
 
 # Module Supports
 | Name | JVM (Tested) | Android (Not Tested) | 
-| --- | --- | --- |
-| [glitch-core](core) | 1.7+ | ✔ 4.4+ |
-| [glitch-kraken](kraken) | 1.7+ | ✔ 4.4+ |
-| [glitch-helix](helix) | 1.7+ | ✔ 4.4+ |
-| [glitch-auth](auth) | 1.7+ | ✔ 4.4+ |
+|:---:|:---:|:---:|
+| [glitch-core](core) | 1.8+ | ✔ ? |
+| [glitch-kraken](kraken) | 1.8+ | ✔ ? |
+| [glitch-helix](helix) | 1.8+ | ✔ ? |
+| [glitch-auth](auth) | 1.8+ | ✔ ? |
 | [glitch-chat](chat) | 1.8+ | ❌ |
 | [glitch-pubsub](pubsub) | 1.8+ | ❌ |
 

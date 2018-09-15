@@ -6,7 +6,7 @@ include("chat")
 include("kraken")
 include("helix")
 include("pubsub")
-include("bom")
+include("BOM")
 include("docs")
 
 enableFeaturePreview('STABLE_PUBLISHING')

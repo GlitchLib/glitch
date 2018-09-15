@@ -7,9 +7,6 @@ plugins {
 }
 
 allprojects {
-    group = ext["project.groupId"]
-    version = ext["project.version"]
-
     repositories {
         jcenter()
     }
@@ -31,20 +28,20 @@ subprojects {
     if (project.name != "docs") {
         archivesBaseName = "${rootProject.name}-${project.name.replace(':', '-')}".toLowerCase()
     }
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    def immutables = ext."immutables.version"
-    def lombok = ext."lombok.version"
+    sourceCompatibility = targetCompatibility = (project.name.matches(/^(kraken|helix|core|auth)$/)) ? 1.7 : 1.8
 
     dependencies {
-        if (project != project(":bom") && project != project(":docs")) {
+        if (project != project(":BOM") && project != project(":docs")) {
 
-            compileOnly "org.immutables:value:$immutables"
-            annotationProcessor "org.immutables:value:$immutables"
+            compileOnly "org.immutables:value:2.7.1"
+            annotationProcessor "org.immutables:value:2.7.1"
+            compileOnly "org.immutables:gson:2.7.1"
+            annotationProcessor "org.immutables:gson:2.7.1"
 
-            compileOnly "org.projectlombok:lombok:$lombok"
-            annotationProcessor "org.projectlombok:lombok:$lombok"
+            compileOnly "org.projectlombok:lombok:1.18.2"
+            annotationProcessor "org.projectlombok:lombok:1.18.2"
+
+            testCompile "com.squareup.retrofit2:retrofit-mock:2.4.0"
         }
     }
 
