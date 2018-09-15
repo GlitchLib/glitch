@@ -20,7 +20,7 @@ This is a core package maintained for all modules.
     - [ ] [JDBI](https://jdbi.org/)
     - [ ] File store
       - [ ] Multi-file credential
-    - [ ] Cached
+    - [x] Cached
 - [ ] Event Manager
   - [ ] Reactive Events
   - [ ] Annotated Events

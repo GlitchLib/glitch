@@ -1,5 +1,3 @@
-**WARNING:** We recommending use [core](../core) dependency. Do not import it to your project.
-
 # Glitch Helix
 
 This module contains a [New Twitch API](https://dev.twitch.tv/docs/api/) - codename: `Helix`.

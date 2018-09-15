@@ -1,8 +1,6 @@
-**WARNING:** We recommending use [core](../core) dependency. Do not import it to your project.
+# Glitch Kraken
 
-# Glitch Helix
-
-This module contains a [New Twitch API](https://dev.twitch.tv/docs/api/) - codename: `Helix`.
+This module contains a [Twitch API v5](https://dev.twitch.tv/docs/v5/) - codename: `Kraken`.
 
 ## TODO
 
@@ -24,5 +22,3 @@ This module contains a [New Twitch API](https://dev.twitch.tv/docs/api/) - coden
   * [ ] Users
   * [ ] Videos
     * [ ] Video Uploader
-  * [ ] [Webhooks](https://dev.twitch.tv/docs/api/webhooks-guide/)
-* [ ] PubSub Webhooks (codename: `PubSubHubBub`)

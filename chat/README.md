@@ -1,5 +1,3 @@
-**WARNING:** We recommending use [core](../core) dependency. Do not import it to your project.
-
 # Glitch Chat
 
 This module contains a [Twitch Message Interface](https://dev.twitch.tv/docs/irc/guide/) using [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) over the [WebSocket](https://en.wikipedia.org/wiki/WebSocket).
