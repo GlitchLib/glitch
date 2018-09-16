@@ -1,12 +1,13 @@
-package glitch.core.utils.ws.event;
+package glitch.socket.events.actions;
 
-import glitch.core.utils.Immutable;
-import glitch.core.utils.ws.WebSocketClient;
+import glitch.socket.GlitchWebSocket;
+import glitch.socket.events.Event;
+import glitch.socket.utils.EventImmutable;
 import org.immutables.value.Value;
 
-@Immutable
+@EventImmutable
 @Value.Immutable
-public interface ThrowableEvent<T extends Throwable, S extends WebSocketClient> extends SocketEvent<S> {
+public interface ThrowableEvent<T extends Throwable, S extends GlitchWebSocket> extends Event<S> {
     T getThrowable();
 
     @Value.Lazy

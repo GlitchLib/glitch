@@ -6,6 +6,7 @@ include("chat")
 include("kraken")
 include("helix")
 include("pubsub")
+include("socket")
 include("BOM")
 include("docs")
 
