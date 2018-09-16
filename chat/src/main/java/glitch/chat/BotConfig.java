@@ -3,19 +3,28 @@ package glitch.chat;
 import glitch.auth.Credential;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
-import glitch.chat.json.BotInfo;
 import glitch.core.utils.Immutable;
+import java.awt.Color;
+import org.immutables.gson.Gson;
 import org.immutables.value.Value;
 
 @Immutable
 @Value.Immutable
-public interface BotConfig extends Credential, BotInfo {
-    static BotConfig from(Credential credential, BotInfo botInfo) {
-        return new BotConfigBuilder()
+@Gson.TypeAdapters
+public interface BotConfig extends Credential {
+    static BotConfig from(Credential credential, BotConfig botConfig) {
+        return BotConfigImpl.builder()
+                .from(botConfig)
                 .from((Validate) credential)
                 .from((AccessToken) credential)
                 .build();
     }
+
+    boolean isKnownBot();
+
+    boolean isVerifiedBot();
+
+    Color color();
 
     @Value.Lazy
     default String getUsername() {

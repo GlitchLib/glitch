@@ -1,15 +1,14 @@
 package glitch;
 
-import glitch.core.api.AbstractAPI;
 import glitch.auth.CredentialManager;
 import glitch.auth.Scope;
-import glitch.core.utils.api.HttpClient;
-import glitch.core.events.EventManager;
-import glitch.core.utils.HttpUtils;
-import io.reactivex.Single;
+import glitch.auth.store.EmptyStorage;
+import glitch.auth.store.Storage;
+import io.reactivex.Observable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -24,15 +23,15 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlitchClient {
     private final Config configuration;
-    private final EventManager eventManager = new EventManager(this);
-    private final CredentialManager credentialManager = new CredentialManager(this);
+    private final CredentialManager credentialManager;
+
+    private GlitchClient(Config config, Storage storage) {
+        this.configuration = config;
+        this.credentialManager = new CredentialManager(this, storage);
+    }
 
     public static Builder builder() {
         return new Builder();
-    }
-
-    public <H extends AbstractAPI> HttpClient createClient(Class<H> api) {
-        return HttpUtils.createForApi(configuration, api.getSimpleName().equals("KrakenAPI"));
     }
 
     @Setter
@@ -48,6 +47,8 @@ public class GlitchClient {
 
         private String userAgent;
 
+        private Storage storage = new EmptyStorage();
+
         public Set<Scope> defaultScopes() {
             return defaultScopes;
         }
@@ -61,18 +62,26 @@ public class GlitchClient {
             return this;
         }
 
-        public Single<GlitchClient> build() {
-            return Single.fromCallable(this::buildAsync);
+        public Observable<GlitchClient> buildAsync() {
+            return Observable.just(build());
         }
 
-        public GlitchClient buildAsync() throws Exception {
+        public GlitchClient build() {
             Properties properties = Versions.getProperties();
 
             if (userAgent == null || userAgent.equals("")) {
                 userAgent = String.format("Glitch v%s [Rev. %s]", properties.getProperty(Versions.APPLICATION_VERSION), properties.getProperty(Versions.GIT_COMMIT_ID_ABBREV));
             }
 
-            return new GlitchClient(Config.from(this));
+            Config config = ConfigImpl.builder()
+                    .clientId(Objects.requireNonNull(this.clientId))
+                    .clientSecret(Objects.requireNonNull(this.clientSecret))
+                    .userAgent(this.userAgent)
+                    .defaultScopes(this.defaultScopes)
+                    .redirectUri(this.redirectUri)
+                    .build();
+
+            return new GlitchClient(config, storage);
         }
     }
 }

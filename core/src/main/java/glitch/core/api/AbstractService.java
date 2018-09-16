@@ -3,20 +3,15 @@ package glitch.core.api;
 import glitch.GlitchClient;
 import glitch.auth.Credential;
 import glitch.auth.Scope;
-import glitch.core.utils.api.BaseURL;
-import glitch.core.utils.api.HttpClient;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
-public abstract class AbstractService extends AbstractAPI {
-
-    public AbstractService(GlitchClient client, HttpClient httpClient, BaseURL baseURL) {
-        super(client, httpClient, baseURL);
-    }
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class AbstractService<R> {
+    protected final GlitchClient client;
+    protected final R api;
 
     protected boolean hasRequiredScope(Credential credential, Scope requiredScope) {
         return credential.getScopes().contains(requiredScope);
-    }
-
-    protected String authorization(String typeToken, Credential credential) {
-        return String.format("%s %s", typeToken, credential.getAccessToken());
     }
 }

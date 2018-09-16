@@ -1,12 +1,12 @@
 package glitch.core.api.json;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import glitch.core.utils.Immutable;
+import org.immutables.gson.Gson;
 import org.immutables.value.Value;
 
 @Immutable
 @Value.Immutable
-@JsonDeserialize(builder = BadgeBuilder.class)
+@Gson.TypeAdapters(fieldNamingStrategy = true)
 public interface Badge {
     int getVersion();
 

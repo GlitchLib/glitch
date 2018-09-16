@@ -1,15 +1,25 @@
 package glitch.auth.json.converters;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import java.io.IOException;
-import java.time.Instant;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
+import java.util.Calendar;
 
-public final class ExpireInstantDeserializer extends JsonDeserializer<Instant> {
+public final class ExpireInstantDeserializer implements JsonDeserializer<Calendar>, JsonSerializer<Calendar> {
     @Override
-    public Instant deserialize(JsonParser p, DeserializationContext context) throws IOException, JsonProcessingException {
-        return Instant.now().plusSeconds(p.getLongValue());
+    public Calendar deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, json.getAsInt());
+        return calendar;
+    }
+
+    @Override
+    public JsonElement serialize(Calendar src, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(src.getTime().toString());
     }
 }

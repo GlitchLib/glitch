@@ -10,7 +10,7 @@ import org.immutables.value.Value;
         defaultAsDefault = true,
         deepImmutablesDetection = true,
         allParameters = true,
-        defaults = @Value.Immutable(copy = false)
+        defaults = @Value.Immutable
 )
 public @interface EventImmutable {
 }

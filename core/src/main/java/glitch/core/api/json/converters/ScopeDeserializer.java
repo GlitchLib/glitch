@@ -1,15 +1,23 @@
 package glitch.core.api.json.converters;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import glitch.auth.Scope;
-import java.io.IOException;
+import java.lang.reflect.Type;
 
-public class ScopeDeserializer extends JsonDeserializer<Scope> {
+public class ScopeDeserializer implements JsonDeserializer<Scope>, JsonSerializer<Scope> {
     @Override
-    public Scope deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        return Scope.from(p.getValueAsString());
+    public Scope deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        return Scope.from(json.getAsString());
+    }
+
+    @Override
+    public JsonElement serialize(Scope src, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(src.getValue());
     }
 }

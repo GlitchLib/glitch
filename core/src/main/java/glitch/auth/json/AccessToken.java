@@ -1,25 +1,25 @@
 package glitch.auth.json;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.annotations.SerializedName;
 import glitch.auth.Scope;
-import glitch.auth.json.converters.ExpireInstantDeserializer;
 import glitch.core.utils.Immutable;
 import java.time.Instant;
+import java.util.Calendar;
 import java.util.Set;
+import org.immutables.gson.Gson;
 import org.immutables.value.Value;
 
 @Immutable
 @Value.Immutable
-@JsonDeserialize(builder = AccessTokenBuilder.class)
+@Gson.TypeAdapters(fieldNamingStrategy = true)
 public interface AccessToken {
     String getAccessToken();
 
     String getRefreshToken();
 
-    @JsonDeserialize(using = ExpireInstantDeserializer.class)
-    Instant expiresIn();
+    @SerializedName("expires_in")
+    Calendar expiredAt();
 
-    @JsonProperty("scope")
+    @SerializedName("scope")
     Set<Scope> getScopes();
 }

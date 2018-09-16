@@ -1,10 +1,15 @@
 package glitch.auth.store;
 
+import com.google.common.collect.Collections2;
 import glitch.auth.Credential;
-import java.io.IOException;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.functions.Predicate;
 import java.util.Collection;
-import java.util.Optional;
-import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -12,37 +17,62 @@ public class CachedStorage implements Storage {
     private final Collection<Credential> credentials;
 
     @Override
-    public void registerAsync(Credential credential) {
-        if (!credentials.contains(credential)) {
-            credentials.stream().filter(c -> c.getUserId().equals(credential.getUserId()))
-                    .findFirst().ifPresent(credentials::remove);
-
-            credentials.add(credential);
-        }
+    public Single<Void> register(final Credential credential) {
+        return Single.create(new SingleOnSubscribe<Void>() {
+            @Override
+            public void subscribe(SingleEmitter<Void> sub) throws Exception {
+                drop(credential);
+                credentials.add(credential);
+            }
+        });
     }
 
     @Override
-    public void dropAsync(Credential credential) {
-        credentials.removeIf(c -> c.getUserId().equals(credential.getUserId()));
+    public Single<Void> drop(final Credential credential) {
+        return Single.create(new SingleOnSubscribe<Void>() {
+            @Override
+            public void subscribe(SingleEmitter<Void> sub) throws Exception {
+                Collection<Credential> filter = Collections2.filter(credentials, new com.google.common.base.Predicate<Credential>() {
+                    @Override
+                    public boolean apply(@Nullable Credential input) {
+                        return input != null && input.getUserId().equals(credential.getUserId());
+                    }
+                });
+
+                for (Credential cr : filter) {
+                    credentials.remove(cr);
+                }
+            }
+        });
     }
 
     @Override
-    public Collection<Credential> fetchAll() {
-        return credentials;
+    public Observable<Credential> fetchAll() {
+        return Observable.fromIterable(credentials);
     }
 
     @Override
-    public Optional<Credential> getAsync(Predicate<Credential> condition) {
-        return credentials.stream().filter(condition).findFirst();
+    public Observable<Credential> get(Predicate<Credential> condition) {
+        return fetchAll().filter(condition);
     }
 
     @Override
-    public Credential getByIdAsync(Long id) throws IOException {
-        return getAsync(c -> c.getUserId().equals(id)).orElseThrow(() -> new IOException("Credentials doesn't exist with this ID: " + id));
+    public Single<Credential> getById(final Long id) {
+        return get(new Predicate<Credential>() {
+            @Override
+            public boolean test(Credential credential) throws Exception {
+                return credential.getUserId().equals(id);
+            }
+        }).firstOrError();
     }
 
     @Override
-    public Optional<Credential> getByLoginAsync(String loginRegex) {
-        return getAsync(c -> c.getLogin().matches(loginRegex));
+    public Maybe<Credential> getByLogin(final String loginRegex) {
+        return get(new Predicate<Credential>() {
+            @Override
+            public boolean test(Credential credential) throws Exception {
+                return credential.getLogin().matches(loginRegex);
+            }
+        }).firstElement();
     }
 }

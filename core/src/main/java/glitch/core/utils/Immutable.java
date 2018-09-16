@@ -4,12 +4,13 @@ import org.immutables.value.Value;
 
 @Value.Style(
         get = {"get*", "has*", "*"},
-        builderVisibility = Value.Style.BuilderVisibility.PUBLIC,
-        visibility = Value.Style.ImplementationVisibility.PRIVATE,
+        builderVisibility = Value.Style.BuilderVisibility.SAME,
+        visibility = Value.Style.ImplementationVisibility.PUBLIC,
         typeImmutable = "*Impl",
         defaultAsDefault = true,
         deepImmutablesDetection = true,
-        defaults = @Value.Immutable(copy = false)
+        allParameters = true,
+        defaults = @Value.Immutable
 )
 public @interface Immutable {
 }

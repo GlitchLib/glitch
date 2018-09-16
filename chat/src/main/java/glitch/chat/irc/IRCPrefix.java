@@ -1,14 +1,14 @@
 package glitch.chat.irc;
 
-import glitch.core.utils.Immutable;
+import glitch.socket.utils.EventImmutable;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
-@Immutable
+@EventImmutable
 @Value.Immutable
 public interface IRCPrefix {
     static IRCPrefix empty() {
-        return new IRCPrefixBuilder().build();
+        return IRCPrefixImpl.of("", null, null, "");
     }
 
     String getRaw();

@@ -1,48 +1,21 @@
 package glitch.auth.store;
 
 import glitch.auth.Credential;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.function.Predicate;
+import io.reactivex.functions.Predicate;
 
 public interface Storage {
-    void registerAsync(Credential credential) throws IOException;
+    Single<Void> register(Credential credential);
 
-    default Single<Void> register(Credential credential) {
-        return Single.fromCallable(() -> {
-            registerAsync(credential);
-            return null;
-        });
-    }
+    Single<Void> drop(Credential credential);
 
-    void dropAsync(Credential credential) throws IOException;
+    Observable<Credential> fetchAll();
 
-    default Single<Void> drop(Credential credential) {
-        return Single.fromCallable(() -> {
-            dropAsync(credential);
-            return null;
-        });
-    }
+    Observable<Credential> get(Predicate<Credential> condition);
 
-    Collection<Credential> fetchAll();
+    Single<Credential> getById(Long id);
 
-    Optional<Credential> getAsync(Predicate<Credential> condition) throws IOException;
-
-    Credential getByIdAsync(Long id) throws IOException;
-
-    Optional<Credential> getByLoginAsync(String loginRegex) throws IOException;
-
-    default Single<Credential> get(Predicate<Credential> condition) {
-        return Single.create(sub -> getAsync(condition).ifPresent(sub::onSuccess));
-    }
-
-    default Single<Credential> getById(Long id) {
-        return get(c -> c.getUserId().equals(id));
-    }
-
-    default Single<Credential> getByName(String loginRegex) {
-        return get(c -> c.getLogin().matches(loginRegex));
-    }
+    Maybe<Credential> getByLogin(String loginRegex);
 }

@@ -1,12 +1,12 @@
 package glitch.chat.events;
 
-import glitch.chat.MessageInterface;
+import glitch.chat.GlitchChat;
 import glitch.chat.irc.IRCObject;
-import glitch.core.utils.Immutable;
-import glitch.core.utils.ws.event.SocketEvent;
+import glitch.socket.events.Event;
+import glitch.socket.utils.EventImmutable;
 import org.immutables.value.Value;
 
-@Immutable
+@EventImmutable
 @Value.Immutable
-public interface RawIRCEvent extends IRCObject, SocketEvent<MessageInterface> {
+public interface RawIRCEvent extends IRCObject, Event<GlitchChat> {
 }
