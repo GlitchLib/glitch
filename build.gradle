@@ -26,7 +26,7 @@ subprojects {
     }
 
     if (project.name != "docs") {
-        archivesBaseName = "${rootProject.name}-${project.name.replace(':', '-')}".toLowerCase()
+        archivesBaseName = "${rootProject.name.toLowerCase()}-${project.name.replace(':', '-')}"
     }
     sourceCompatibility = targetCompatibility = (project.name.matches(/^(kraken|helix|core|auth)$/)) ? 1.7 : 1.8
 

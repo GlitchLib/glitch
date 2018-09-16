@@ -15,19 +15,23 @@ cache:
   - $HOME/.gradle/wrapper/
 
 before_install: chmod +x ./gradlew
-before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- ./cc-test-reporter before-build
-script: ./gradlew check
-after_script:
-- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 jobs:
   include:
+  - stage: test
+    before_script:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
+    script: ./gradlew check
+    after_script:
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - stage: deploy
     jdk: openjdk8
-    before_script: skip
     script: ./gradlew bintrayUpload -x test
-    after_script: skip
-    if: (tag =~ ^v) AND (branch = master)
+    if:
+
+stages:
+- test
+- name: deploy
+  if: (tag =~ ^v) AND (branch = master)

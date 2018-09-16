@@ -17,7 +17,7 @@ withPomXml { Node node ->
     Node deps = node.appendNode("dependencyManagement").appendNode("dependencies")
 
     project.rootProject.subprojects.each {
-        if (it.name != 'bom') {
+        if (it.name != "BOM" && it.name != "docs") {
             Node dep = deps.appendNode('dependency')
             dep.appendNode('groupId', it.group)
             dep.appendNode('artifactId', it.archivesBaseName)

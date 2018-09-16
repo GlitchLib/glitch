@@ -39,14 +39,15 @@ bintray {
     publications = [ 'maven' ]
     dryRun = false
     publish = false
-    override = false
+    override = true
     pkg {
         userOrg = bintrayUser
         repo = "GlitchLib"
-        name = rootProject.name
-        desc = rootProject.description
+        name = "Glitch"
+        desc = "Java API Wrapper for Twitch"
         licenses = [ "LGPL-3.0" ]
         publicDownloadNumbers = true
+        vcsUrl = "https://github.com/GlitchLib/glitch.git"
         version {
             name = rootProject.version
             vcsTag = "v${rootProject.version}"
