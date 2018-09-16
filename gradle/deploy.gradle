@@ -45,7 +45,7 @@ bintray {
         repo = "GlitchLib"
         name = "Glitch"
         desc = "Java API Wrapper for Twitch"
-        licenses = [ "LGPL-3.0" ]
+        licenses = [ "MIT" ]
         publicDownloadNumbers = true
         vcsUrl = "https://github.com/GlitchLib/glitch.git"
         version {
