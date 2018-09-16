@@ -27,7 +27,9 @@ jobs:
   include:
   - stage: deploy
     jdk: openjdk8
+    before_script: ignore
     script: ./gradlew bintrayUpload -x test
+    after_script: ignore
 
 stages:
 - test
