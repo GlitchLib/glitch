@@ -13,20 +13,13 @@ This is a core package maintained for all modules.
 
 # TODO
 
-- [ ] Twitch Credentials
+- [x] Twitch Credentials
   - [x] OAuth2 with Validation
-  - [ ] Credential Storage
+  - [x] Credential Storage - API
     - [ ] [JPA / Hibernate](http://hibernate.org/)
     - [ ] [JDBI](https://jdbi.org/)
     - [ ] File store
       - [ ] Multi-file credential
     - [x] Cached
-- [ ] Event Manager
-  - [ ] Reactive Events
-  - [ ] Annotated Events
-    - [ ] with custom arguments - using annotated parameters
-  - [ ] Command API
 - [x] Customized REST Client
-- [x] Customized WebSocket Client
-  - [ ] Multiple instance for [PubSub](../pubsub)
 

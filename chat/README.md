@@ -12,12 +12,13 @@ This module contains a [Twitch Message Interface](https://dev.twitch.tv/docs/irc
   * [ ] via `MessageInterface`
 * [ ] Events supports
   * [x] Raw IRC - for creates own custom events
-  * [ ] Join/Part channel
-  * [ ] Messages
-  * [ ] Subscribe's
-  * [ ] Host's
-  * [ ] Raid's
+  * [x] Join/Part channel
+  * [x] Messages
+  * [x] Subscribe's
+  * [x] Host's
+  * [x] Raid's
   * [ ] Moderation Actions - *better supported with [PubSub](../pubsub)*
     * [ ] Timeout - *with reasons too*
     * [ ] Bans - *with reasons too*
     * [ ] Unbans - *with reasons too*
+* [ ] Command API
