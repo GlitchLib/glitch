@@ -14,10 +14,11 @@ cache:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
 
+before_install: chmod +x ./gradlew
+
 jobs:
   include:
   - stage: test
-    before_install: chmod +x ./gradlew
     before_script:
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
@@ -27,7 +28,6 @@ jobs:
     - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - stage: deploy
     jdk: openjdk8
-    before_script: chmod +x ./gradlew
     install: skip
     script: ./gradlew bintrayUpload -x test
 
