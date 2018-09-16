@@ -38,8 +38,8 @@ bintray {
     key = bintrayApiKey
     publications = [ 'maven' ]
     dryRun = false
-    publish = false
-    override = true
+    publish = true
+    override = false
     pkg {
         userOrg = bintrayUser
         repo = "GlitchLib"
