@@ -12,9 +12,9 @@ tasks.withType(Jar) {
 delombok.enabled = false
 test.enabled = false
 
-withPomXml {
-    it.appendNode("name").value = "Glitch BOM"
-    Node deps = it.appendNode("dependencyManagement").appendNode("dependencies")
+withPomXml { Node node ->
+    node.appendNode("name").value = "Glitch BOM"
+    Node deps = node.appendNode("dependencyManagement").appendNode("dependencies")
 
     project.rootProject.subprojects.each {
         if (it.name != 'bom') {

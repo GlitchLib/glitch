@@ -9,16 +9,16 @@ A hybrid-reactive Java wrapper for the Twitch. Supports using:
 
 * [Retrofit](https://square.github.io/retrofit/)
 * [Gson](https://github.com/google/gson)
-* [RxJava 2](http://reactivex.io/)
+* [RxJava2](http://reactivex.io/)
 * [Java-WebSocket](https://tootallnate.github.io/Java-WebSocket/)
 
 # Module Supports
 | Name | JVM (Tested) | Android (Not Tested) | 
 |:---:|:---:|:---:|
-| [glitch-core](core) | 1.8+ | ✔ ? |
-| [glitch-kraken](kraken) | 1.8+ | ✔ ? |
-| [glitch-helix](helix) | 1.8+ | ✔ ? |
-| [glitch-auth](auth) | 1.8+ | ✔ ? |
+| [glitch-core](core) | 1.7+ | ✔ 4.4+ |
+| [glitch-kraken](kraken) | 1.7+ | ✔ 4.4+ |
+| [glitch-helix](helix) | 1.7+ | ✔ 4.4+ |
+| [glitch-auth](auth) | 1.7+ | ✔ 4.4+ |
 | [glitch-chat](chat) | 1.8+ | ❌ |
 | [glitch-pubsub](pubsub) | 1.8+ | ❌ |
 

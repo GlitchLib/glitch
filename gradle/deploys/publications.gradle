@@ -3,18 +3,19 @@ apply plugin: "maven-publish"
 apply from: "${rootDir}/gradle/deploys/sources.gradle"
 apply from: "${rootDir}/gradle/deploys/javadoc.gradle"
 
-artifacts {
-    archives javadocJar
-    if (project.name != "docs") {
-        archives sourcesJar
+if (project.name != "BOM") {
+    artifacts {
+        archives javadocJar
+        if (project.name != "docs") {
+            archives sourcesJar
+        }
     }
 }
-
 publishing {
     publications {
         maven(MavenPublication) {
             artifactId archivesBaseName
-            if (project.name != "bom") {
+            if (project.name != "BOM") {
                 from components.java
                 artifact javadocJar
                 if (project.name != "docs") {

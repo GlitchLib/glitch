@@ -1,5 +1,3 @@
-**WARNING:** We recommending use [core](../core) dependency. Do not import it to your project.
-
 # Glitch Chat
 
 This module contains a [PubSub](https://dev.twitch.tv/docs/irc/guide/) using [WebSocket](https://en.wikipedia.org/wiki/WebSocket) only.
