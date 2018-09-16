@@ -1,12 +1,15 @@
 package glitch.kraken.json;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import glitch.core.api.json.IDObject;
+import glitch.core.utils.Immutable;
 import java.awt.Color;
 import java.util.Locale;
 import javax.annotation.Nullable;
+import org.immutables.value.Value;
 
+@Immutable
+@Value.Immutable
 public interface Channel extends IDObject<Long> {
     @Nullable
     Locale getBroadcasterLanguage();
@@ -23,7 +26,7 @@ public interface Channel extends IDObject<Long> {
 
     boolean isMature();
 
-    @JsonAlias({"username", "name"})
+    @SerializedName(value = "name", alternate = {"username", "login"})
     String getUsername();
 
     boolean isPartner();
@@ -34,7 +37,7 @@ public interface Channel extends IDObject<Long> {
     @Nullable
     Color getProfileBannerBackgroundColor();
 
-    @JsonProperty("status")
+    @SerializedName("status")
     String getTitle();
 
     String getUrl();

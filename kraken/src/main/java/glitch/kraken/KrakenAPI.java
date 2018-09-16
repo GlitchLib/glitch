@@ -1,8 +1,12 @@
 package glitch.kraken;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
 import glitch.GlitchClient;
 import glitch.core.api.AbstractAPI;
-import glitch.core.utils.api.BaseURL;
+import glitch.core.utils.GlitchUtils;
 import glitch.kraken.services.BitsService;
 import glitch.kraken.services.ChannelService;
 import glitch.kraken.services.ChatService;
@@ -16,101 +20,105 @@ import glitch.kraken.services.StreamService;
 import glitch.kraken.services.TeamService;
 import glitch.kraken.services.UserService;
 import glitch.kraken.services.VideoService;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import retrofit2.Retrofit;
 
 public class KrakenAPI extends AbstractAPI {
-    public KrakenAPI(GlitchClient client) {
-        super(client, client.createClient(KrakenAPI.class), BaseURL.create("https://api.twitch.tv/kraken"));
+
+    private KrakenAPI(Retrofit retrofit) {
+        super(retrofit);
     }
 
     /**
      * @return
      */
     public BitsService bitsService() {
-        return new BitsService(client, httpClient, baseURL);
+        return retrofit.create(BitsService.class);
     }
 
     /**
      * @return
      */
     public ChannelService channelService() {
-        return new ChannelService(client, httpClient, baseURL);
+        return retrofit.create(ChannelService.class);
     }
 
     /**
      * @return
      */
     public ChatService chatService() {
-        return new ChatService(client, httpClient, baseURL);
+        return retrofit.create(ChatService.class);
     }
 
     /**
      * @return
      */
     public ClipService clipService() {
-        return new ClipService(client, httpClient, baseURL);
+        return retrofit.create(ClipService.class);
     }
 
     /**
      * @return
      */
     public CollectionService colletionService() {
-        return new CollectionService(client, httpClient, baseURL);
+        return retrofit.create(CollectionService.class);
     }
 
     /**
      * @return
      */
     public CommunityService communitieService() {
-        return new CommunityService(client, httpClient, baseURL);
+        return retrofit.create(CommunityService.class);
     }
 
     /**
      * @return
      */
     public GameService gameService() {
-        return new GameService(client, httpClient, baseURL);
+        return retrofit.create(GameService.class);
     }
 
     /**
      * @return
      */
     public IngestService ingestService() {
-        return new IngestService(client, httpClient, baseURL);
+        return retrofit.create(IngestService.class);
     }
 
     /**
      * @return
      */
     public SearchService searchService() {
-        return new SearchService(client, httpClient, baseURL);
+        return retrofit.create(SearchService.class);
     }
 
     /**
      * @return
      */
     public StreamService streamService() {
-        return new StreamService(client, httpClient, baseURL);
+        return retrofit.create(StreamService.class);
     }
 
     /**
      * @return
      */
     public TeamService teamService() {
-        return new TeamService(client, httpClient, baseURL);
+        return retrofit.create(TeamService.class);
     }
 
     /**
      * @return
      */
     public UserService userService() {
-        return new UserService(client, httpClient, baseURL);
+        return retrofit.create(UserService.class);
     }
 
     /**
      * @return
      */
     public VideoService videoService() {
-        return new VideoService(client, httpClient, baseURL);
+        return retrofit.create(VideoService.class);
     }
 
     /**
@@ -122,5 +130,32 @@ public class KrakenAPI extends AbstractAPI {
     @Deprecated
     public void channelFeed() {
         throw new UnsupportedOperationException("Channel Feed has been deprecated");
+    }
+
+
+    public static KrakenAPI create(GlitchClient client) {
+        Multimap<String, String> headers = LinkedHashMultimap.create();
+
+        headers.put("Client-ID", client.getConfiguration().getClientId());
+        headers.put("Accept", "application/vnd.twitchtv.v5+json"); // From 31.12.2018 v3 will be removed in new year. Will be not necessary soon.
+        headers.put("User-Agent", client.getConfiguration().getUserAgent());
+
+        return new KrakenAPI(GlitchUtils.createHttpClient(GlitchUtils.KRAKEN, headers, krakenSerializers(), krakenDeserializers()));
+    }
+
+    private static <X> Map<Class<X>, JsonDeserializer<X>> krakenDeserializers() {
+        Map<Class<X>, JsonDeserializer<X>> deser = new LinkedHashMap<>();
+
+        GlitchUtils.registerDeserializers(deser);
+
+        return deser;
+    }
+
+    private static <X> Map<Class<X>, JsonSerializer<X>> krakenSerializers() {
+        Map<Class<X>, JsonSerializer<X>> ser = new LinkedHashMap<>();
+
+        GlitchUtils.registerSerializers(ser);
+
+        return ser;
     }
 }

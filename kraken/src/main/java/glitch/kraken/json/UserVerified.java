@@ -1,21 +1,25 @@
 package glitch.kraken.json;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
+import glitch.core.utils.Immutable;
+import org.immutables.value.Value;
 
+@Immutable
+@Value.Immutable
 public interface UserVerified extends User {
     String getEmail();
 
-    @JsonProperty("email_verified")
+    @SerializedName("email_verified")
     boolean hasEmailVerified();
 
-    @JsonProperty("notifications.email")
+    @SerializedName("notifications.email")
     boolean hasEmailNotifications();
 
-    @JsonProperty("notifications.push")
+    @SerializedName("notifications.push")
     boolean hasPushNotifications();
 
     boolean isPartnered();
 
-    @JsonProperty("twitter_connected")
+    @SerializedName("twitter_connected")
     boolean hasTwitterConnected();
 }

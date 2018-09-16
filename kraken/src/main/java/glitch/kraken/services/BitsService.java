@@ -1,40 +1,42 @@
 package glitch.kraken.services;
 
-import glitch.GlitchClient;
-import glitch.core.api.AbstractService;
-import glitch.core.utils.api.BaseURL;
-import glitch.core.utils.api.HttpClient;
-import glitch.core.utils.api.HttpMethod;
-import glitch.core.utils.api.HttpRequest;
-import glitch.core.utils.api.Router;
 import glitch.kraken.json.Channel;
 import glitch.kraken.json.Cheermote;
-import glitch.kraken.json.lists.AbstractList;
 import glitch.kraken.json.lists.CheermoteList;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
+import javax.annotation.Nullable;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
-public class BitsService extends AbstractService {
-    public BitsService(GlitchClient client, HttpClient httpClient, BaseURL baseURL) {
-        super(client, httpClient, baseURL);
+public abstract class BitsService {
+    public Observable<Cheermote> getCheermotes(@Nullable long channelId) {
+        return getCheermoteList(channelId)
+                .flatMapObservable(new Function<CheermoteList, ObservableSource<Cheermote>>() {
+                    @Override
+                    public ObservableSource<Cheermote> apply(CheermoteList cheers) throws Exception {
+                        return Observable.fromIterable(cheers.getData());
+                    }
+                });
     }
 
-    private HttpRequest<CheermoteList> request() {
-        return Router.create(HttpMethod.GET, baseURL.endpoint("/bits/actions"), CheermoteList.class)
-                .request();
-    }
-
-    public Observable<Cheermote> getCheermotes() {
-        return request().exchange(httpClient)
-                .flatMapObservable(cheers -> Observable.fromIterable(cheers.getData()));
-    }
-
-    public Observable<Cheermote> getCheermotes(Channel channel) {
+    public Observable<Cheermote> getCheermotes(@Nullable Channel channel) {
         return getCheermotes(channel.getId());
     }
 
-    public Observable<Cheermote> getCheermotes(Long channelId) {
-        return request().queryParam("channel_id", channelId)
-                .exchange(httpClient)
-                .flatMapObservable(cheers -> Observable.fromIterable(cheers.getData()));
+    @GET("/bits/actions")
+    public Observable<Cheermote> getCheermotes() {
+        return getCheermoteList(null)
+                .flatMapObservable(new Function<CheermoteList, ObservableSource<Cheermote>>() {
+                    @Override
+                    public ObservableSource<Cheermote> apply(CheermoteList cheers) throws Exception {
+                        return Observable.fromIterable(cheers.getData());
+                    }
+                });
     }
+
+    @GET("/bits/actions")
+    abstract Single<CheermoteList> getCheermoteList(@Nullable @Query("channel_id") Long channelId);
 }
