@@ -15,6 +15,7 @@ This module contains a [Twitch Message Interface](https://dev.twitch.tv/docs/irc
   * [x] Join/Part channel
   * [x] Messages
   * [x] Subscribe's
+  * [x] Gift Sub's
   * [x] Host's
   * [x] Raid's
   * [ ] Moderation Actions - *better supported with [PubSub](../pubsub)*

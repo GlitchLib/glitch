@@ -21,6 +21,7 @@ import glitch.chat.events.chat.OrdinalMessageEventImpl;
 import glitch.chat.events.chat.PrivateMessageEventImpl;
 import glitch.chat.events.chat.RitualNoticeEventImpl;
 import glitch.chat.events.chat.SubscribeEventImpl;
+import glitch.chat.events.chat.SubscribeGiftEventImpl;
 import glitch.chat.events.states.GlobalUserStateEventImpl;
 import glitch.chat.events.states.NoticeEventImpl;
 import glitch.chat.events.states.UserStateEvent;
@@ -312,9 +313,18 @@ class IRCMessageConsumer<E extends Event<GlitchChat>> implements Consumer<RawIRC
                 break;
             case "sub":
             case "resub":
+            case "subgift":
                 SubscriptionType subType = SubscriptionType.from(tags.get("msg-param-sub-plan"));
-                int months = tags.containsKey("msg-param-months") ? Integer.parseInt(tags.get("msg-param-months")) : 1;
-                event = SubscribeEventImpl.of(months, subType, badges, color, mod, true, turbo, message, channel.get(), created, UUID.randomUUID().toString(), client, user);
+                int months = (tags.containsKey("msg-param-months") && !tags.get("msg-param-months").equals("0")) ? Integer.parseInt(tags.get("msg-param-months")) : 1;
+                String gifter = (tags.containsKey("msg-param-recipient-user-name") && !tags.get("msg-param-recipient-user-name").equals("")) ? tags.get("msg-param-recipient-user-name") : null;
+                event = SubscribeEventImpl.of(months, gifter, subType, badges, color, mod, true, turbo, message, channel.get(), created, UUID.randomUUID().toString(), client, user);
+                break;
+            case "submysterygift":
+                SubscriptionType massSubType = SubscriptionType.from(tags.get("msg-param-sub-plan"));
+                int giftCount = (tags.containsKey("msg-param-mass-gift-count")) ? Integer.parseInt(tags.get("msg-param-mass-gift-count")) : 0;
+                int totalGiftCount = (tags.containsKey("msg-param-sender-count")) ? Integer.parseInt(tags.get("msg-param-sender-count")) : 0;
+                event = SubscribeGiftEventImpl.of(massSubType, giftCount, totalGiftCount, channel.get(), created, UUID.randomUUID().toString(), client, user);
+                break;
         }
         return event;
     }
