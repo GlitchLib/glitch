@@ -29,4 +29,4 @@ jobs:
     jdk: openjdk8
     install: skip
     script: ./gradlew bintrayUpload -x test
-    if: tag IS present
+    if: tag IS present AND branch = "master"
