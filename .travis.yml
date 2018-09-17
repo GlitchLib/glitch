@@ -1,9 +1,4 @@
 language: java
-jdk:
-  - openjdk8
-  - openjdk9
-  - openjdk10
-  - openjdk11
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -19,19 +14,23 @@ before_install: chmod +x ./gradlew
 jobs:
   include:
   - stage: test
+    jdk:
+      - openjdk8
+      - openjdk9
+      - openjdk10
+      - openjdk11
     before_script:
-    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-    - chmod +x ./cc-test-reporter
-    - ./cc-test-reporter before-build
+      - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - chmod +x ./cc-test-reporter
+      - ./cc-test-reporter before-build
     script: ./gradlew check
-    after_script:
-    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+    after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - stage: deploy
     jdk: openjdk8
     install: skip
     script: ./gradlew bintrayUpload -x test
 
 stages:
-- test
-- name: deploy
-  if: branch = master AND tag = true
+  - test
+  - name: deploy
+    if: branch = master AND tag = true
