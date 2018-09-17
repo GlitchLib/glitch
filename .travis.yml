@@ -34,4 +34,4 @@ jobs:
 stages:
 - test
 - name: deploy
-  if: (tag =~ ^v) AND (branch = master)
+  if: branch = master AND tag = true
