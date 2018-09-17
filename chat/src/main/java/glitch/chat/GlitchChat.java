@@ -7,10 +7,9 @@ import com.google.gson.JsonSerializer;
 import glitch.GlitchClient;
 import glitch.auth.Credential;
 import glitch.auth.UserCredential;
-import glitch.chat.events.RawIRCEvent;
-import glitch.chat.utils.MessageParser;
 import glitch.core.utils.GlitchUtils;
 import glitch.socket.GlitchWebSocket;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,40 +27,29 @@ import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-@Getter
-public class GlitchChat extends GlitchWebSocket {
-    private final BotConfig botConfig;
+public interface GlitchChat extends GlitchWebSocket {
 
-    @SuppressWarnings("unchecked")
-    private GlitchChat(GlitchClient client, BotConfig botConfig) {
-        super(client, "wss://irc-ws.chat.twitch.tv/");
-        this.botConfig = botConfig;
-        this.ping.set("PING :tmi.twitch.tv");
-        this.pong.set("PONG :tmi.twitch.tv");
+    void joinChannel(String channel);
 
+    void partChannel(String channel);
 
-        listenOn(RawIRCEvent.class).subscribe(new IRCMessageConsumer(this));
+    default void leaveChannel(String channel) {
+        partChannel(channel);
     }
 
-    public static Builder builder(GlitchClient client) {
+    void sendMessage(String channel, String message);
+
+    void sendPrivateMessage(String username, String message);
+
+    static Builder builder(GlitchClient client) {
         return new Builder(client);
-    }
-
-    @Override
-    public void onMessage(String message) {
-        publisher.onNext(MessageParser.parseMessage(message));
-    }
-
-    private interface ChatDetails {
-        @GET("/users/{id}/chat")
-        Single<BotConfig> getBotChatInfo(@Path("id") Long userId);
     }
 
     @Getter
     @Setter
     @Accessors(fluent = true, chain = true)
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Builder {
+    class Builder {
         private final GlitchClient client;
         private final Set<String> channels = new LinkedHashSet<>();
         private UserCredential botCredential;
@@ -108,11 +96,16 @@ public class GlitchChat extends GlitchWebSocket {
         }
 
         public Single<GlitchChat> buildAsync() {
-            return createBotConfig().map(config -> new GlitchChat(client, config));
+            return createBotConfig().map(config -> new GlitchChatImpl(client, config, channels));
         }
 
         public GlitchChat build() {
             return buildAsync().blockingGet();
+        }
+
+        private interface ChatDetails {
+            @GET("/users/{id}/chat")
+            Single<BotConfig> getBotChatInfo(@Path("id") Long userId);
         }
     }
 }

@@ -3,6 +3,7 @@ javadoc {
     options {
         encoding = "UTF-8"
     }
+    exclude "**/*Impl.java"
 }
 
 task javadocJar(type: Jar,

@@ -85,7 +85,7 @@ class IRCMessageConsumer<E extends Event<GlitchChat>> implements Consumer<RawIRC
                 );
                 break;
             case PRIV_MSG:
-                client.getPublisher().onNext(MessageEventImpl.of(
+                client.getDispatcher().onNext(MessageEventImpl.of(
                         tags,
                         message,
                         hasAction,
@@ -115,7 +115,7 @@ class IRCMessageConsumer<E extends Event<GlitchChat>> implements Consumer<RawIRC
                 );
                 break;
             case USER_NOTICE:
-                client.getPublisher().onNext(
+                client.getDispatcher().onNext(
                         UserNoticeEventImpl.of(
                                 tags,
                                 message,
@@ -243,10 +243,9 @@ class IRCMessageConsumer<E extends Event<GlitchChat>> implements Consumer<RawIRC
         }
 
         if (!Objects.isNull(event)) {
-            client.getPublisher().onNext(event);
+            client.getDispatcher().onNext(event);
         }
     }
-
 
     private UserStateEvent getUserState(ImmutableMap<String, String> tags, Optional<String> channel, Instant created) {
         Color color = getColor(tags.get("color"));
@@ -331,7 +330,7 @@ class IRCMessageConsumer<E extends Event<GlitchChat>> implements Consumer<RawIRC
 
     @Nullable
     private Color getColor(String color) {
-        if (color == null && !color.equals("") && color.startsWith("#")) {
+        if (color != null && !color.equals("") && color.startsWith("#")) {
             return Color.decode(color);
         }
 
