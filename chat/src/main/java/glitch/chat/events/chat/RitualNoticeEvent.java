@@ -10,15 +10,15 @@ import org.immutables.value.Value;
 @EventImmutable
 @Value.Immutable
 public interface RitualNoticeEvent extends ChannelUserEvent {
-    public abstract List<Badge> getBadges();
+    List<Badge> getBadges();
 
-    public abstract Color getColor();
+    Color getColor();
 
-    public abstract boolean hasMod();
+    boolean hasMod();
 
-    public abstract boolean isSubscriber();
+    boolean isSubscriber();
 
-    public abstract boolean hasTurbo();
+    boolean hasTurbo();
 
-    public abstract String getMessage();
+    String getMessage();
 }

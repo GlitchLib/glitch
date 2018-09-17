@@ -6,5 +6,5 @@ import org.immutables.value.Value;
 @EventImmutable
 @Value.Immutable
 public interface BitsMessageEvent extends OrdinalMessageEvent {
-    public abstract int getBits();
+    int getBits();
 }
