@@ -27,4 +27,4 @@ A hybrid-reactive Java wrapper for the Twitch. Supports using:
 Will provided *ASAP*.
 
 # Licence
-This project is under [LGPL-3.0](LICENCE.md) Licence
+This project is under [MIT](LICENCE.md) Licence
