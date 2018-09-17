@@ -9,7 +9,6 @@ import glitch.auth.Credential;
 import glitch.auth.UserCredential;
 import glitch.core.utils.GlitchUtils;
 import glitch.socket.GlitchWebSocket;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Arrays;
 import java.util.Collection;
@@ -96,7 +95,7 @@ public interface GlitchChat extends GlitchWebSocket {
         }
 
         public Single<GlitchChat> buildAsync() {
-            return createBotConfig().map(config -> new GlitchChatImpl(client, config, channels));
+            return createBotConfig().map(config -> new GlitchChatImpl(client, config, channels)).cast(GlitchChat.class);
         }
 
         public GlitchChat build() {
