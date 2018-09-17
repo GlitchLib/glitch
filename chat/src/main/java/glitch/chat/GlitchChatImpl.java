@@ -80,9 +80,4 @@ public class GlitchChatImpl extends GlitchWebSocketImpl implements GlitchChat {
     public void sendPrivateMessage(String username, String message) {
         sendMessage(botConfig.getUsername(), String.format("/w %s %s", username, message));
     }
-
-    @Override
-    public void disconnect() {
-        this.close();
-    }
 }

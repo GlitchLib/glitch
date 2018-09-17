@@ -74,6 +74,11 @@ public abstract class GlitchWebSocketImpl extends WebSocketClient implements Gli
     }
 
     @Override
+    public void disconnect() {
+        this.close();
+    }
+
+    @Override
     public void onOpen(ServerHandshake handshakedata) {
         onOpenEvent(handshakedata);
     }

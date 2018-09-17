@@ -3,11 +3,12 @@ package glitch.pubsub;
 import com.google.gson.Gson;
 import glitch.GlitchClient;
 import glitch.socket.GlitchWebSocket;
+import glitch.socket.GlitchWebSocketImpl;
 
-public class PubSub extends GlitchWebSocket {
+public class PubSubImpl extends GlitchWebSocketImpl implements GlitchPubSub {
     private final Gson gson;
 
-    public PubSub(GlitchClient client, Gson gson) {
+    PubSubImpl(GlitchClient client, Gson gson) {
         super(client, "wss://pubsub-edge.twitch.tv/");
         this.gson = gson;
     }
