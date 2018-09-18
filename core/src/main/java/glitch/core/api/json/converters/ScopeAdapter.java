@@ -10,7 +10,7 @@ import com.google.gson.JsonSerializer;
 import glitch.auth.Scope;
 import java.lang.reflect.Type;
 
-public class ScopeDeserializer implements JsonDeserializer<Scope>, JsonSerializer<Scope> {
+public class ScopeAdapter implements JsonDeserializer<Scope>, JsonSerializer<Scope> {
     @Override
     public Scope deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         return Scope.from(json.getAsString());

@@ -10,7 +10,7 @@ import com.google.gson.JsonSerializer;
 import glitch.core.api.json.enums.UserType;
 import java.lang.reflect.Type;
 
-public class UserTypeSerialization implements JsonDeserializer<UserType>, JsonSerializer<UserType> {
+public class UserTypeAdapter implements JsonDeserializer<UserType>, JsonSerializer<UserType> {
     @Override
     public UserType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         return UserType.from(json.getAsString());

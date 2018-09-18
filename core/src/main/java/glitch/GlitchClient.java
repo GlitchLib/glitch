@@ -5,6 +5,7 @@ import glitch.auth.Scope;
 import glitch.auth.store.EmptyStorage;
 import glitch.auth.store.Storage;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -62,8 +63,8 @@ public class GlitchClient {
             return this;
         }
 
-        public Observable<GlitchClient> buildAsync() {
-            return Observable.just(build());
+        public Single<GlitchClient> buildAsync() {
+            return Single.just(build());
         }
 
         public GlitchClient build() {

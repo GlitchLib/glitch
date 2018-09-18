@@ -1,33 +1,34 @@
 package glitch.auth;
 
+import feign.Response;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
-import glitch.core.utils.http.HeaderValue;
-import io.reactivex.Single;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.POST;
-import retrofit2.http.Query;
+import glitch.core.utils.http.ResponseException;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 interface CredentialAPI {
-    @GET("/validate")
-    Single<Validate> validate(@Header("Authorization") @HeaderValue("OAuth") Credential credential);
+    @GET @Path("/validate")
+    Validate validate(@HeaderParam("Authorization") String accessToken) throws ResponseException;
 
-    @POST("/token?grant_type=authorization_code")
-    Single<AccessToken> getAccessToken(
-            @Query("client_id") String clientId,
-            @Query("client_secret") String clientSecret,
-            @Query("code") String authorizationCode,
-            @Query("redirect_uri") String redirectUri
-    );
+    @POST @Path("/token?grant_type=authorization_code")
+    AccessToken getAccessToken(
+            @QueryParam("client_id") String clientId,
+            @QueryParam("client_secret") String clientSecret,
+            @QueryParam("code") String authorizationCode,
+            @QueryParam("redirect_uri") String redirectUri
+    ) throws ResponseException;
 
-    @POST("/token?grant_type=refresh_token")
-    Single<AccessToken> refreshToken(
-            @Query("client_id") String clientId,
-            @Query("client_secret") String clientSecret,
-            @Query("refresh_token") Credential credential
-    );
+    @POST @Path("/token?grant_type=refresh_token")
+    AccessToken refreshToken(
+            @QueryParam("client_id") String clientId,
+            @QueryParam("client_secret") String clientSecret,
+            @QueryParam("refresh_token") String refreshToken
+    ) throws ResponseException;
 
-    @POST("/revoke")
-    Single<Void> revoke(@Query("client_id") String clientId, @Query("token") Credential credential);
+    @POST @QueryParam("/revoke")
+    void revoke(@QueryParam("client_id") String clientId, @QueryParam("token") String accessToken) throws ResponseException;
 }

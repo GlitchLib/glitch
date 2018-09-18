@@ -7,24 +7,28 @@
 # Glitch
 A hybrid-reactive Java wrapper for the Twitch. Supports using:
 
-* [Retrofit](https://square.github.io/retrofit/)
-* [Gson](https://github.com/google/gson)
+* [Feign](https://github.com/OpenFeign/feign) - a Retrofit alternatives
+* [Gson](https://github.com/google/gson) - JSON
 * [RxJava2](http://reactivex.io/)
 * [Java-WebSocket](https://tootallnate.github.io/Java-WebSocket/)
 
 # Module Supports
 | Name | JVM (Tested) | Android (Not Tested) | 
 |:---:|:---:|:---:|
-| [glitch-core](core) | 1.7+ | ✔ 4.4+ |
-| [glitch-kraken](kraken) | 1.7+ | ✔ 4.4+ |
-| [glitch-helix](helix) | 1.7+ | ✔ 4.4+ |
-| [glitch-auth](auth) | 1.7+ | ✔ 4.4+ |
+| [glitch-core](core) | 1.7+ | ✔ (unknown) |
+| [glitch-kraken](kraken) | 1.7+ | ✔ (unknown) |
+| [glitch-helix](helix) | 1.7+ | ✔ (unknown) |
+| [glitch-auth](auth) | 1.7+ | ✔ (unknown) |
 | [glitch-chat](chat) | 1.8+ | ❌ |
 | [glitch-pubsub](pubsub) | 1.8+ | ❌ |
 
 # Getting started
 
-Will provided *ASAP*.
+check the [BOM](./BOM) dependency how to import versions. Then get some examples below.
+
+## Examples 
+
+Examples has been on [wiki page](./wiki)
 
 # Licence
 This project is under [MIT](LICENCE.md) Licence

@@ -1,5 +1,6 @@
 package glitch.auth;
 
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 import glitch.GlitchClient;
@@ -10,10 +11,18 @@ import glitch.auth.store.EmptyStorage;
 import glitch.auth.store.Storage;
 import glitch.core.api.AbstractService;
 import glitch.core.utils.GlitchUtils;
+import glitch.core.utils.http.HTTP;
+import glitch.core.utils.http.ResponseException;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
 import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.SingleSource;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,26 +30,49 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 public final class CredentialManager extends AbstractService<CredentialAPI> {
-    private static final String BASE_URL = "https://id.twitch.tv/oauth2";
-
     private final Storage storage;
 
     public CredentialManager(GlitchClient client, @Nullable Storage storage) {
-        super(client, GlitchUtils.createHttpClient(BASE_URL, null, serializers(), deserializers()).create(CredentialAPI.class));
+        super(client, HTTP.create(
+                LinkedHashMultimap.<String, String>create(),
+                GlitchUtils.createGson(CredentialManager.adapters(), true))
+                .newInstance(new OAuth2Instance()));
         this.storage = (storage != null) ? storage : new EmptyStorage();
     }
 
-    public Single<Validate> validate(Credential credential) {
-        return api.validate(credential);
+    public Single<Validate> validate(final Credential credential) {
+        return validate(credential.getAccessToken());
     }
 
-    public Single<Credential> create(String code, String redirectUri) {
-        return api.getAccessToken(
-                client.getConfiguration().getClientId(),
-                client.getConfiguration().getClientSecret(),
-                code,
-                Objects.requireNonNull((redirectUri != null) ? redirectUri : client.getConfiguration().getRedirectUri(), "redirect_uri")
-        ).flatMap(new Function<AccessToken, SingleSource<? extends Credential>>() {
+    private Single<Validate> validate(final String accessToken) {
+        return Single.unsafeCreate(new SingleSource<Validate>() {
+            @Override
+            public void subscribe(SingleObserver<? super Validate> observer) {
+                try {
+                    observer.onSuccess(api.validate("OAuth " + accessToken));
+                } catch (ResponseException e) {
+                    observer.onError(e);
+                }
+            }
+        });
+    }
+
+    public Single<Credential> create(final String code, final String redirectUri) {
+        return Single.unsafeCreate(new SingleSource<AccessToken>() {
+            @Override
+            public void subscribe(SingleObserver<? super AccessToken> observer) {
+                try {
+                    observer.onSuccess(api.getAccessToken(
+                            client.getConfiguration().getClientId(),
+                            client.getConfiguration().getClientSecret(),
+                            code,
+                            Objects.requireNonNull((redirectUri != null) ? redirectUri : client.getConfiguration().getRedirectUri(), "redirect_uri")
+                    ));
+                } catch (ResponseException e) {
+                    observer.onError(e);
+                }
+            }
+        }).flatMap(new Function<AccessToken, SingleSource<? extends Credential>>() {
             @Override
             public SingleSource<? extends Credential> apply(AccessToken accessToken) throws Exception {
                 return CredentialManager.this.build(accessToken);
@@ -48,12 +80,21 @@ public final class CredentialManager extends AbstractService<CredentialAPI> {
         });
     }
 
-    public Single<Credential> refresh(Credential credential) {
-        return api.refreshToken(
-                client.getConfiguration().getClientId(),
-                client.getConfiguration().getClientSecret(),
-                credential
-        ).flatMap(new Function<AccessToken, SingleSource<Credential>>() {
+    public Single<Credential> refresh(final Credential credential) {
+        return Single.unsafeCreate(new SingleSource<AccessToken>() {
+            @Override
+            public void subscribe(SingleObserver<? super AccessToken> observer) {
+                try {
+                    observer.onSuccess(api.refreshToken(
+                            client.getConfiguration().getClientId(),
+                            client.getConfiguration().getClientSecret(),
+                            credential.getRefreshToken()
+                    ));
+                } catch (ResponseException e) {
+                    observer.onError(e);
+                }
+            }
+        }).flatMap(new Function<AccessToken, SingleSource<Credential>>() {
             @Override
             public SingleSource<Credential> apply(AccessToken accessToken) throws Exception {
                 return CredentialManager.this.build(accessToken);
@@ -65,13 +106,14 @@ public final class CredentialManager extends AbstractService<CredentialAPI> {
         final CredentialImpl.Builder cb = CredentialImpl.builder()
                 .from(accessToken);
 
-        return validate(cb.build())
+        return validate(accessToken.getAccessToken())
                 .map(new Function<Validate, Credential>() {
                     @Override
                     public Credential apply(Validate validate) throws Exception {
                         return cb.from(validate).build();
                     }
                 })
+                .cast(Credential.class)
                 .doOnSuccess(new Consumer<Credential>() {
                     @Override
                     public void accept(Credential credential) throws Exception {
@@ -80,14 +122,23 @@ public final class CredentialManager extends AbstractService<CredentialAPI> {
                 });
     }
 
-    public Single<Void> revoke(final Credential credential) {
-        return api.revoke(credential.getClientId(), credential)
-                .doOnSuccess(new Consumer<Void>() {
-                    @Override
-                    public void accept(Void v) throws Exception {
-                        storage.drop(credential);
-                    }
-                });
+    public Completable revoke(final Credential credential) {
+        return Completable.unsafeCreate(new CompletableSource() {
+            @Override
+            public void subscribe(CompletableObserver cs) {
+                try {
+                    api.revoke(credential.getClientId(), credential.getAccessToken());
+                    cs.onComplete();
+                } catch (ResponseException e) {
+                    cs.onError(e);
+                }
+            }
+        }).doOnComplete(new Action() {
+            @Override
+            public void run() {
+                storage.drop(credential);
+            }
+        });
     }
 
     public Single<Credential> buildFromCredentials(String accessToken, String refreshToken) {
@@ -99,7 +150,7 @@ public final class CredentialManager extends AbstractService<CredentialAPI> {
                 .accessToken(userCredential.getAccessToken())
                 .refreshToken(userCredential.getRefreshToken());
 
-        return validate(cb.build())
+        return validate(userCredential.getAccessToken())
                 .map(new Function<Validate, Credential>() {
                     @Override
                     public Credential apply(Validate validate) throws Exception {
@@ -113,27 +164,16 @@ public final class CredentialManager extends AbstractService<CredentialAPI> {
                 });
     }
 
-    public AuthorizationUriBuilder buildAuthorization() {
-        return new AuthorizationUriBuilder(BASE_URL, client.getConfiguration());
+    public Single<AuthorizationUriBuilder> buildAuthorization() {
+        return Single.just(new AuthorizationUriBuilder(OAuth2Instance.BASE_URL, client.getConfiguration()));
     }
 
     @SuppressWarnings("unchecked")
-    private static <X> Map<Class<X>, JsonSerializer<X>> serializers() {
-        Map<Class<X>, JsonSerializer<X>> serializers = new LinkedHashMap<>();
+    private static  Map<Type, Object> adapters() {
+        Map<Type, Object> adapters = new LinkedHashMap<>();
 
-        GlitchUtils.registerSerializers(serializers);
-        serializers.put((Class<X>) Calendar.class, (JsonSerializer<X>) new ExpireInstantDeserializer());
+        adapters.put(Calendar.class, new ExpireInstantDeserializer());
 
-        return serializers;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X> Map<Class<X>, JsonDeserializer<X>> deserializers() {
-        Map<Class<X>, JsonDeserializer<X>> deserializers = new LinkedHashMap<>();
-
-        GlitchUtils.registerDeserializers(deserializers);
-        deserializers.put((Class<X>) Calendar.class, (JsonDeserializer<X>) new ExpireInstantDeserializer());
-
-        return deserializers;
+        return adapters;
     }
 }

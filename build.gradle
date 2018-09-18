@@ -3,7 +3,6 @@ plugins {
     id "com.jfrog.bintray" version "1.8.4"
     id "com.jfrog.artifactory" version "4.7.5"
     id "de.lukaskoerfer.gradle.delombok" version "0.2"
-    id "org.ajoberstar.grgit" version "3.0.0-beta.1" apply false
 }
 
 allprojects {
@@ -31,7 +30,7 @@ subprojects {
     sourceCompatibility = targetCompatibility = (project.name.matches(/^(kraken|helix|core|auth)$/)) ? 1.7 : 1.8
 
     dependencies {
-        if (project != project(":BOM") && project != project(":docs")) {
+        if (project.name != "BOM" && project.name != "docs") {
 
             compileOnly "org.immutables:value:2.7.1"
             annotationProcessor "org.immutables:value:2.7.1"
@@ -41,7 +40,7 @@ subprojects {
             compileOnly "org.projectlombok:lombok:1.18.2"
             annotationProcessor "org.projectlombok:lombok:1.18.2"
 
-            testCompile "com.squareup.retrofit2:retrofit-mock:2.4.0"
+            testCompile "ch.qos.logback:logback-classic:1.2.3"
         }
     }
 
@@ -53,6 +52,6 @@ subprojects {
 }
 
 wrapper {
-    gradleVersion = "4.10"
+    gradleVersion = "4.10.1"
     distributionType = Wrapper.DistributionType.ALL
 }
