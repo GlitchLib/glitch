@@ -221,7 +221,7 @@ class IRCMessageConsumer<E extends Event<GlitchChat>> implements Consumer<RawIRC
             case GLOBAL_USER_STATE:
                 Color color = getColor(tags.get("color"));
                 String displayName = tags.get("display_name");
-                boolean turbo = tags.get("mod").equals("1");
+                boolean turbo = tags.get("badges").contains("turbo");
                 String userType = tags.get("user_type");
                 long userId = Long.parseLong(tags.get("user_id"));
                 event = (E) GlobalUserStateEventImpl.of(

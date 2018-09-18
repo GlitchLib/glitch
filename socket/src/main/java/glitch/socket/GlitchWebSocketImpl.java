@@ -25,12 +25,16 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.PingFrame;
 import org.java_websocket.framing.PongFrame;
 import org.java_websocket.handshake.ServerHandshake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class GlitchWebSocketImpl extends WebSocketClient implements GlitchWebSocket {
     @Getter
     private final GlitchClient client;
     @Getter
     protected final PublishSubject<Event> dispatcher = PublishSubject.create();
+
+    private final Logger logger = LoggerFactory.getLogger("glitch.socket.client");
 
     private final Function<String, PingFrame> pingFrame = message -> new PingFrame() {
         @Override
@@ -51,6 +55,10 @@ public abstract class GlitchWebSocketImpl extends WebSocketClient implements Gli
     public GlitchWebSocketImpl(GlitchClient client, String uri) {
         super(URI.create(uri), new Draft_6455());
         this.client = client;
+        dispatcher.timeInterval()
+                .doOnEach(timed -> logger.debug("[EVENT] Call: {}", timed.getValue().value()))
+                .doOnError(err -> logger.debug("[ERROR] [" + err.getClass().getSimpleName() +  "] " + err.getMessage(), err))
+                .subscribe();
     }
 
     @Override

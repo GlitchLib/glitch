@@ -2,14 +2,19 @@ package glitch.chat;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
+import com.google.gson.annotations.SerializedName;
+import feign.Feign;
 import glitch.GlitchClient;
 import glitch.auth.Credential;
 import glitch.auth.UserCredential;
 import glitch.core.utils.GlitchUtils;
+import glitch.core.utils.http.HTTP;
+import glitch.core.utils.http.ResponseException;
+import glitch.core.utils.http.instances.KrakenInstance;
 import glitch.socket.GlitchWebSocket;
 import io.reactivex.Single;
+import java.awt.Color;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -17,14 +22,15 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.Value;
 import lombok.experimental.Accessors;
-import retrofit2.Retrofit;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
 
 public interface GlitchChat extends GlitchWebSocket {
 
@@ -73,25 +79,19 @@ public interface GlitchChat extends GlitchWebSocket {
 
             headers.put("Client-ID", client.getConfiguration().getClientId());
             headers.put("User-Agent", client.getConfiguration().getUserAgent());
+            headers.put("Accept", "application/vnd.twitchtv.v5+json");
 
-            Map<Class<X>, JsonSerializer<X>> serializers = new LinkedHashMap<>();
-            Map<Class<X>, JsonDeserializer<X>> deserializers = new LinkedHashMap<>();
-
-            GlitchUtils.registerSerializers(serializers);
-            GlitchUtils.registerDeserializers(deserializers);
+            Map<Type, Object> adapters = new LinkedHashMap<>();
 
             Single<ChatDetails> chatDetails = Single.create(sub -> {
-                Retrofit retrofit = GlitchUtils.createHttpClient(GlitchUtils.KRAKEN, headers, serializers, deserializers);
+                Feign feign = HTTP.create(headers, GlitchUtils.createGson(adapters, true));
 
-                sub.onSuccess(retrofit.create(ChatDetails.class));
+                sub.onSuccess(feign.newInstance(new KrakenInstance<>(ChatDetails.class)));
             });
 
             Single<Credential> credential = client.getCredentialManager().buildFromCredentials(botCredential);
 
-            Single<BotConfig> botInfo = credential
-                    .zipWith(chatDetails, (cred, chat) -> chat.getBotChatInfo(cred.getUserId()))
-                    .flatMap(info -> info);
-            return botInfo.zipWith(credential, (b, c) -> BotConfig.from(c, b));
+            return credential.zipWith(chatDetails, (cred, chat) -> BotConfig.from(cred, chat.getBotChatInfo(cred.getUserId())));
         }
 
         public Single<GlitchChat> buildAsync() {
@@ -103,8 +103,17 @@ public interface GlitchChat extends GlitchWebSocket {
         }
 
         private interface ChatDetails {
-            @GET("/users/{id}/chat")
-            Single<BotConfig> getBotChatInfo(@Path("id") Long userId);
+            @GET @Path("/users/{id}/chat")
+            BotConfigInfo getBotChatInfo(@PathParam("id") Long userId) throws ResponseException;
         }
+    }
+
+    @Value
+    class BotConfigInfo {
+        @SerializedName("is_known_bot")
+        private final boolean knownBot;
+        @SerializedName("is_verified_bot")
+        private final boolean verifiedBot;
+        private final Color color;
     }
 }

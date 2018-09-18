@@ -12,9 +12,11 @@ import org.immutables.value.Value;
 @Value.Immutable
 @Gson.TypeAdapters
 public interface BotConfig extends Credential {
-    static BotConfig from(Credential credential, BotConfig botConfig) {
+    static BotConfig from(Credential credential, GlitchChat.BotConfigInfo botConfig) {
         return BotConfigImpl.builder()
-                .from(botConfig)
+                .isKnownBot(botConfig.isKnownBot())
+                .isVerifiedBot(botConfig.isVerifiedBot())
+                .color(botConfig.getColor())
                 .from((Validate) credential)
                 .from((AccessToken) credential)
                 .build();

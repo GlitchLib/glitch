@@ -2,7 +2,7 @@ package glitch.chat.irc;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import glitch.chat.utils.IRCommand;
+import glitch.chat.IRCommand;
 import glitch.socket.utils.EventImmutable;
 import org.immutables.value.Value;
 

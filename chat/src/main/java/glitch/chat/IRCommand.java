@@ -1,4 +1,4 @@
-package glitch.chat.utils;
+package glitch.chat;
 
 public enum IRCommand {
     UNKNOWN,

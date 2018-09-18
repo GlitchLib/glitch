@@ -1,4 +1,4 @@
-package glitch.chat.utils;
+package glitch.chat;
 
 import glitch.chat.events.RawIRCEvent;
 import glitch.chat.events.RawIRCEventImpl;
@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MessageParser {
-    public static RawIRCEvent parseMessage(String raw) {
+    public static RawIRCEvent parseMessage(String raw, GlitchChat chat) {
         if (raw.contains(System.lineSeparator())) {
             for (String l : raw.split(System.lineSeparator())) {
-                return parseMessage(l);
+                return parseMessage(l, chat);
             }
         }
 
-        RawIRCEventImpl.Builder irc = RawIRCEventImpl.builder();
+        RawIRCEventImpl.Builder irc = RawIRCEventImpl.builder().rawMessage(raw);
 
         boolean lockTrailing = false;
 
@@ -45,8 +45,8 @@ public final class MessageParser {
                     }
                 }
             } else if (part.startsWith(":")) {
-                if (part.matches("^:(.+)!(.+)@(.+)$")) {
-                    irc.prefix(parseRawPrefix(part.substring(1)));
+                if (part.matches("^:(.+)(!.+)*?(@.+)*?$")) {
+                    irc.prefix(IRCPrefix.fromRaw(part));
                 } else {
                     lockTrailing = true;
                     irc.addMiddle(part);
@@ -61,26 +61,7 @@ public final class MessageParser {
             }
         }
 
-        return irc.build();
-    }
-
-    private static IRCPrefix parseRawPrefix(String rawPrefix) {
-        IRCPrefixImpl.Builder prefix = IRCPrefixImpl.builder().raw(":" + rawPrefix);
-        if (rawPrefix.contains("@")) {
-            String[] nh = rawPrefix.split("@");
-            prefix.host(nh[1]);
-            if (nh[0].contains("!")) {
-                String[] nu = nh[0].split("!");
-                prefix.nick(nu[0])
-                        .user(nu[1]);
-            } else {
-                prefix.nick(nh[0]);
-            }
-        } else {
-            prefix.host(rawPrefix);
-        }
-
-        return prefix.build();
+        return irc.client(chat).build();
     }
 
     private static IRCommand parseCommand(String cmd) {

@@ -2,20 +2,22 @@ package glitch.chat;
 
 import glitch.GlitchClient;
 import glitch.chat.events.RawIRCEvent;
-import glitch.chat.utils.MessageParser;
 import glitch.socket.GlitchWebSocketImpl;
 import glitch.socket.events.actions.OpenEvent;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.Getter;
-import org.java_websocket.client.WebSocketClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Getter
 public class GlitchChatImpl extends GlitchWebSocketImpl implements GlitchChat {
     private final BotConfig botConfig;
 
     private final Set<String> channels = new LinkedHashSet<>();
+
+    private final Logger logger = LoggerFactory.getLogger("glitch.tmi.chat");
 
     @SuppressWarnings("unchecked")
     GlitchChatImpl(GlitchClient client, BotConfig botConfig, Collection<String> channels) {
@@ -28,7 +30,18 @@ public class GlitchChatImpl extends GlitchWebSocketImpl implements GlitchChat {
             this.channels.addAll(channels);
         }
 
-        listenOn(RawIRCEvent.class).subscribe(new IRCMessageConsumer(this));
+        listenOn(RawIRCEvent.class)
+                .doOnEach(eventNotification -> {
+                    if (eventNotification.isOnError()) {
+                        logger.error(eventNotification.getError().getMessage(), eventNotification.getError());
+                    }
+                    if (eventNotification.isOnNext()) {
+                        RawIRCEvent event = eventNotification.getValue();
+                        StringBuilder sb = new StringBuilder();
+
+                        logger.debug("Received RawMessage({})", event.getRawMessage());
+                    }
+                }).subscribe(new IRCMessageConsumer(this));
         listenOn(OpenEvent.class).subscribe(event -> {
             send("CAP REQ :twitch.tv/commands");
             send("CAP REQ :twitch.tv/membership");
@@ -50,7 +63,7 @@ public class GlitchChatImpl extends GlitchWebSocketImpl implements GlitchChat {
 
     @Override
     public void onMessage(String message) {
-        dispatcher.onNext(MessageParser.parseMessage(message));
+        dispatcher.onNext(MessageParser.parseMessage(message, this));
     }
 
     @Override
