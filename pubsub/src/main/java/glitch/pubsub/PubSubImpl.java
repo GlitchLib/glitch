@@ -2,7 +2,6 @@ package glitch.pubsub;
 
 import com.google.gson.Gson;
 import glitch.GlitchClient;
-import glitch.socket.GlitchWebSocket;
 import glitch.socket.GlitchWebSocketImpl;
 
 public class PubSubImpl extends GlitchWebSocketImpl implements GlitchPubSub {

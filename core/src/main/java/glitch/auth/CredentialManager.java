@@ -1,8 +1,6 @@
 package glitch.auth;
 
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
 import glitch.GlitchClient;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;

@@ -4,7 +4,6 @@ import glitch.auth.CredentialManager;
 import glitch.auth.Scope;
 import glitch.auth.store.EmptyStorage;
 import glitch.auth.store.Storage;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.Arrays;
 import java.util.Collection;

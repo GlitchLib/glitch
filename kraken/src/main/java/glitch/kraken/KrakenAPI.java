@@ -2,7 +2,6 @@ package glitch.kraken;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonSerializer;
 import feign.Feign;
 import glitch.GlitchClient;
 import glitch.core.api.AbstractAPI;

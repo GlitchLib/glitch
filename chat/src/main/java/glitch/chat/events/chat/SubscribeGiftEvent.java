@@ -1,6 +1,5 @@
 package glitch.chat.events.chat;
 
-import glitch.chat.events.channel.ChannelEvent;
 import glitch.chat.events.channel.ChannelUserEvent;
 import glitch.core.api.json.enums.SubscriptionType;
 import glitch.socket.utils.EventImmutable;

@@ -1,6 +1,5 @@
 package glitch.auth;
 
-import feign.Response;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
 import glitch.core.utils.http.ResponseException;

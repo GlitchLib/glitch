@@ -3,7 +3,6 @@ package glitch.chat;
 import glitch.chat.events.RawIRCEvent;
 import glitch.chat.events.RawIRCEventImpl;
 import glitch.chat.irc.IRCPrefix;
-import glitch.chat.irc.IRCPrefixImpl;
 import java.util.Date;
 import java.util.StringTokenizer;
 import lombok.AccessLevel;
