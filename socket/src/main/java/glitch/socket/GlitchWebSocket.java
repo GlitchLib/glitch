@@ -1,6 +1,7 @@
 package glitch.socket;
 
 import glitch.socket.events.Event;
+import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
 public interface GlitchWebSocket {
@@ -11,4 +12,6 @@ public interface GlitchWebSocket {
     void disconnect();
 
     void reconnect();
+
+    <S extends GlitchWebSocket, E extends Event<S>> Observable<E> listenOn(Class<E> eventType);
 }
