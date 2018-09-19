@@ -2,7 +2,7 @@ plugins {
     id "com.gorylenko.gradle-git-properties" version "1.5.2"
 }
 
-def feign = "9.7.0"
+def feign = "10.0.1"
 
 dependencies {
     compile "org.slf4j:slf4j-api:1.7.25"
