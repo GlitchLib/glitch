@@ -4,6 +4,7 @@ import glitch.GlitchClient;
 import glitch.socket.events.Event;
 import glitch.socket.events.actions.CloseEventImpl;
 import glitch.socket.events.actions.OpenEventImpl;
+import glitch.socket.events.actions.PingEvent;
 import glitch.socket.events.actions.PingEventImpl;
 import glitch.socket.events.actions.PongEventImpl;
 import glitch.socket.events.actions.ThrowableEventImpl;
@@ -59,14 +60,14 @@ public abstract class GlitchWebSocketImpl extends WebSocketClient implements Gli
                 .doOnEach(timed -> logger.debug("[EVENT] Call: {}", timed.getValue().value()))
                 .doOnError(err -> logger.debug("[ERROR] [" + err.getClass().getSimpleName() +  "] " + err.getMessage(), err))
                 .subscribe();
+        listenOn(PingEvent.class).subscribe(event -> pong());
     }
 
-    @Override
-    public void sendPing() throws NotYetConnectedException {
+    public void ping() throws NotYetConnectedException {
         sendFrame(pingFrame.apply(ping.get()));
     }
 
-    public void sendPong() throws NotYetConnectedException {
+    public void pong() throws NotYetConnectedException {
         sendFrame(pongFrame.apply(pong.get()));
     }
 
@@ -101,30 +102,9 @@ public abstract class GlitchWebSocketImpl extends WebSocketClient implements Gli
         onExceptionEvent(ex);
     }
 
-    @Override
-    public void onWebsocketPing(WebSocket conn, Framedata f) {
-        onPing(conn, f);
-    }
-
-    @Override
-    public void onWebsocketPong(WebSocket conn, Framedata f) {
-        onPong(conn, f);
-    }
-
     @SuppressWarnings("unchecked")
     public <S extends GlitchWebSocket, E extends Event<S>> Observable<E> listenOn(Class<E> eventType) {
         return dispatcher.ofType(eventType);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <S extends GlitchWebSocket> void onPing(WebSocket conn, Framedata f) {
-        dispatcher.onNext(PingEventImpl.of(Instant.now(), UUID.randomUUID().toString(), (S) this));
-        sendPong();
-    }
-
-    @SuppressWarnings("unchecked")
-    private <S extends GlitchWebSocket> void onPong(WebSocket conn, Framedata f) {
-        dispatcher.onNext(PongEventImpl.of(Instant.now(), UUID.randomUUID().toString(), (S) this));
     }
 
     @SuppressWarnings("unchecked")
