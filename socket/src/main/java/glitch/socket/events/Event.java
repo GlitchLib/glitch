@@ -15,8 +15,9 @@ public interface Event<S extends GlitchWebSocket> {
         return Instant.now();
     }
 
-    default String getEventId() {
-        return UUID.randomUUID().toString();
+    @Value.Lazy
+    default UUID getEventId() {
+        return UUID.randomUUID();
     }
 
     S getClient();
