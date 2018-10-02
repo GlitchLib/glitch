@@ -22,6 +22,10 @@ public interface GlitchPubSub extends GlitchWebSocket {
 
     PubSubTopics getTopics();
 
+    Single<Void> sendPing();
+
+    Single<Void> sendPong();
+
     static Builder builder(GlitchClient client) {
         return new Builder(client);
     }

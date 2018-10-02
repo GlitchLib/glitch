@@ -24,7 +24,7 @@ public class WebSocketImpl implements GlitchWebSocket {
     protected final PublishSubject<Event> dispatcher = PublishSubject.create();
     @Getter
     private final GlitchClient client;
-    private final WebSocketClient ws;
+    protected final WebSocketClient ws;
 
     public WebSocketImpl(GlitchClient client, String uri) {
         this.client = client;
@@ -35,11 +35,13 @@ public class WebSocketImpl implements GlitchWebSocket {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public void onMessage(String message) {
                 dispatcher.onNext(RawMessageEventImpl.of(message, Instant.now(), WebSocketImpl.this));
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public void onMessage(ByteBuffer buffer) {
                 dispatcher.onNext(RawByteMessageEventImpl.of(buffer, Instant.now(), WebSocketImpl.this));
             }
@@ -69,6 +71,11 @@ public class WebSocketImpl implements GlitchWebSocket {
     @Override
     public Single<Void> reconnect() {
         return Single.create(ignore -> ws.reconnectBlocking());
+    }
+
+    @Override
+    public Single<Boolean> isActive() {
+        return Single.just(ws.isOpen());
     }
 
     @Override

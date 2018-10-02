@@ -95,7 +95,8 @@ public interface GlitchChat extends GlitchWebSocket {
         }
 
         public Single<GlitchChat> buildAsync() {
-            return createBotConfig().map(config -> new GlitchChatImpl(client, config, channels)).cast(GlitchChat.class);
+            return createBotConfig().map(config -> new ChatImpl(client, config)).cast(GlitchChat.class)
+                    .doOnSuccess(client -> channels.forEach(client::joinChannel));
         }
 
         public GlitchChat build() {

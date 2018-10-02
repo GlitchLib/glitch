@@ -4,19 +4,17 @@ import glitch.pubsub.events.Message;
 import glitch.pubsub.events.TopicRegisteredEvent;
 import glitch.pubsub.events.TopicUnregisteredEvent;
 import glitch.pubsub.topics.Topic;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import java.nio.channels.NotYetConnectedException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PubSubTopics {
     private final PubSubImpl client;
     private final Map<Topic, Boolean> topics = new LinkedHashMap<>(50);
 
-    public PubSubTopics(PubSubImpl client) {
+    PubSubTopics(PubSubImpl client) {
         this.client = client;
         client.listenOn(TopicRegisteredEvent.class).subscribe(event -> this.topics.replace(event.getTopic(), true));
         client.listenOn(TopicUnregisteredEvent.class).subscribe(event -> this.topics.replace(event.getTopic(), false));
@@ -35,85 +33,81 @@ public class PubSubTopics {
         return topics.entrySet();
     }
 
-    public void registerTopic(Topic topic) {
-        register(topic, false);
-    }
-    public void registerTopics(Topic... topics) {
-        registerTopics(Arrays.asList(topics));
-    }
-    public void registerTopics(Collection<Topic> topics) {
-        topics.forEach(this::registerTopic);
+    public Single<Void> registerTopic(Topic topic) {
+        return register(topic, false);
     }
 
-    public void enableTopic(Topic topic) {
-        register(topic, true);
-    }
-    public void enableTopics(Topic... topics) {
-        enableTopics(Arrays.asList(topics));
-    }
-    public void enableTopics(Collection<Topic> topics) {
-        topics.forEach(this::enableTopic);
+    public Single<Void> registerTopics(Topic... topics) {
+        return registerTopics(Arrays.asList(topics));
     }
 
-    public void unregisterTopic(Topic topic) {
-        unregister(topic, false);
-    }
-    public void unregisterTopics(Topic... topics) {
-        unregisterTopics(Arrays.asList(topics));
-    }
-    public void unregisterTopics(Collection<Topic> topics) {
-        topics.forEach(this::unregisterTopic);
+    public Single<Void> registerTopics(Collection<Topic> topics) {
+        return Observable.fromIterable(topics).flatMapSingle(this::registerTopic).singleOrError();
     }
 
-    public void disableTopic(Topic topic) {
-        unregister(topic, true);
-    }
-    public void disableTopics(Topic... topics) {
-        disableTopics(Arrays.asList(topics));
-    }
-    public void disableTopics(Collection<Topic> topics) {
-        topics.forEach(this::disableTopic);
+    public Single<Void> enableTopic(Topic topic) {
+        return register(topic, true);
     }
 
-
-    void sendRequest(Message.Type type, Topic topic) {
-        Map<String, Object> request = new LinkedHashMap<>();
-        Map<String, Object> topicData = new LinkedHashMap<>();
-
-        topicData.put("topics", Collections.singleton(topic.getRawType()));
-
-        if (topic.getCredential() != null) {
-            topicData.put("auth_token", topic.getCredential().getAccessToken());
-        }
-
-        request.put("type", type.name());
-        request.put("nonce", topic.getCode().toString());
-        request.put("data", topicData);
-
-        client.send(client.gson.toJson(request));
+    public Single<Void> enableTopics(Topic... topics) {
+        return enableTopics(Arrays.asList(topics));
     }
 
-    private void register(Topic topic, boolean activate) {
+    public Single<Void> enableTopics(Collection<Topic> topics) {
+        return Observable.fromIterable(topics).flatMapSingle(this::enableTopic).singleOrError();
+    }
+
+    public Single<Void> unregisterTopic(Topic topic) {
+        return unregister(topic, false);
+    }
+
+    public Single<Void> unregisterTopics(Topic... topics) {
+        return unregisterTopics(Arrays.asList(topics));
+    }
+
+    public Single<Void> unregisterTopics(Collection<Topic> topics) {
+        return Observable.fromIterable(topics).flatMapSingle(this::unregisterTopic).singleOrError();
+    }
+
+    public Single<Void> disableTopic(Topic topic) {
+        return unregister(topic, true);
+    }
+
+    public Single<Void> disableTopics(Topic... topics) {
+        return disableTopics(Arrays.asList(topics));
+    }
+
+    public Single<Void> disableTopics(Collection<Topic> topics) {
+        return Observable.fromIterable(topics).flatMapSingle(this::disableTopic).singleOrError();
+    }
+
+    Single<Void> register(Topic topic, boolean activate) {
         if (!topics.containsKey(topic)) {
             topics.put(topic, false);
         }
 
-        if (activate) {
-            sendRequest(Message.Type.LISTEN, topic);
-        }
+        return exchange(Message.Type.LISTEN, topic, activate);
     }
 
-    public void unregister(Topic topic, boolean disable) {
-        boolean active = topics.get(topic);
-
-        if (!disable) {
-            topics.remove(topic);
-        }
-
-        if (active) {
-            sendRequest(Message.Type.UNLISTEN, topic);
-        }
+    Single<Void> unregister(Topic topic, boolean disable) {
+        if (topics.containsKey(topic)) {
+            return Single.just(topics.get(topic)).flatMap(active -> exchange(Message.Type.UNLISTEN, topic, active))
+                    .flatMap(ignore -> {
+                        if (!disable) {
+                            topics.remove(topic);
+                        }
+                        return Single.never();
+                    });
+        } else return Single.never();
     }
 
-
+    Single<Void> exchange(Message.Type type, Topic topic, boolean active) {
+        return client.isActive().flatMap(ws -> {
+            if (active) {
+                if (ws) {
+                    return client.sendRequest(Message.Type.UNLISTEN, topic);
+                } else return Single.error(new NotYetConnectedException());
+            } else return Single.never();
+        });
+    }
 }

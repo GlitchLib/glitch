@@ -19,6 +19,8 @@ public interface GlitchWebSocket {
 
     Single<Void> reconnect();
 
+    Single<Boolean> isActive();
+
     default void connectAsync() {
         connect().blockingGet();
     }
@@ -31,5 +33,5 @@ public interface GlitchWebSocket {
         reconnect().blockingGet();
     }
 
-    <S extends GlitchWebSocket, E extends Event<S>> Observable<E> listenOn(Class<E> eventType);
+    <S extends GlitchWebSocket, E extends Event<S>>  Observable<E> listenOn(Class<E> eventType);
 }

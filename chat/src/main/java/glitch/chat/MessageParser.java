@@ -3,14 +3,19 @@ package glitch.chat;
 import glitch.chat.events.RawIRCEvent;
 import glitch.chat.events.RawIRCEventImpl;
 import glitch.chat.irc.IRCPrefix;
+import glitch.socket.events.message.RawMessageEvent;
 import java.util.Date;
 import java.util.StringTokenizer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MessageParser {
-    public static RawIRCEvent parseMessage(String raw, GlitchChat chat) {
+final class MessageParser {
+    static RawIRCEvent parseMessage(RawMessageEvent<GlitchChat> event) {
+        return parseMessage(event.getMessage(), event.getClient());
+    }
+
+    private static RawIRCEvent parseMessage(String raw, GlitchChat chat) {
         if (raw.contains(System.lineSeparator())) {
             for (String l : raw.split(System.lineSeparator())) {
                 return parseMessage(l, chat);
