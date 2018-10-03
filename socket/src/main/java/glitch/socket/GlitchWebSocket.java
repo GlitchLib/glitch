@@ -2,8 +2,6 @@ package glitch.socket;
 
 import glitch.GlitchClient;
 import glitch.socket.events.Event;
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
@@ -33,5 +31,5 @@ public interface GlitchWebSocket {
         reconnect().blockingGet();
     }
 
-    <S extends GlitchWebSocket, E extends Event<S>>  Observable<E> listenOn(Class<E> eventType);
+    <S extends GlitchWebSocket, E extends Event<S>> Observable<E> listenOn(Class<E> eventType);
 }
