@@ -1,12 +1,7 @@
 package glitch.socket;
 
 import glitch.GlitchClient;
-import glitch.socket.events.Event;
-import glitch.socket.events.actions.CloseEvent;
-import glitch.socket.events.actions.CloseEventImpl;
-import glitch.socket.events.actions.OpenEventImpl;
-import glitch.socket.events.message.RawByteMessageEventImpl;
-import glitch.socket.events.message.RawMessageEventImpl;
+import glitch.socket.events.*;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;

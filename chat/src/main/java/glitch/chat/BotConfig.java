@@ -1,8 +1,10 @@
 package glitch.chat;
 
+import com.google.common.collect.ImmutableSet;
 import glitch.auth.Credential;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
+import glitch.core.api.json.Badge;
 import glitch.core.utils.Immutable;
 import java.awt.Color;
 import org.immutables.gson.Gson;
@@ -17,6 +19,7 @@ public interface BotConfig extends Credential {
                 .isKnownBot(botConfig.isKnownBot())
                 .isVerifiedBot(botConfig.isVerifiedBot())
                 .color(botConfig.getColor())
+                .badges(ImmutableSet.copyOf(botConfig.getBadges()))
                 .from((Validate) credential)
                 .from((AccessToken) credential)
                 .build();
@@ -27,6 +30,8 @@ public interface BotConfig extends Credential {
     boolean isVerifiedBot();
 
     Color color();
+
+    ImmutableSet<Badge> getBadges();
 
     @Value.Lazy
     default String getUsername() {

@@ -11,6 +11,10 @@ public interface RoomStateEvent extends ChannelEvent {
     @Nullable
     Locale getBroadcasterLanguage();
 
+    boolean isEmoteOnly();
+
+    Long getFollowersOnlyTime();
+
     boolean hasRobot9000();
 
     long getSlow();
@@ -20,5 +24,10 @@ public interface RoomStateEvent extends ChannelEvent {
     @Value.Lazy
     default boolean hasSlow() {
         return getSlow() > 0;
+    }
+
+    @Value.Lazy
+    default boolean isFollowersOnly() {
+        return getFollowersOnlyTime() != -1L;
     }
 }

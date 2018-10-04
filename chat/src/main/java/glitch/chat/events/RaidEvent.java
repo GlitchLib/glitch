@@ -1,6 +1,5 @@
 package glitch.chat.events;
 
-import glitch.chat.events.RitualNoticeEvent;
 import glitch.socket.utils.EventImmutable;
 import org.immutables.value.Value;
 

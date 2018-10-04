@@ -18,22 +18,24 @@ import javax.annotation.Nullable;
  * Data receives from the IRC are be parsed into this object.
  *
  * @author Damian Staszewski
- * @since 0.2.0
- *
  * @see java.util.Map
  * @see java.time.Instant
  * @see glitch.core.api.json.Badge
  * @see glitch.chat.irc.EmoteIndex
  * @see com.google.common.collect.ImmutableList
  * @see com.google.common.collect.ImmutableSet
+ * @since 0.2.0
  */
 public class Tags implements Map<String, String> {
+    private static final String[] booleanKeys = new String[] {"turbo", "mod", "subscriber", "emote-only", "r9k", "subs-only"};
     private final Map<String, String> tags;
-
-    private static final String[] booleanKeys = new String[] { "turbo", "mod", "subscriber", "emote-only", "r9k", "subs-only" };
 
     private Tags(Map<String, String> tags) {
         this.tags = Collections.unmodifiableMap(tags);
+    }
+
+    public static Tags of(Map<String, String> tags) {
+        return new Tags(Collections.unmodifiableMap(tags));
     }
 
     /**
@@ -96,7 +98,7 @@ public class Tags implements Map<String, String> {
      * {@inheritDoc}
      */
     @Override
-    public void putAll(Map<? extends String,? extends String> m) {
+    public void putAll(Map<? extends String, ? extends String> m) {
         tags.putAll(m);
     }
 
@@ -158,6 +160,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Formatting tag value into {@link java.lang.Boolean}
+     *
      * @param key key with which the specified value is to be associated
      * @return the value to which the specified key is mapped, or return {@code false} if this map contains no mapping for the key
      */
@@ -167,6 +170,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Formatting tag value into {@link java.lang.Integer}
+     *
      * @param key key with which the specified value is to be associated
      * @return the value to which the specified key is mapped, or return {@code 0} if this map contains no mapping for the key
      */
@@ -176,6 +180,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Formatting tag value into {@link java.lang.Boolean}
+     *
      * @param key key with which the specified value is to be associated
      * @return the value to which the specified key is mapped, or return {@code 0L} if this map contains no mapping for the key
      */
@@ -185,6 +190,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Getting {@link glitch.core.api.json.Badge badges} if {@code badge} key is exist.
+     *
      * @return Getting existing {@link glitch.core.api.json.Badge badges}
      */
     public ImmutableSet<Badge> getBadges() {
@@ -197,6 +203,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Getting {@link glitch.chat.irc.EmoteIndex emote indexes} if {@code emotes} key is exist.
+     *
      * @return Getting existing {@link glitch.chat.irc.EmoteIndex emote indexes}
      */
     public ImmutableList<EmoteIndex> getEmotes() {
@@ -216,6 +223,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Getting Emote sets into {@link java.lang.Integer integer} if {@code emote-sets} key is exist.
+     *
      * @return Getting existing emote sets into {@link java.lang.Integer integer}
      */
     public ImmutableList<Integer> getEmoteSets() {
@@ -227,6 +235,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Getting {@link java.time.Instant timestamp} if {@code tmi-sent-ts} key is exist.
+     *
      * @return Getting existing {@link java.time.Instant timestamp} otherwise returns {@link java.time.Instant#now() current time}
      */
     public Instant getSentTimestamp() {
@@ -236,6 +245,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Getting broadcast language formatting into {@link java.util.Locale {@code Locale}} if {@code broadcast-lang} key is exist.
+     *
      * @return Getting existing broadcast language formatting into {@link java.util.Locale {@code Locale}} otherwise returns {@code null}
      */
     @Nullable
@@ -248,6 +258,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Getting {@link glitch.core.api.json.enums.UserType user type} if {@code user-type} key is exist.
+     *
      * @return Getting existing {@link glitch.core.api.json.enums.UserType user type} otherwise returns {@code null}
      */
     @Nullable
@@ -260,6 +271,7 @@ public class Tags implements Map<String, String> {
 
     /**
      * Getting {@link java.awt.Color user color} if {@code color} key is exist.
+     *
      * @return Getting existing {@link glitch.core.api.json.enums.UserType user color} otherwise returns {@code null}
      */
     @Nullable
@@ -268,9 +280,5 @@ public class Tags implements Map<String, String> {
                 .map(Entry::getValue).findFirst()
                 .map(Color::decode)
                 .orElse(null);
-    }
-
-    public static Tags of(Map<String, String> tags) {
-        return new Tags(Collections.unmodifiableMap(tags));
     }
 }

@@ -1,17 +1,39 @@
 package glitch.chat.irc;
 
-import glitch.socket.utils.EventImmutable;
 import javax.annotation.Nullable;
-import org.immutables.value.Value;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-@EventImmutable
-@Value.Immutable
-public interface IRCPrefix {
-    static IRCPrefix empty() {
-        return IRCPrefixImpl.of("", null, null, "");
+/**
+ * @author Damian Staszewski
+ * @since 0.1.0
+ */
+@Data
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class IRCPrefix {
+    private final String raw;
+    @Nullable
+    private final String nick;
+    @Nullable
+    private final String user;
+    private final String host;
+
+    /**
+     * @return
+     */
+    public static IRCPrefix empty() {
+        return fromRaw(":tmi.twitch.tv");
     }
 
-    static IRCPrefix fromRaw(String rawPrefix) {
+    /**
+     * @param rawPrefix
+     * @return
+     */
+    public static IRCPrefix fromRaw(String rawPrefix) {
+        if (rawPrefix.matches(":(?:.*)tmi.twitch.tv")) {
+            throw new IllegalArgumentException("The RAW Prefix is invalid! PREFIX: " + rawPrefix);
+        }
         String prefix = rawPrefix.substring(1);
         String nick = null;
         String user = null;
@@ -32,16 +54,6 @@ public interface IRCPrefix {
             host = prefix;
         }
 
-        return IRCPrefixImpl.of(rawPrefix, nick, user, host);
+        return new IRCPrefix(rawPrefix, nick, user, host);
     }
-
-    String getRaw();
-
-    @Nullable
-    String getNick();
-
-    @Nullable
-    String getUser();
-
-    String getHost();
 }

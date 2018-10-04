@@ -7,6 +7,7 @@ import feign.Feign;
 import glitch.GlitchClient;
 import glitch.auth.Credential;
 import glitch.auth.UserCredential;
+import glitch.core.api.json.Badge;
 import glitch.core.utils.GlitchUtils;
 import glitch.core.utils.http.HTTP;
 import glitch.core.utils.http.ResponseException;
@@ -15,24 +16,18 @@ import glitch.socket.GlitchWebSocket;
 import io.reactivex.Single;
 import java.awt.Color;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.Value;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 public interface GlitchChat extends GlitchWebSocket {
+
+    static Builder builder(GlitchClient client) {
+        return new Builder(client);
+    }
 
     void joinChannel(String channel);
 
@@ -45,10 +40,6 @@ public interface GlitchChat extends GlitchWebSocket {
     void sendMessage(String channel, String message);
 
     void sendPrivateMessage(String username, String message);
-
-    static Builder builder(GlitchClient client) {
-        return new Builder(client);
-    }
 
     @Getter
     @Setter
@@ -104,7 +95,8 @@ public interface GlitchChat extends GlitchWebSocket {
         }
 
         private interface ChatDetails {
-            @GET @Path("/users/{id}/chat")
+            @GET
+            @Path("/users/{id}/chat")
             BotConfigInfo getBotChatInfo(@PathParam("id") Long userId) throws ResponseException;
         }
     }
@@ -116,5 +108,6 @@ public interface GlitchChat extends GlitchWebSocket {
         @SerializedName("is_verified_bot")
         private final boolean verifiedBot;
         private final Color color;
+        private final Set<Badge> badges;
     }
 }

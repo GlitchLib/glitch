@@ -1,7 +1,6 @@
-package glitch.socket.events.message;
+package glitch.socket.events;
 
 import glitch.socket.GlitchWebSocket;
-import glitch.socket.events.Event;
 import glitch.socket.utils.EventImmutable;
 import org.immutables.value.Value;
 

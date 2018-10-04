@@ -5,6 +5,6 @@ import org.immutables.value.Value;
 
 @EventImmutable
 @Value.Immutable
-public interface BitsMessageEvent extends ChannelMessageEvent {
+public interface BitsMessageEvent extends MessageEvent {
     int getBits();
 }

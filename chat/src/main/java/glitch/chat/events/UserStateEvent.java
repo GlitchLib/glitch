@@ -7,7 +7,6 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface UserStateEvent extends GlobalUserStateEvent, ChannelEvent {
 
-    @Value.Lazy
     default boolean isMod() {
         return getBadges().stream().anyMatch(badge -> badge.getName().equalsIgnoreCase("moderator"));
     }

@@ -7,7 +7,7 @@ import org.immutables.value.Value;
 
 @EventImmutable
 @Value.Immutable
-public interface SubscribeEvent extends ChannelMessageEvent {
+public interface SubscribeEvent extends MessageEvent {
     int getMonths();
 
     @Nullable

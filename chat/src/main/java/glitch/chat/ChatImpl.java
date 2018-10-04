@@ -3,9 +3,8 @@ package glitch.chat;
 import glitch.GlitchClient;
 import glitch.chat.events.RawIRCEvent;
 import glitch.socket.WebSocketImpl;
-import glitch.socket.events.message.RawMessageEvent;
+import glitch.socket.events.RawMessageEvent;
 import io.reactivex.Notification;
-import io.reactivex.Observer;
 import io.reactivex.functions.Consumer;
 import lombok.extern.slf4j.Slf4j;
 

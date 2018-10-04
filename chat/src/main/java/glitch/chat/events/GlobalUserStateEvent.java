@@ -14,6 +14,7 @@ import org.immutables.value.Value;
 public interface GlobalUserStateEvent extends Event<GlitchChat> {
     Set<Badge> getBadges();
 
+    @Nullable
     Color getColor();
 
     String getDisplayName();

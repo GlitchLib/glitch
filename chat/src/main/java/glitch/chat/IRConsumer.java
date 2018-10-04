@@ -1,23 +1,23 @@
 package glitch.chat;
 
-import glitch.chat.cache.Channel;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import glitch.chat.events.*;
+import glitch.chat.irc.EmoteIndex;
 import glitch.core.api.json.Badge;
-import glitch.core.api.json.BadgeImpl;
 import glitch.core.api.json.enums.SubscriptionType;
-import glitch.socket.events.actions.PingEvent;
-import glitch.socket.events.actions.PingEventImpl;
-import glitch.socket.events.actions.PongEvent;
-import glitch.socket.events.actions.PongEventImpl;
+import glitch.socket.events.PingEvent;
+import glitch.socket.events.PingEventImpl;
+import glitch.socket.events.PongEvent;
+import glitch.socket.events.PongEventImpl;
 import java.awt.Color;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.time.Instant;
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 public class IRConsumer {
 
     public static void composeFrom(RawIRCEvent event) {
-
         switch (event.getCommand()) {
             case JOIN:
                 event.getClient().getDispatcher().onNext(joinEvent(event));
@@ -26,7 +26,7 @@ public class IRConsumer {
                 event.getClient().getDispatcher().onNext(partEvent(event));
                 break;
             case PRIV_MSG:
-                event.getClient().getDispatcher().onNext(messageEvent(event));
+                handleMessage(event);
                 break;
             case WHISPER:
                 event.getClient().getDispatcher().onNext(privateMessage(event));
@@ -38,19 +38,19 @@ public class IRConsumer {
                 event.getClient().getDispatcher().onNext(pongEvent(event));
                 break;
             case USER_NOTICE:
-                event.getClient().getDispatcher().onNext(subRaidRitualEvent(event));
+                handleUserNotice(event);
                 break;
             case NOTICE:
                 event.getClient().getDispatcher().onNext(noticeEvent(event));
                 break;
             case HOST_TARGET:
-                event.getClient().getDispatcher().onNext(host(event));
+                handleHost(event);
                 break;
             case CLEAR_CHAT:
-                event.getClient().getDispatcher().onNext(clearChatEvent(event));
+                handleClearChat(event);
                 break;
             case ROOM_STATE:
-                event.getClient().getDispatcher().onNext(roomState(event));
+                handleRoomState(event);
                 break;
             case GLOBAL_USER_STATE:
                 event.getClient().getDispatcher().onNext(globalUserState(event));
@@ -61,73 +61,127 @@ public class IRConsumer {
         }
     }
 
-    public static void composeFrom(MessageEvent event) {
-        ChannelMessageEvent channelMessageEvent = channelMessageEvent(event);
-
-        int bits = event.getTags().containsKey("bits") ? Integer.parseInt(event.getTags().get("bits")) : 0;
+    private static void handleMessage(RawIRCEvent event) {
+        ImmutableSet<Badge> badges = event.getTags().getBadges();
+        int bits = Integer.parseInt(event.getTags().getOrDefault("bits", "0"));
+        Color color = event.getTags().getColor();
+        String displayName = event.getTags().get("display-name");
+        ImmutableList<EmoteIndex> emotes = event.getTags().getEmotes();
+        String message = parseMessage(event);
+        boolean mod = event.getTags().getBoolean("mod");
+        long channelId = event.getTags().getLong("room-id");
+        Instant timestamp = event.getTags().getSentTimestamp();
+        long userId = event.getTags().getLong("user-id");
+        String userName = getUser(event);
+        String channelName = getChannel(event);
+        boolean actionMessage = hasAction(event);
 
         if (bits > 0) {
-            event.getClient().getDispatcher().onNext(BitsMessageEventImpl.builder().from(channelMessageEvent).bits(bits).build());
-        } else if (event.isActionMessage()) {
-            event.getClient().getDispatcher().onNext(ActionMessageEventImpl.builder().from(channelMessageEvent).build());
+            event.getClient().getDispatcher().onNext(BitsMessageEventImpl
+                    .of(bits, channelId, message, actionMessage, emotes, mod, badges,
+                            color, displayName, userId, timestamp, event.getClient(),
+                            channelName, userName));
         } else {
-            event.getClient().getDispatcher().onNext(channelMessageEvent);
+            event.getClient().getDispatcher().onNext(MessageEventImpl
+                    .of(channelId, message, actionMessage, emotes, mod, badges,
+                            color, displayName, userId, timestamp, event.getClient(),
+                            channelName, userName));
         }
     }
 
-    public static void composeFrom(UserNoticeEvent event) {
-        Set<Badge> badges = badges(event.getTags().get("badges"));
-        Color color = getColor(event.getTags().get("color"));
-        String user = event.getTags().get("login");
+    private static void handleRoomState(RawIRCEvent event) {
+        String channel = getChannel(event);
+        if (event.getTags().size() > 1) {
+            String key = event.getTags().keySet().stream().findFirst().get();
+            String value = event.getTags().get(key);
+            event.getClient().getDispatcher().onNext(RoomStateChangedEventImpl.of(key, value, channel, event.getCreatedAt(), event.getClient()));
+        } else {
+            event.getClient().getDispatcher().onNext(RoomStateEventImpl.of(
+                    event.getTags().getBroadcasterLanguage(),
+                    event.getTags().getBoolean("emote-only"),
+                    event.getTags().getLong("followers-only"),
+                    event.getTags().getBoolean("r9k"),
+                    event.getTags().getInteger("slow"),
+                    event.getTags().getBoolean("subs-only"),
+                    channel,
+                    event.getCreatedAt(),
+                    event.getClient()
+            ));
+        }
+    }
+
+    private static void handleClearChat(RawIRCEvent event) {
+        String banReason = event.getTags().getOrDefault("ban-reason", null);
+        String channel = getChannel(event);
+        if (event.getTrailing() != null && !event.getTrailing().equals("")) {
+            String user = event.getTrailing();
+            if (event.getTags().containsKey("ban-duration")) {
+                event.getClient().getDispatcher().onNext(TimeoutEventImpl.of(event.getTags().getLong("ban-duration"), banReason, channel, event.getCreatedAt(), event.getClient(), user));
+            } else {
+                event.getClient().getDispatcher().onNext(BanEventImpl.of(banReason, channel, event.getCreatedAt(), event.getClient(), user));
+            }
+        } else {
+            event.getClient().getDispatcher().onNext(ClearChatEventImpl.of(channel, event.getCreatedAt(), event.getClient()));
+        }
+    }
+
+    private static void handleHost(RawIRCEvent event) {
+        String message = parseMessage(event);
+        boolean host = !message.startsWith("- ");
+        String hostedChannel = event.getMiddle().get(1);
+        ChannelEvent channelEvent = channelEvent(event);
+        long viewers = Long.parseLong(((host) ? event.getMiddle().get(2) : message.substring(3)).replaceAll("[\\[\\]]", ""));
+        if (host) {
+            event.getClient().getDispatcher().onNext(
+                    HostEventImpl.builder()
+                            .from(channelEvent)
+                            .viewers(viewers)
+                            .hostedChannel(hostedChannel)
+                            .build()
+            );
+        } else {
+            event.getClient().getDispatcher().onNext(
+                    UnhostEventImpl.builder()
+                            .from(channelEvent)
+                            .build()
+            );
+        }
+    }
+
+    private static void handleUserNotice(RawIRCEvent event) {
+        ImmutableSet<Badge> badges = event.getTags().getBadges();
+        int bits = Integer.parseInt(event.getTags().getOrDefault("bits", "0"));
+        Color color = event.getTags().getColor();
         String displayName = event.getTags().get("display-name");
-        Long userId = Long.parseLong(event.getTags().get("user-id"));
+        ImmutableList<EmoteIndex> emotes = event.getTags().getEmotes();
+        String message = parseMessage(event);
+        boolean mod = event.getTags().getBoolean("mod");
+        long channelId = event.getTags().getLong("room-id");
+        Instant timestamp = event.getTags().getSentTimestamp();
+        long userId = event.getTags().getLong("user-id");
+        String userName = getUser(event);
+        String channelName = getChannel(event);
+        boolean actionMessage = hasAction(event);
         String messageId = event.getTags().get("msg-id");
-        Long channelId = Long.parseLong(event.getTags().get("room-id"));
+        UserEvent userEvent = userEvent(event);
+        ChannelEvent channelEvent = channelEvent(event);
 
         switch (messageId) {
             case "raid":
-                long viewcount = Long.parseLong(event.getTags().get("msg-param-viewerCount"));
+                long viewcount = event.getTags().getLong("msg-param-viewerCount");
                 event.getClient().getDispatcher().onNext(
-                        RaidEventImpl.builder()
-                                .from(event)
-                                .badges(badges)
-                                .color(color)
-                                .username(user)
-                                .displayName(displayName)
-                                .userId(userId)
-                                .channelId(channelId)
-                                .viewcount(viewcount)
-                                .message(event.getMessage())
-                                .build()
+                        RaidEventImpl.of(viewcount, channelId, message, actionMessage, emotes, mod, badges, color, displayName, userId, timestamp, event.getClient(), channelName, userName)
                 );
                 break;
             case "ritual":
                 String ritual = event.getTags().get("msg-param-ritual-name");
                 if (ritual.equals("new_chatter")) {
                     event.getClient().getDispatcher().onNext(
-                            NewChatterEventImpl.builder()
-                                    .from(event)
-                                    .badges(badges)
-                                    .color(color)
-                                    .username(user)
-                                    .displayName(displayName)
-                                    .userId(userId)
-                                    .channelId(channelId)
-                                    .message(event.getMessage())
-                                    .build()
+                            NewChatterEventImpl.of(channelId, message, actionMessage, emotes, mod, badges, color, displayName, userId, timestamp, event.getClient(), channelName, userName)
                     );
                 } else {
                     event.getClient().getDispatcher().onNext(
-                            RitualNoticeEventImpl.builder()
-                                    .from(event)
-                                    .badges(badges)
-                                    .color(color)
-                                    .username(user)
-                                    .displayName(displayName)
-                                    .userId(userId)
-                                    .channelId(channelId)
-                                    .message(event.getMessage())
-                                    .build()
+                            RitualNoticeEventImpl.of(channelId, message, actionMessage, emotes, mod, badges, color, displayName, userId, timestamp, event.getClient(), channelName, userName)
                     );
                 }
                 break;
@@ -139,19 +193,7 @@ public class IRConsumer {
                 String gifter = (event.getTags().containsKey("msg-param-recipient-user-name") && !event.getTags().get("msg-param-recipient-user-name").equals("")) ? event.getTags().get("msg-param-recipient-user-name") : null;
 
                 event.getClient().getDispatcher().onNext(
-                        SubscribeEventImpl.builder()
-                                .from(event)
-                                .badges(badges)
-                                .color(color)
-                                .username(user)
-                                .displayName(displayName)
-                                .userId(userId)
-                                .channelId(channelId)
-                                .message(event.getMessage())
-                                .gifterUsername(gifter)
-                                .subscriptionType(subType)
-                                .months(months)
-                                .build()
+                        SubscribeEventImpl.of(months, gifter, subType, channelId, message, actionMessage, emotes, mod, badges, color, displayName, userId, timestamp, event.getClient(), channelName, userName)
                 );
                 break;
             case "submysterygift":
@@ -159,13 +201,7 @@ public class IRConsumer {
                 int giftCount = (event.getTags().containsKey("msg-param-mass-gift-count")) ? Integer.parseInt(event.getTags().get("msg-param-mass-gift-count")) : 0;
                 int totalGiftCount = (event.getTags().containsKey("msg-param-sender-count")) ? Integer.parseInt(event.getTags().get("msg-param-sender-count")) : 0;
                 event.getClient().getDispatcher().onNext(
-                        SubscribeGiftEventImpl.builder()
-                                .from(event)
-                                .username(user)
-                                .subscriptionType(massSubType)
-                                .giftedCount(giftCount)
-                                .totalGiftedCount(totalGiftCount)
-                                .build()
+                        SubscribeGiftEventImpl.of(massSubType, giftCount, totalGiftCount, channelName, timestamp, event.getClient(), userName)
                 );
                 break;
         }
@@ -182,16 +218,6 @@ public class IRConsumer {
         return PartChannelEventImpl.builder()
                 .from(channelEvent(event))
                 .from(userEvent(event))
-                .build();
-    }
-
-    private static MessageEvent messageEvent(RawIRCEvent event) {
-        return MessageEventImpl.builder()
-                .from(userEvent(event))
-                .from(channelEvent(event))
-                .tags(event.getTags())
-                .message(parseMessage(event))
-                .isActionMessage(hasAction(event))
                 .build();
     }
 
@@ -229,26 +255,6 @@ public class IRConsumer {
                 .messageId(event.getTags().getOrDefault("msg-id", "unknown-id"))
                 .message(parseMessage(event))
                 .build();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <E extends ChannelEvent> E host(RawIRCEvent event) {
-        String message = parseMessage(event);
-        boolean host = message.equals("");
-        String hostedChannel = event.getTrailing().get(1);
-        ChannelEvent channelEvent = channelEvent(event);
-        long viewers = Long.parseLong(event.getTrailing().get(2).substring(1).replace("]", ""));
-        if (host) {
-            return (E) HostEventImpl.builder()
-                    .from(channelEvent)
-                    .viewers(viewers)
-                    .hostedChannel(hostedChannel)
-                    .build();
-        } else {
-           return (E) UnhostEventImpl.builder()
-                   .from(channelEvent)
-                   .build();
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -308,9 +314,9 @@ public class IRConsumer {
 
     private static GlobalUserStateEvent globalUserState(RawIRCEvent event) {
         return GlobalUserStateEventImpl.builder()
-                .badges(badges(event.getTags().get("badges")))
-                .userId(Long.parseLong(event.getTags().getOrDefault("user_id", "0")) )
-                .color(getColor(event.getTags().get("color")))
+                .badges(event.getTags().getBadges())
+                .userId(Long.parseLong(event.getTags().getOrDefault("user_id", "0")))
+                .color(event.getTags().getColor())
                 .displayName(event.getTags().get("display-name"))
                 .build();
     }
@@ -320,25 +326,6 @@ public class IRConsumer {
                 .from(globalUserState(event))
                 .from(channelEvent(event))
                 .build();
-    }
-
-    private static ChannelMessageEvent channelMessageEvent(MessageEvent event) {
-        return ChannelMessageEventImpl.builder()
-                .channelId(Long.parseLong(event.getTags().get("room-id")))
-                .userId(Long.parseLong(event.getTags().get("user-id")))
-                .displayName(event.getTags().get("display-name"))
-                .badges(badges(event.getTags().get("badges")))
-                .color(getColor(event.getTags().get("color")))
-                .message(event.getMessage())
-                .from((ChannelEvent) event)
-                .from((UserEvent) event)
-                .build();
-    }
-
-    private static Set<Badge> badges(String badges) {
-        return Arrays.stream(badges.split(","))
-                .map(badge -> BadgeImpl.of(Integer.parseInt(badge.split("/")[1]), badge.split("/")[0]))
-                .collect(Collectors.toSet());
     }
 
     private static UserEvent userEvent(RawIRCEvent event) {
@@ -362,22 +349,26 @@ public class IRConsumer {
 
     @Nullable
     private static String getChannel(RawIRCEvent event) {
-        return event.getTrailing()
+        return event.getMiddle()
                 .stream()
                 .filter(s -> s.startsWith("#"))
                 .map(s -> s.substring(1))
                 .findFirst().orElse(null);
     }
 
+    private static String getUser(RawIRCEvent event) {
+        if (event.getCommand().equals(IRCCommand.USER_NOTICE)) {
+            return event.getTags().get("login");
+        } else {
+            return event.getPrefix().getUser();
+        }
+    }
+
     private static String parseMessage(RawIRCEvent event) {
-        return String.join(" ", event.getMiddle()).replaceAll("\\u0001", "").replaceAll("ACTION ", "").trim();
+        return event.getTrailing().replaceAll("(\\u0001|ACTION\\s)", "");
     }
 
     private static boolean hasAction(RawIRCEvent event) {
-        return event.getMiddle().contains("ACTION");
-    }
-
-    private static Color getColor(String color) {
-        return Color.decode(color);
+        return event.getTrailing().matches("\\u0001ACTION\\s(.*)\\u0001");
     }
 }

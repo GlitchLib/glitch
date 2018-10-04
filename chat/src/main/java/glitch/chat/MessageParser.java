@@ -3,9 +3,12 @@ package glitch.chat;
 import glitch.chat.events.RawIRCEvent;
 import glitch.chat.events.RawIRCEventImpl;
 import glitch.chat.irc.IRCPrefix;
-import glitch.socket.events.message.RawMessageEvent;
+import glitch.chat.irc.Tags;
+import glitch.socket.events.RawMessageEvent;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.StringTokenizer;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -28,104 +31,103 @@ final class MessageParser {
 
         for (String part : raw.split(" ")) {
             if (part.startsWith("@")) {
-                StringTokenizer tagsTokenizer = new StringTokenizer(part.substring(1), ";");
-                while (tagsTokenizer.hasMoreElements()) {
-                    final String[] entry = tagsTokenizer.nextToken().split("=", 2);
-                    final String key = entry[0];
-                    String value = entry[1];
-                    if (value.contains("\\r")) value = value.replace("\\r", "\r");
-                    if (value.contains("\\n")) value = value.replace("\\n", "\n");
-                    if (value.contains("\\\\")) value = value.replace("\\\\", "\\");
-                    if (value.contains("\\s")) value = value.replace("\\s", " ");
-                    if (value.contains("\\:")) value = value.replace("\\:", ";");
+                Map<String, String> tags = new LinkedHashMap<>();
+                Arrays.stream(part.substring(1).split(";"))
+                        .forEach(tag -> {
+                            final String[] entry = tag.split("=", 2);
+                            final String key = entry[0];
+                            String value = entry[1];
+                            if (value.contains("\\r")) value = value.replace("\\r", "\r");
+                            if (value.contains("\\n")) value = value.replace("\\n", "\n");
+                            if (value.contains("\\\\")) value = value.replace("\\\\", "\\");
+                            if (value.contains("\\s")) value = value.replace("\\s", " ");
+                            if (value.contains("\\:")) value = value.replace("\\:", ":");
 
-                    switch (key) {
-                        case "":
-                            break;
-                        default:
-                            irc.putTags(key, value);
-                            if (key.equals("tmi-sent-ts")) irc.createdAt(new Date(Long.parseLong(value)).toInstant());
-                            break;
-                    }
-                }
+                            if (key != null && !key.equals("")) {
+                                tags.put(key, value);
+                                if (key.equals("tmi-sent-ts"))
+                                    irc.createdAt(new Date(Long.parseLong(value)).toInstant());
+                            }
+                        });
+                irc.tags(Tags.of(tags));
             } else if (part.startsWith(":")) {
                 if (part.matches("^:(.+)(!.+)*?(@.+)*?$")) {
                     irc.prefix(IRCPrefix.fromRaw(part));
                 } else {
                     lockTrailing = true;
-                    irc.addMiddle(part);
+                    irc.trailing(raw.substring(raw.indexOf(part) + 1));
                 }
             } else if (part.matches("^([A-Z]+|[0-9]{1,3})")) {
                 irc.command(parseCommand(part));
             } else {
-                if (lockTrailing)
+                if (!lockTrailing)
                     irc.addMiddle(part);
-                else
-                    irc.addTrailing(part);
             }
         }
 
         return irc.client(chat).build();
     }
 
-    private static IRCommand parseCommand(String cmd) {
+    private static IRCCommand parseCommand(String cmd) {
         switch (cmd) {
             case "PRIVMSG":
-                return IRCommand.PRIV_MSG;
+                return IRCCommand.PRIV_MSG;
             case "NOTICE":
-                return IRCommand.NOTICE;
+                return IRCCommand.NOTICE;
             case "PING":
-                return IRCommand.PING;
+                return IRCCommand.PING;
             case "PONG":
-                return IRCommand.PONG;
+                return IRCCommand.PONG;
             case "HOSTTARGET":
-                return IRCommand.HOST_TARGET;
+                return IRCCommand.HOST_TARGET;
             case "CLEARCHAT":
-                return IRCommand.CLEAR_CHAT;
+                return IRCCommand.CLEAR_CHAT;
             case "USERSTATE":
-                return IRCommand.USER_STATE;
+                return IRCCommand.USER_STATE;
             case "GLOBALUSERSTATE":
-                return IRCommand.GLOBAL_USER_STATE;
+                return IRCCommand.GLOBAL_USER_STATE;
             case "NICK":
-                return IRCommand.NICK;
+                return IRCCommand.NICK;
             case "JOIN":
-                return IRCommand.JOIN;
+                return IRCCommand.JOIN;
             case "PART":
-                return IRCommand.PART;
+                return IRCCommand.PART;
             case "PASS":
-                return IRCommand.PASS;
+                return IRCCommand.PASS;
             case "CAP":
-                return IRCommand.CAP;
+                return IRCCommand.CAP;
             case "001":
-                return IRCommand.RPL_001;
+                return IRCCommand.RPL_WELCOME;
             case "002":
-                return IRCommand.RPL_002;
+                return IRCCommand.RPL_YOURHOST;
             case "003":
-                return IRCommand.RPL_003;
+                return IRCCommand.RPL_CREATED;
             case "004":
-                return IRCommand.RPL_004;
+                return IRCCommand.RPL_MYINFO;
             case "353":
-                return IRCommand.RPL_353;
+                return IRCCommand.RPL_NAMREPLY;
             case "366":
-                return IRCommand.RPL_366;
+                return IRCCommand.RPL_ENDOFNAMES;
             case "372":
-                return IRCommand.RPL_372;
+                return IRCCommand.RPL_MOTD;
             case "375":
-                return IRCommand.RPL_375;
+                return IRCCommand.RPL_MOTDSTART;
             case "376":
-                return IRCommand.RPL_376;
+                return IRCCommand.RPL_ENDOFMOTD;
+            case "421":
+                return IRCCommand.ERR_UNKNOWNCOMMAND;
             case "WHISPER":
-                return IRCommand.WHISPER;
+                return IRCCommand.WHISPER;
             case "SERVERCHANGE":
-                return IRCommand.SERVER_CHANGE;
+                return IRCCommand.SERVER_CHANGE;
             case "RECONNECT":
-                return IRCommand.RECONNECT;
+                return IRCCommand.RECONNECT;
             case "ROOMSTATE":
-                return IRCommand.ROOM_STATE;
+                return IRCCommand.ROOM_STATE;
             case "USERNOTICE":
-                return IRCommand.USER_NOTICE;
+                return IRCCommand.USER_NOTICE;
             default:
-                IRCommand com = IRCommand.UNKNOWN;
+                IRCCommand com = IRCCommand.UNKNOWN;
                 com.value = cmd;
                 return com;
         }

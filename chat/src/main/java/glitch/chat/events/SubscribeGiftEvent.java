@@ -8,6 +8,8 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface SubscribeGiftEvent extends ChannelUserEvent {
     SubscriptionType getSubscriptionType();
+
     int getGiftedCount();
+
     int getTotalGiftedCount();
 }

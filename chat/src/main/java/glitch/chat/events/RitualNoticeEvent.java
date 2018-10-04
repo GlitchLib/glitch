@@ -5,5 +5,5 @@ import org.immutables.value.Value;
 
 @EventImmutable
 @Value.Immutable
-public interface RitualNoticeEvent extends ChannelMessageEvent {
+public interface RitualNoticeEvent extends MessageEvent {
 }

@@ -1,6 +1,6 @@
 package glitch.chat;
 
-public enum IRCommand {
+public enum IRCCommand {
     UNKNOWN,
     PRIV_MSG,
     NOTICE,
@@ -15,15 +15,16 @@ public enum IRCommand {
     NICK,
     PASS,
     CAP,
-    RPL_001,
-    RPL_002,
-    RPL_003,
-    RPL_004,
-    RPL_353,
-    RPL_366,
-    RPL_372,
-    RPL_375,
-    RPL_376,
+    RPL_WELCOME,
+    RPL_YOURHOST,
+    RPL_CREATED,
+    RPL_MYINFO,
+    RPL_NAMREPLY,
+    RPL_ENDOFNAMES,
+    RPL_MOTD,
+    RPL_MOTDSTART,
+    RPL_ENDOFMOTD,
+    ERR_UNKNOWNCOMMAND,
     WHISPER,
     ROOM_STATE,
     RECONNECT,
@@ -32,7 +33,7 @@ public enum IRCommand {
 
     String value;
 
-    IRCommand() {
+    IRCCommand() {
         this.value = (name().startsWith("RPL_")) ? name().substring(4) : name();
     }
 
