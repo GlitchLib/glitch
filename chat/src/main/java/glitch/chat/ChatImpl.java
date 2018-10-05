@@ -1,20 +1,23 @@
 package glitch.chat;
 
 import glitch.GlitchClient;
+import glitch.chat.api.ChatAPI;
 import glitch.chat.events.RawIRCEvent;
 import glitch.socket.WebSocketImpl;
 import glitch.socket.events.RawMessageEvent;
-import io.reactivex.Notification;
-import io.reactivex.functions.Consumer;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Getter
 public class ChatImpl extends WebSocketImpl implements GlitchChat {
+    private final ChatAPI api;
     private final BotConfig config;
 
-    public ChatImpl(GlitchClient client, BotConfig config) {
+    public ChatImpl(GlitchClient client, BotConfig config, ChatAPI api) {
         super(client, "wss://irc-ws.chat.twitch.tv:443");
         this.config = config;
+        this.api = api;
 
         registerListeners();
     }
@@ -41,20 +44,20 @@ public class ChatImpl extends WebSocketImpl implements GlitchChat {
 
     @SuppressWarnings("unchecked")
     private void registerListeners() {
-        listenOn(RawMessageEvent.class).doOnEach(new Consumer<Notification<RawMessageEvent>>() {
-            @Override
-            public void accept(Notification<RawMessageEvent> eventNotification) throws Exception {
-                if (eventNotification.isOnError()) {
-                    log.error(eventNotification.getError().getMessage(), eventNotification.getError());
-                }
-                if (eventNotification.isOnNext()) {
-                    RawMessageEvent<GlitchChat> event = eventNotification.getValue();
-
-                    log.debug("Received RawMessage({})", event.getMessage());
-                }
+        listenOn(RawIrcMessageEvent.class).doOnEach(eventNotification -> {
+            if (eventNotification.isOnError()) {
+                log.error(eventNotification.getError().getMessage(), eventNotification.getError());
             }
-        }).subscribe(event -> getDispatcher().onNext(MessageParser.parseMessage((RawMessageEvent<GlitchChat>) event)));
+            if (eventNotification.isOnNext()) {
+                RawMessageEvent<GlitchChat> event = eventNotification.getValue();
+
+                log.debug("Received RawMessage({})", event.getMessage());
+            }
+        }).subscribe(event -> getDispatcher().onNext(MessageParser.parseMessage(event)));
 
         listenOn(RawIRCEvent.class).subscribe(IRConsumer::composeFrom);
+    }
+
+    private interface RawIrcMessageEvent extends RawMessageEvent<GlitchChat> {
     }
 }

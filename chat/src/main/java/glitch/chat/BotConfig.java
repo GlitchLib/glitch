@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import glitch.auth.Credential;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
+import glitch.chat.api.json.GlobalUserState;
 import glitch.core.api.json.Badge;
 import glitch.core.utils.Immutable;
 import java.awt.Color;
@@ -14,7 +15,7 @@ import org.immutables.value.Value;
 @Value.Immutable
 @Gson.TypeAdapters
 public interface BotConfig extends Credential {
-    static BotConfig from(Credential credential, GlitchChat.BotConfigInfo botConfig) {
+    static BotConfig from(Credential credential, GlobalUserState botConfig) {
         return BotConfigImpl.builder()
                 .isKnownBot(botConfig.isKnownBot())
                 .isVerifiedBot(botConfig.isVerifiedBot())
