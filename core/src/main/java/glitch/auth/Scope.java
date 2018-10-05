@@ -78,7 +78,14 @@ public enum Scope {
     CHANNEL_SUBSCRIPTIONS,
     /**
      * Log into chat and send messages.
+     * @deprecated cannot be requested by new clients.
+     * @see #CHAT_EDIT
+     * @see #CHAT_READ
+     * @see #CHANNEL_MODERATE
+     * @see #WHISPERS_EDIT
+     * @see #WHISPERS_READ
      */
+    @Deprecated
     CHAT_LOGIN,
     /**
      * Manage a user’s collections (of videos).
@@ -119,7 +126,29 @@ public enum Scope {
     /**
      * Turn on Viewer Heartbeat Service ability to record user data.
      */
-    VIEWING_ACTIVITY_READ;
+    VIEWING_ACTIVITY_READ,
+    /**
+     * Perform moderation actions in a channel.
+     */
+    CHANNEL_MODERATE("channel:moderate"),
+    /**
+     * Send live stream chat and rooms messages.
+     */
+    CHAT_EDIT("chat:edit"),
+    /**
+     * View live stream chat and rooms messages.
+     */
+    CHAT_READ("chat:read"),
+    /**
+     * View your whisper messages.
+     */
+    WHISPERS_READ("whispers:read"),
+    /**
+     * Send whisper messages.
+     */
+    WHISPERS_EDIT("whispers:edit");
+
+
 
     /**
      * Get the identifier that oauth will recognize.
