@@ -17,9 +17,9 @@ public class WebSocketImpl implements GlitchWebSocket {
 
     @Getter
     protected final PublishSubject<Event> dispatcher = PublishSubject.create();
+    protected final WebSocketClient ws;
     @Getter
     private final GlitchClient client;
-    protected final WebSocketClient ws;
 
     public WebSocketImpl(GlitchClient client, String uri) {
         this.client = client;

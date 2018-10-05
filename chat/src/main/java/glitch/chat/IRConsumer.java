@@ -3,7 +3,7 @@ package glitch.chat;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import glitch.chat.events.*;
-import glitch.chat.irc.EmoteIndex;
+import glitch.chat.irc.Emote;
 import glitch.core.api.json.Badge;
 import glitch.core.api.json.enums.SubscriptionType;
 import glitch.socket.events.PingEvent;
@@ -66,7 +66,7 @@ public class IRConsumer {
         int bits = Integer.parseInt(event.getTags().getOrDefault("bits", "0"));
         Color color = event.getTags().getColor();
         String displayName = event.getTags().get("display-name");
-        ImmutableList<EmoteIndex> emotes = event.getTags().getEmotes();
+        ImmutableList<Emote> emotes = event.getTags().getEmotes();
         String message = parseMessage(event);
         boolean mod = event.getTags().getBoolean("mod");
         long channelId = event.getTags().getLong("room-id");
@@ -153,7 +153,7 @@ public class IRConsumer {
         int bits = Integer.parseInt(event.getTags().getOrDefault("bits", "0"));
         Color color = event.getTags().getColor();
         String displayName = event.getTags().get("display-name");
-        ImmutableList<EmoteIndex> emotes = event.getTags().getEmotes();
+        ImmutableList<Emote> emotes = event.getTags().getEmotes();
         String message = parseMessage(event);
         boolean mod = event.getTags().getBoolean("mod");
         long channelId = event.getTags().getLong("room-id");

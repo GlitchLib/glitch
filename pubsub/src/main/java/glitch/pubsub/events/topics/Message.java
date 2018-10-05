@@ -10,5 +10,6 @@ import org.immutables.value.Value;
 @Gson.TypeAdapters(fieldNamingStrategy = true)
 interface Message {
     String getMessage();
+
     List<Emote> getEmotes();
 }

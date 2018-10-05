@@ -9,5 +9,6 @@ import org.immutables.value.Value;
 @Gson.TypeAdapters(fieldNamingStrategy = true)
 public interface Response extends Message {
     String getNonce();
+
     String getError();
 }

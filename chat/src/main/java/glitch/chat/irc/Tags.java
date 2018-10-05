@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * @see java.util.Map
  * @see java.time.Instant
  * @see glitch.core.api.json.Badge
- * @see glitch.chat.irc.EmoteIndex
+ * @see glitch.chat.irc.Emote
  * @see com.google.common.collect.ImmutableList
  * @see com.google.common.collect.ImmutableSet
  * @since 0.2.0
@@ -202,11 +202,11 @@ public class Tags implements Map<String, String> {
     }
 
     /**
-     * Getting {@link glitch.chat.irc.EmoteIndex emote indexes} if {@code emotes} key is exist.
+     * Getting {@link Emote emote indexes} if {@code emotes} key is exist.
      *
-     * @return Getting existing {@link glitch.chat.irc.EmoteIndex emote indexes}
+     * @return Getting existing {@link Emote emote indexes}
      */
-    public ImmutableList<EmoteIndex> getEmotes() {
+    public ImmutableList<Emote> getEmotes() {
         return ImmutableList.copyOf(entrySet().stream().filter(entry -> entry.getKey().equals("emotes"))
                 .map(Entry::getValue).findFirst().map(value -> Arrays.stream(value.split("/")))
                 .map(emotes -> emotes.map(emote -> {
@@ -217,7 +217,7 @@ public class Tags implements Map<String, String> {
                                 return Range.closed(Integer.parseInt(part[0]), Integer.parseInt(part[1]));
                             }).collect(Collectors.toSet());
 
-                    return (EmoteIndex) EmoteIndexImpl.of(ImmutableRangeSet.copyOf(indexes), Integer.parseInt(emoteIndexes[0]));
+                    return (Emote) EmoteImpl.of(ImmutableRangeSet.copyOf(indexes), Integer.parseInt(emoteIndexes[0]));
                 }).collect(Collectors.toList())).orElse(Collections.emptyList()));
     }
 

@@ -9,6 +9,8 @@ import org.immutables.value.Value;
 @Gson.TypeAdapters(fieldNamingStrategy = true)
 public interface GiftSubscriptionEvent extends SubscriptionEvent {
     Long getRecipientId();
+
     String getRecipientUserName();
+
     String getRecipientDisplayName();
 }

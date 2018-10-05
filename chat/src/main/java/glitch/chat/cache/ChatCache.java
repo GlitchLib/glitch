@@ -11,18 +11,18 @@ public class ChatCache {
 
     private final GlitchChat chat;
 
+    public ChatCache(GlitchChat chat) {
+        this.chat = chat;
+
+        registerListeners();
+    }
+
     public Optional<Channel> findChannel() {
         return Optional.empty();
     }
 
     public Optional<User> findUser() {
         return Optional.empty();
-    }
-
-    public ChatCache(GlitchChat chat) {
-        this.chat = chat;
-
-        registerListeners();
     }
 
     private void registerListeners() {

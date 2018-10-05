@@ -11,5 +11,6 @@ import org.immutables.value.Value;
 @Gson.TypeAdapters(fieldNamingStrategy = true)
 public interface Request extends Data {
     Set<String> getTopics();
+
     String authToken();
 }

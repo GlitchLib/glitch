@@ -12,13 +12,22 @@ import org.immutables.value.Value;
 @Gson.TypeAdapters(fieldNamingStrategy = true)
 public interface CommerceEvent extends Event<GlitchPubSub> {
     String getUserName();
+
     String getDisplayName();
+
     String getChannelName();
+
     Long getChannelId();
+
     Long getUserId();
+
     Instant getTime();
+
     String getItemImageUrl();
+
     String getItemDescription();
+
     boolean isSupportsChannel();
+
     Message getPurchaseMessage();
 }

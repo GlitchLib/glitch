@@ -1,6 +1,5 @@
 package glitch.pubsub.events;
 
-import glitch.pubsub.json.Data;
 import glitch.pubsub.topics.Topic;
 import glitch.socket.utils.EventImmutable;
 import org.immutables.gson.Gson;
@@ -15,6 +14,7 @@ public interface MessageReceivedEvent extends Message {
 
     public interface DataReceive {
         Topic getTopic();
+
         String getMessage();
     }
 }

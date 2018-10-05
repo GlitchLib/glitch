@@ -1,12 +1,6 @@
 package glitch.pubsub.adapters;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonDeserializer;
+import com.google.gson.*;
 import glitch.pubsub.PubSubImpl;
 import glitch.pubsub.exceptions.UnknownTopicException;
 import glitch.pubsub.topics.Topic;
@@ -25,8 +19,8 @@ public class TopicAdapter implements JsonSerializer<Topic>, JsonDeserializer<Top
     @Override
     public Topic deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         try {
-            return pubSub.getTopics().getActive().stream().filter(topic -> topic.getRawType().equals(json.getAsString()))
-                    .findFirst().orElseThrow(() -> new UnknownTopicException("Cannot find active topic: " + json.getAsString()));
+            return pubSub.getTopics().getAll().stream().filter(topic -> topic.getRawType().equals(json.getAsString()))
+                    .findFirst().orElseThrow(() -> new UnknownTopicException("Cannot find registered topic: " + json.getAsString()));
         } catch (UnknownTopicException e) {
             throw new JsonParseException(e);
         }

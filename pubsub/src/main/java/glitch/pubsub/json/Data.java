@@ -1,3 +1,4 @@
 package glitch.pubsub.json;
 
-public interface Data {}
+public interface Data {
+}

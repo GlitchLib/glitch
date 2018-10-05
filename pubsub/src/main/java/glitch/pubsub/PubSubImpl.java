@@ -5,18 +5,13 @@ import glitch.GlitchClient;
 import glitch.core.utils.GlitchUtils;
 import glitch.pubsub.adapters.PubSubAdapter;
 import glitch.pubsub.adapters.TopicAdapter;
-import glitch.pubsub.events.Message;
-import glitch.pubsub.events.MessageReceivedEvent;
-import glitch.pubsub.events.ReconnectEventImpl;
-import glitch.pubsub.events.Response;
-import glitch.pubsub.events.TopicRegisteredEventImpl;
-import glitch.pubsub.events.TopicUnregisteredEventImpl;
+import glitch.pubsub.events.*;
 import glitch.pubsub.topics.Topic;
 import glitch.socket.WebSocketImpl;
-import glitch.socket.events.actions.OpenEvent;
-import glitch.socket.events.actions.PingEventImpl;
-import glitch.socket.events.actions.PongEventImpl;
-import glitch.socket.events.message.RawMessageEvent;
+import glitch.socket.events.OpenEvent;
+import glitch.socket.events.PingEventImpl;
+import glitch.socket.events.PongEventImpl;
+import glitch.socket.events.RawMessageEvent;
 import io.reactivex.Single;
 import java.lang.reflect.Type;
 import java.time.Instant;
@@ -68,7 +63,7 @@ public class PubSubImpl extends WebSocketImpl implements GlitchPubSub {
 
     private void registerListenrers() {
         listenOn(OpenEvent.class).subscribe(event -> this.topics.getActive().forEach(topic -> this.sendRequest(Message.Type.LISTEN, topic)));
-        listenOn(RawMessageEvent.class).subscribe(event -> {
+        listenOn(PubSubRawMessageEvent.class).subscribe(event -> { // Real listening RawMessageEvent<GlitchPubSub> for avoiding compilation error
             Message msg = gson.fromJson(event.getMessage(), Message.class);
             switch (msg.getType()) {
                 case PING:
@@ -108,5 +103,8 @@ public class PubSubImpl extends WebSocketImpl implements GlitchPubSub {
         adapters.put(GlitchPubSub.class, new PubSubAdapter(this));
 
         return adapters;
+    }
+
+    private interface PubSubRawMessageEvent extends RawMessageEvent<GlitchPubSub> {
     }
 }

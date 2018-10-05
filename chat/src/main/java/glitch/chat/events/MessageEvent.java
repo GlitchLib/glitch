@@ -1,7 +1,7 @@
 package glitch.chat.events;
 
 import com.google.common.collect.ImmutableList;
-import glitch.chat.irc.EmoteIndex;
+import glitch.chat.irc.Emote;
 import glitch.socket.utils.EventImmutable;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
@@ -16,5 +16,5 @@ public interface MessageEvent extends UserStateEvent, ChannelUserEvent {
 
     boolean isActionMessage();
 
-    ImmutableList<EmoteIndex> getEmotes();
+    ImmutableList<Emote> getEmotes();
 }

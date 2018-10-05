@@ -1,12 +1,10 @@
 package glitch.pubsub;
 
-import glitch.core.api.json.enums.SubscriptionType;
 import glitch.pubsub.events.MessageReceivedEvent;
 import glitch.pubsub.events.topics.CommerceEvent;
 import glitch.pubsub.events.topics.GiftSubscriptionEvent;
 import glitch.pubsub.events.topics.SubscriptionContext;
 import glitch.pubsub.events.topics.SubscriptionEvent;
-import io.reactivex.Observer;
 import io.reactivex.functions.Consumer;
 import lombok.RequiredArgsConstructor;
 

@@ -17,7 +17,7 @@ import org.immutables.value.Value;
  */
 @Immutable
 @Value.Immutable(builder = false)
-public interface EmoteIndex extends IDObject<Integer> {
+public interface Emote extends IDObject<Integer> {
     ImmutableRangeSet<Integer> getIndexRange();
 
     @Value.Lazy

@@ -1,12 +1,10 @@
 package glitch.pubsub.topics;
 
-import com.google.gson.annotations.SerializedName;
 import glitch.auth.Credential;
 import glitch.auth.Scope;
 import glitch.auth.ScopeIsMissingException;
 import glitch.core.utils.Immutable;
 import glitch.core.utils.Unofficial;
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -19,23 +17,6 @@ import org.immutables.value.Value;
 @Immutable
 @Value.Immutable
 public interface Topic {
-    Type getType();
-
-    String[] getSuffix();
-
-    @Value.Lazy
-    default UUID getCode() {
-        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
-    }
-
-    @Value.Lazy
-    default String getRawType() {
-        return getType().toRaw(getSuffix());
-    }
-
-    @Nullable
-    Credential getCredential();
-
     /**
      * Anyone cheers on a specified channel.
      */
@@ -126,6 +107,23 @@ public interface Topic {
         return Arrays.stream(serialized).map(String::valueOf).toArray(String[]::new);
     }
 
+    Type getType();
+
+    String[] getSuffix();
+
+    @Value.Lazy
+    default UUID getCode() {
+        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
+    }
+
+    @Value.Lazy
+    default String getRawType() {
+        return getType().toRaw(getSuffix());
+    }
+
+    @Nullable
+    Credential getCredential();
+
     @RequiredArgsConstructor
     enum Type {
         /**
@@ -147,22 +145,19 @@ public interface Topic {
 
         /**
          * Anyone follow on a specified channel.
-         * <code>subject(&lt;channel ID&gt;)</code>
          */
         @Unofficial("[Unknown Source]") // TODO: Required Source
-        FOLLOW("following"),
+                FOLLOW("following"),
 
         /**
          * Listening moderation actions in specific channel.
          * Owner ID must be a moderator in specific channel.
-         * <code>subject(&lt;owner ID&gt;, &lt;channel ID&gt;)</code>
          */
         @Unofficial("https://discuss.dev.twitch.tv/t/in-line-broadcaster-chat-mod-logs/7281")
         CHAT_MODERATION_ACTIONS("chat_moderator_actions"),
 
         /**
          * Listens EBS broadcast sent to specific extension on a specific channel
-         * <code>subject(&lt;channel ID&gt;, &lt;extension ID&gt;)</code>
          */
         @Unofficial("https://discuss.dev.twitch.tv/t/private-topic-for-extension-events-in-pubsub/15628/3")
         CHANNEL_EXTENSION_BROADCAST("channel-ext-v1") {
@@ -174,13 +169,11 @@ public interface Topic {
 
         /**
          * Anyone makes a purchase on a channel.
-         * <code>subject(&lt;channel ID&gt;)</code>
          */
         CHANNEL_COMMERCE("channel-commerce-events-v1"),
 
         /**
          * Listening live stream with view counter in specific channel name
-         * <code>subject(&lt;channel name&gt;)</code>
          */
         @Unofficial("https://discuss.dev.twitch.tv/t/pubsub-video-playback/9020")
         VIDEO_PLAYBACK("video-playback");

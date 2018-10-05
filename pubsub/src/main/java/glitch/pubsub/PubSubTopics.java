@@ -105,7 +105,7 @@ public class PubSubTopics {
         return client.isActive().flatMap(ws -> {
             if (active) {
                 if (ws) {
-                    return client.sendRequest(Message.Type.UNLISTEN, topic);
+                    return client.sendRequest(type, topic);
                 } else return Single.error(new NotYetConnectedException());
             } else return Single.never();
         });

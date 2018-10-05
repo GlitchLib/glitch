@@ -1,17 +1,13 @@
 package glitch.pubsub;
 
 import glitch.GlitchClient;
-import glitch.core.utils.GlitchUtils;
 import glitch.pubsub.topics.Topic;
 import glitch.socket.GlitchWebSocket;
 import io.reactivex.Single;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -20,15 +16,15 @@ import lombok.experimental.Accessors;
 
 public interface GlitchPubSub extends GlitchWebSocket {
 
+    static Builder builder(GlitchClient client) {
+        return new Builder(client);
+    }
+
     PubSubTopics getTopics();
 
     Single<Void> sendPing();
 
     Single<Void> sendPong();
-
-    static Builder builder(GlitchClient client) {
-        return new Builder(client);
-    }
 
     @Data
     @Getter(AccessLevel.NONE)
