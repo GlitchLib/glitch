@@ -224,7 +224,9 @@ public class IRConsumer {
     private static PrivateMessageEventImpl privateMessage(RawIRCEvent event) {
         return PrivateMessageEventImpl
                 .builder()
+                .from(globalUserState(event))
                 .from(userEvent(event))
+                .emotes(event.getTags().getEmotes())
                 .message(parseMessage(event))
                 .build();
     }
