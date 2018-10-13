@@ -1,4 +1,4 @@
-package glitch.pubsub.events.topics;
+package glitch.pubsub.events.topics.subs;
 
 import glitch.socket.utils.EventImmutable;
 import org.immutables.gson.Gson;

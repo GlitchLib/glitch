@@ -5,5 +5,5 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public abstract class AbstractAPI {
-    protected final Feign client;
+    protected final Feign.Builder client;
 }

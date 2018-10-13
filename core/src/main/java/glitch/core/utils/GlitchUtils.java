@@ -1,9 +1,6 @@
 package glitch.core.utils;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapterFactory;
+import com.google.gson.*;
 import glitch.auth.Scope;
 import glitch.core.api.json.converters.ColorAdapter;
 import glitch.core.api.json.converters.ScopeAdapter;
@@ -36,11 +33,6 @@ public class GlitchUtils {
             adapters.put(Scope.class, new ScopeAdapter());
             adapters.put(Color.class, new ColorAdapter());
             adapters.put(UserType.class, new UserTypeAdapter());
-//            adapters.put(Completable.class, new RxAdapter<>());
-//            adapters.put(Flowable.class, new RxAdapter<>());
-//            adapters.put(Maybe.class, new RxAdapter<>());
-//            adapters.put(Observable.class, new RxAdapter<>());
-//            adapters.put(Single.class, new RxAdapter<>());
         }
 
         for (Map.Entry<Type, Object> entry : adapters.entrySet()) {
@@ -51,6 +43,9 @@ public class GlitchUtils {
             builder.registerTypeAdapterFactory(factory);
         }
 
+        builder.registerTypeAdapterFactory(new RxTypeAdapterFactory());
+
         return builder.create();
     }
+
 }

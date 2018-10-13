@@ -1,4 +1,4 @@
-package glitch.pubsub.events.topics;
+package glitch.pubsub.events.topics.subs;
 
 public enum SubscriptionContext {
     SUB,

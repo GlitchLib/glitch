@@ -1,15 +1,13 @@
-package glitch.pubsub.events.topics;
+package glitch.pubsub.events.topics.playback;
 
+import glitch.pubsub.GlitchPubSub;
+import glitch.socket.events.Event;
 import glitch.socket.utils.EventImmutable;
-import java.util.List;
 import org.immutables.gson.Gson;
 import org.immutables.value.Value;
 
 @EventImmutable
 @Value.Immutable
 @Gson.TypeAdapters(fieldNamingStrategy = true)
-public interface Message {
-    String getMessage();
-
-    List<Emote> getEmotes();
+public interface StreamStartEvent extends Event<GlitchPubSub> {
 }

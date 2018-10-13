@@ -1,8 +1,9 @@
-package glitch.pubsub.events.topics;
+package glitch.pubsub.events.topics.subs;
 
 import com.google.gson.annotations.SerializedName;
 import glitch.core.api.json.enums.SubscriptionType;
 import glitch.pubsub.GlitchPubSub;
+import glitch.pubsub.events.topics.Message;
 import glitch.socket.events.Event;
 import glitch.socket.utils.EventImmutable;
 import java.time.Instant;

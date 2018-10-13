@@ -1,7 +1,7 @@
 package glitch.core.api.json.enums;
 
 public enum UserType {
-    NONE,
+    USER,
     MOD,
     GLOBAL_MOD,
     ADMIN,
@@ -13,6 +13,6 @@ public enum UserType {
                 return type;
             }
         }
-        return NONE;
+        return USER;
     }
 }

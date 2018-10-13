@@ -55,9 +55,9 @@ public interface Topic {
      * Anyone whispers the specified user.
      */
     static Topic whispers(Credential credential) throws ScopeIsMissingException {
-        if (credential.getScopes().contains(Scope.CHAT_LOGIN)) {
+        if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.WHISPERS_READ)) {
             return TopicImpl.of(Type.WHISPERS, toArray(credential.getUserId()), credential);
-        } else throw new ScopeIsMissingException(Scope.CHAT_LOGIN);
+        } else throw new ScopeIsMissingException(Scope.WHISPERS_READ);
     }
 
     /**
@@ -71,14 +71,16 @@ public interface Topic {
      * Listening moderation actions in specific channel.
      * Owner ID must be a moderator in specific channel.
      */
-    static Topic moderationActions(Long channelId, Credential credential) {
-        return TopicImpl.of(Type.CHAT_MODERATION_ACTIONS, toArray(channelId, credential.getUserId()), credential);
+    static Topic moderationActions(Long channelId, Credential credential) throws ScopeIsMissingException {
+        if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.CHANNEL_MODERATE)) {
+            return TopicImpl.of(Type.CHAT_MODERATION_ACTIONS, toArray(channelId, credential.getUserId()), credential);
+        } else throw new ScopeIsMissingException(Scope.CHANNEL_MODERATE);
     }
 
     /**
      * Listening moderation actions on the own channel.
      */
-    static Topic moderationActions(Credential credential) {
+    static Topic moderationActions(Credential credential) throws ScopeIsMissingException {
         return moderationActions(credential.getUserId(), credential);
     }
 
@@ -99,8 +101,15 @@ public interface Topic {
     /**
      * Anyone makes a purchase on a channel.
      */
-    static Topic commerce() {
-        throw new UnsupportedOperationException("Commerce is currently unsupported");
+    static Topic commerce(Long channelId, Credential credential) {
+        return TopicImpl.of(Type.CHANNEL_COMMERCE, toArray(channelId), credential);
+    }
+
+    /**
+     * Anyone makes a purchase on your channel.
+     */
+    static Topic commerce(Credential credential) {
+        return commerce(credential.getUserId(), credential);
     }
 
     static <S extends Serializable> String[] toArray(S... serialized) {
@@ -135,6 +144,8 @@ public interface Topic {
          * Anyone subscribes (first month), resubscribes (subsequent months), or gifts a subscription to a channel.
          * <p>
          * Subgift subscription messages contain recipient information.
+         * Formatting:
+         *
          */
         CHANNEL_SUBSCRIPTION("channel-subscribe-events-v1"),
 
@@ -145,9 +156,10 @@ public interface Topic {
 
         /**
          * Anyone follow on a specified channel.
+         * Formatting: {@code {&quot;display_name&quot;:&quot;&lt;display name&gt;&quot;, &quot;username&quot;:&quot;&lt;username&gt;&quot;, &quot;user_id&quot;:&quot;&lt;id&gt;&quot;}}
          */
         @Unofficial("[Unknown Source]") // TODO: Required Source
-                FOLLOW("following"),
+        FOLLOW("following"),
 
         /**
          * Listening moderation actions in specific channel.

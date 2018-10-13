@@ -2,9 +2,9 @@
 [![Build Status](https://travis-ci.com/GlitchLib/glitch.svg)](https://travis-ci.com/GlitchLib/glitch)
 [![Maintainability](https://api.codeclimate.com/v1/badges/64d5418e82673e076bc6/maintainability)](https://codeclimate.com/github/GlitchLib/glitch/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/64d5418e82673e076bc6/test_coverage)](https://codeclimate.com/github/GlitchLib/glitch/test_coverage)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/GlitchLib/glitch/alerts/)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/GlitchLib/glitch/context:java)
-[![Discord](https://img.shields.io/discord/325552783787032576.svg?style=flat&logo=discord&logoWidth=20&label=Twitch%20API&colorB=7289da)](https://discord.gg/jy9BKGq)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=12)](https://lgtm.com/projects/g/GlitchLib/glitch/alerts/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=12)](https://lgtm.com/projects/g/GlitchLib/glitch/context:java)
+[![Discord](https://discordapp.com/api/guilds/325552783787032576/widget.png)](https://discord.gg/jy9BKGq)
 
 # Glitch
 A hybrid-reactive Java wrapper for the Twitch. Supports using:
