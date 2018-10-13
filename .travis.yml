@@ -5,7 +5,7 @@ jdk:
 - openjdk11
 
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
 cache:
@@ -25,7 +25,11 @@ after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 jobs:
   include:
   - stage: deploy
-    jdk: openjdk8
+    jdk: openjdk11
+    install: skip
+    script: chmod +x ./javadoc.sh && ./javadoc.sh
+    if: tag IS present
+  - jdk: openjdk8
     install: skip
     script: ./gradlew bintrayUpload -x test
     if: tag IS present

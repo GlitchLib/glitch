@@ -9,11 +9,13 @@ javadoc {
     }
 
     rootProject.subprojects.each { project ->
-        project.tasks.withType(Javadoc.class).each { doc ->
-            source += doc.source
-            classpath += doc.classpath
-            excludes += doc.excludes
-            includes += doc.includes
+        if (project.name != "socket") {
+            project.tasks.withType(Javadoc.class).each { doc ->
+                source += doc.source
+                classpath += doc.classpath
+                excludes += doc.excludes
+                includes += doc.includes
+            }
         }
     }
 }
