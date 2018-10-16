@@ -2,8 +2,7 @@
 [![Build Status](https://travis-ci.com/GlitchLib/glitch.svg)](https://travis-ci.com/GlitchLib/glitch)
 [![Maintainability](https://api.codeclimate.com/v1/badges/64d5418e82673e076bc6/maintainability)](https://codeclimate.com/github/GlitchLib/glitch/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/64d5418e82673e076bc6/test_coverage)](https://codeclimate.com/github/GlitchLib/glitch/test_coverage)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=12)](https://lgtm.com/projects/g/GlitchLib/glitch/alerts/)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=12)](https://lgtm.com/projects/g/GlitchLib/glitch/context:java)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/752be0bdadda4598ae9336d5681bc370)](https://www.codacy.com/app/GlitchLib/glitch?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=GlitchLib/glitch&amp;utm_campaign=Badge_Grade)
 [![Discord](https://discordapp.com/api/guilds/325552783787032576/widget.png)](https://discord.gg/jy9BKGq)
 [![Discord](https://discordapp.com/api/guilds/488285226452385792/widget.png)](https://discord.gg/nJJ2fDM)
 
