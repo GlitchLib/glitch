@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0ad3cbdd6f0744ccac9917c401653d8e)](https://app.codacy.com/app/GlitchLib/glitch?utm_source=github.com&utm_medium=referral&utm_content=GlitchLib/glitch&utm_campaign=Badge_Grade_Dashboard)
 [![Download](https://api.bintray.com/packages/stachu540/GlitchLib/Glitch/images/download.svg)](https://bintray.com/stachu540/GlitchLib/Glitch/_latestVersion)
 [![Build Status](https://travis-ci.com/GlitchLib/glitch.svg)](https://travis-ci.com/GlitchLib/glitch)
 [![Maintainability](https://api.codeclimate.com/v1/badges/64d5418e82673e076bc6/maintainability)](https://codeclimate.com/github/GlitchLib/glitch/maintainability)
