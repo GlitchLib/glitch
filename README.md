@@ -5,6 +5,7 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=12)](https://lgtm.com/projects/g/GlitchLib/glitch/alerts/)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/GlitchLib/glitch.svg?logo=lgtm&logoWidth=12)](https://lgtm.com/projects/g/GlitchLib/glitch/context:java)
 [![Discord](https://discordapp.com/api/guilds/325552783787032576/widget.png)](https://discord.gg/jy9BKGq)
+[![Discord](https://discordapp.com/api/guilds/488285226452385792/widget.png)](https://discord.gg/nJJ2fDM)
 
 # Glitch
 A hybrid-reactive Java wrapper for the Twitch. Supports using:
