@@ -6,7 +6,7 @@ def feign = "9.7.0"
 
 dependencies {
     compile "org.slf4j:slf4j-api:1.7.25"
-    compile "com.google.guava:guava:26.0-android"
+    compile "com.google.guava:guava:27.0-android"
 
     compile "io.github.openfeign:feign-gson:$feign"
     compile "io.github.openfeign:feign-okhttp:$feign"
