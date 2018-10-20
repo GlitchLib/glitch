@@ -1,10 +1,11 @@
-package glitch.pubsub.topics;
+package glitch.pubsub;
 
 import glitch.auth.Credential;
 import glitch.auth.Scope;
 import glitch.auth.ScopeIsMissingException;
 import glitch.core.utils.Immutable;
 import glitch.core.utils.Unofficial;
+import glitch.pubsub.topics.TopicImpl;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;

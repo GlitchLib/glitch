@@ -11,12 +11,7 @@ import glitch.core.api.AbstractService;
 import glitch.core.utils.GlitchUtils;
 import glitch.core.utils.http.HTTP;
 import glitch.core.utils.http.ResponseException;
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
-import io.reactivex.CompletableSource;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.SingleSource;
+import io.reactivex.*;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -34,7 +29,7 @@ public final class CredentialManager extends AbstractService<CredentialAPI> {
         super(client, HTTP.create(
                 LinkedHashMultimap.<String, String>create(),
                 GlitchUtils.createGson(CredentialManager.adapters(), true))
-                .newInstance(new OAuth2Instance()));
+                .target(new OAuth2Instance()));
         this.storage = (storage != null) ? storage : new EmptyStorage();
     }
 

@@ -26,10 +26,11 @@ jobs:
   include:
   - stage: deploy
     jdk: openjdk11
-    install: skip
-    script: chmod +x ./javadoc.sh && ./javadoc.sh
+    install: chmod +x ./javadoc.sh
+    script: ./javadoc.sh
     if: tag IS present
-  - jdk: openjdk8
+  - stage: deploy
+    jdk: openjdk8
     install: skip
     script: ./gradlew bintrayUpload -x test
     if: tag IS present

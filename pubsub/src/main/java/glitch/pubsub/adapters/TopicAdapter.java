@@ -2,8 +2,8 @@ package glitch.pubsub.adapters;
 
 import com.google.gson.*;
 import glitch.pubsub.PubSubImpl;
+import glitch.pubsub.Topic;
 import glitch.pubsub.exceptions.UnknownTopicException;
-import glitch.pubsub.topics.Topic;
 import java.lang.reflect.Type;
 import lombok.RequiredArgsConstructor;
 

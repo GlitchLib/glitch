@@ -3,11 +3,7 @@ package glitch.auth;
 import glitch.auth.json.AccessToken;
 import glitch.auth.json.Validate;
 import glitch.core.utils.http.ResponseException;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 
 interface CredentialAPI {
     @GET @Path("/validate")

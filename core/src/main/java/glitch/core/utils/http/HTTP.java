@@ -21,7 +21,7 @@ import static feign.Request.Options;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class HTTP {
-    public static Feign create(Multimap<String, String> headers, @Nonnull final Gson gson) {
+    public static Feign.Builder create(Multimap<String, String> headers, @Nonnull final Gson gson) {
         return Feign.builder()
                 .client(new OkHttpClient())
                 .decoder(new GsonDecoder(gson) {
@@ -47,8 +47,7 @@ public class HTTP {
                 .requestInterceptor(new HeaderInterceptor(headers))
                 .contract(new JAXRSContract())
                 .logger(new Slf4jLogger("glitch.client.http"))
-                .logLevel(Logger.Level.FULL)
-                .build();
+                .logLevel(Logger.Level.FULL);
     }
 
     @RequiredArgsConstructor

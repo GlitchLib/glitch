@@ -1,7 +1,7 @@
 package glitch.pubsub.events;
 
 import glitch.pubsub.GlitchPubSub;
-import glitch.pubsub.topics.Topic;
+import glitch.pubsub.Topic;
 import glitch.socket.events.Event;
 import glitch.socket.utils.EventImmutable;
 import org.immutables.gson.Gson;

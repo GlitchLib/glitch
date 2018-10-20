@@ -1,7 +1,6 @@
 package glitch.pubsub;
 
 import glitch.GlitchClient;
-import glitch.pubsub.topics.Topic;
 import glitch.socket.GlitchWebSocket;
 import io.reactivex.Single;
 import java.util.Arrays;
@@ -14,6 +13,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
+/**
+ * PubSub enables you to subscribe to a topic, for updates (e.g., when a user cheers on a channel).
+ * <p>
+ * The Twitch PubSub system allows back-end services to broadcast realtime messages to clients. Example applications include:
+ *
+ * <ul>
+ * <li>An instant messaging service sending instant messages between friends.</li>
+ * <li>A back-end video system pushing real-time viewer count updates to video players.</li>
+ * <li>A presence system broadcasting users’ online status to all their friends.</li>
+ * </ul>
+ *
+ * @see Topic
+ */
 public interface GlitchPubSub extends GlitchWebSocket {
 
     static Builder builder(GlitchClient client) {

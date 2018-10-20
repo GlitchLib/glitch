@@ -6,7 +6,6 @@ import glitch.core.utils.GlitchUtils;
 import glitch.pubsub.adapters.PubSubAdapter;
 import glitch.pubsub.adapters.TopicAdapter;
 import glitch.pubsub.events.*;
-import glitch.pubsub.topics.Topic;
 import glitch.socket.WebSocketImpl;
 import glitch.socket.events.OpenEvent;
 import glitch.socket.events.PingEventImpl;

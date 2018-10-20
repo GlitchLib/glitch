@@ -2,11 +2,7 @@ package glitch.auth.store;
 
 import com.google.common.collect.Collections2;
 import glitch.auth.Credential;
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
+import io.reactivex.*;
 import io.reactivex.functions.Predicate;
 import java.util.Collection;
 import javax.annotation.Nullable;

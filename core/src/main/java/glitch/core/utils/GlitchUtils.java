@@ -1,6 +1,9 @@
 package glitch.core.utils;
 
-import com.google.gson.*;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapterFactory;
 import glitch.auth.Scope;
 import glitch.core.api.json.converters.ColorAdapter;
 import glitch.core.api.json.converters.ScopeAdapter;

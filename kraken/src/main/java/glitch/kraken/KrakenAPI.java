@@ -8,26 +8,14 @@ import glitch.core.api.AbstractAPI;
 import glitch.core.utils.GlitchUtils;
 import glitch.core.utils.http.HTTP;
 import glitch.core.utils.http.instances.KrakenInstance;
-import glitch.kraken.services.BitsService;
-import glitch.kraken.services.ChannelService;
-import glitch.kraken.services.ChatService;
-import glitch.kraken.services.ClipService;
-import glitch.kraken.services.CollectionService;
-import glitch.kraken.services.CommunityService;
-import glitch.kraken.services.GameService;
-import glitch.kraken.services.IngestService;
-import glitch.kraken.services.SearchService;
-import glitch.kraken.services.StreamService;
-import glitch.kraken.services.TeamService;
-import glitch.kraken.services.UserService;
-import glitch.kraken.services.VideoService;
+import glitch.kraken.services.*;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class KrakenAPI extends AbstractAPI {
 
-    private KrakenAPI(Feign client) {
+    private KrakenAPI(Feign.Builder client) {
         super(client);
     }
 
@@ -35,91 +23,91 @@ public class KrakenAPI extends AbstractAPI {
      * @return
      */
     public BitsService bitsService() {
-        return client.newInstance(new KrakenInstance<>(BitsService.class));
+        return client.target(new KrakenInstance<>(BitsService.class));
     }
 
     /**
      * @return
      */
     public ChannelService channelService() {
-        return client.newInstance(new KrakenInstance<>(ChannelService.class));
+        return client.target(new KrakenInstance<>(ChannelService.class));
     }
 
     /**
      * @return
      */
     public ChatService chatService() {
-        return client.newInstance(new KrakenInstance<>(ChatService.class));
+        return client.target(new KrakenInstance<>(ChatService.class));
     }
 
     /**
      * @return
      */
     public ClipService clipService() {
-        return client.newInstance(new KrakenInstance<>(ClipService.class));
+        return client.target(new KrakenInstance<>(ClipService.class));
     }
 
     /**
      * @return
      */
     public CollectionService colletionService() {
-        return client.newInstance(new KrakenInstance<>(CollectionService.class));
+        return client.target(new KrakenInstance<>(CollectionService.class));
     }
 
     /**
      * @return
      */
     public CommunityService communitieService() {
-        return client.newInstance(new KrakenInstance<>(CommunityService.class));
+        return client.target(new KrakenInstance<>(CommunityService.class));
     }
 
     /**
      * @return
      */
     public GameService gameService() {
-        return client.newInstance(new KrakenInstance<>(GameService.class));
+        return client.target(new KrakenInstance<>(GameService.class));
     }
 
     /**
      * @return
      */
     public IngestService ingestService() {
-        return client.newInstance(new KrakenInstance<>(IngestService.class));
+        return client.target(new KrakenInstance<>(IngestService.class));
     }
 
     /**
      * @return
      */
     public SearchService searchService() {
-        return client.newInstance(new KrakenInstance<>(SearchService.class));
+        return client.target(new KrakenInstance<>(SearchService.class));
     }
 
     /**
      * @return
      */
     public StreamService streamService() {
-        return client.newInstance(new KrakenInstance<>(StreamService.class));
+        return client.target(new KrakenInstance<>(StreamService.class));
     }
 
     /**
      * @return
      */
     public TeamService teamService() {
-        return client.newInstance(new KrakenInstance<>(TeamService.class));
+        return client.target(new KrakenInstance<>(TeamService.class));
     }
 
     /**
      * @return
      */
     public UserService userService() {
-        return client.newInstance(new KrakenInstance<>(UserService.class));
+        return client.target(new KrakenInstance<>(UserService.class));
     }
 
     /**
      * @return
      */
     public VideoService videoService() {
-        return client.newInstance(new KrakenInstance<>(VideoService.class));
+        return client.target(new KrakenInstance<>(VideoService.class));
     }
 
     /**

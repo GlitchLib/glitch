@@ -2,7 +2,6 @@ package glitch.chat;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import feign.Feign;
 import glitch.GlitchClient;
 import glitch.auth.Credential;
 import glitch.auth.UserCredential;
@@ -14,7 +13,6 @@ import glitch.core.utils.http.instances.KrakenInstance;
 import glitch.socket.GlitchWebSocket;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
-import java.lang.reflect.Type;
 import java.util.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -72,11 +70,7 @@ public interface GlitchChat extends GlitchWebSocket {
                 headers.put("User-Agent", client.getConfiguration().getUserAgent());
                 headers.put("Accept", "application/vnd.twitchtv.v5+json");
 
-                Map<Type, Object> adapters = new LinkedHashMap<>();
-
-                Feign feign = HTTP.create(headers, GlitchUtils.createGson(adapters, true));
-
-                return feign.newInstance(new KrakenInstance<>(ChatAPI.class));
+                return HTTP.create(headers, GlitchUtils.createGson(null, true)).target(new KrakenInstance<>(ChatAPI.class));
             });
         }
 

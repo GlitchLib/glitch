@@ -3,7 +3,6 @@ package glitch.pubsub;
 import glitch.pubsub.events.Message;
 import glitch.pubsub.events.TopicRegisteredEvent;
 import glitch.pubsub.events.TopicUnregisteredEvent;
-import glitch.pubsub.topics.Topic;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.nio.channels.NotYetConnectedException;
