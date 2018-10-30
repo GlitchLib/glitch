@@ -37,7 +37,7 @@ subprojects {
             compileOnly "org.immutables:gson:2.7.1"
             annotationProcessor "org.immutables:gson:2.7.1"
 
-            compileOnly "org.projectlombok:lombok:1.18.2"
+            compileOnly "org.projectlombok:lombok:1.18.4"
             annotationProcessor "org.projectlombok:lombok:1.18.2"
 
             testCompile "ch.qos.logback:logback-classic:1.2.3"
