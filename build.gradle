@@ -32,7 +32,7 @@ subprojects {
     dependencies {
         if (project.name != "BOM" && project.name != "docs") {
 
-            compileOnly "org.immutables:value:2.7.1"
+            compileOnly "org.immutables:value:2.7.2"
             annotationProcessor "org.immutables:value:2.7.1"
             compileOnly "org.immutables:gson:2.7.1"
             annotationProcessor "org.immutables:gson:2.7.1"
