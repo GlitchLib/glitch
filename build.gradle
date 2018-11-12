@@ -34,7 +34,7 @@ subprojects {
 
             compileOnly "org.immutables:value:2.7.1"
             annotationProcessor "org.immutables:value:2.7.1"
-            compileOnly "org.immutables:gson:2.7.1"
+            compileOnly "org.immutables:gson:2.7.3"
             annotationProcessor "org.immutables:gson:2.7.1"
 
             compileOnly "org.projectlombok:lombok:1.18.2"
