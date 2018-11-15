@@ -3,9 +3,18 @@ plugins {
     id "com.jfrog.bintray" version "1.8.4"
     id "com.jfrog.artifactory" version "4.7.5"
     id "de.lukaskoerfer.gradle.delombok" version "0.2"
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
 allprojects {
+    apply plugin: "io.spring.dependency-management"
+
+    dependencyManagement {
+        imports {
+            mavenBom "io.projectreactor:reactor-bom:Californium-SR2"
+        }
+    }
+
     repositories {
         jcenter()
     }
@@ -27,20 +36,18 @@ subprojects {
     if (project.name != "docs") {
         archivesBaseName = "${rootProject.name.toLowerCase()}-${project.name.replace(':', '-')}"
     }
-    sourceCompatibility = targetCompatibility = (project.name.matches(/^(kraken|helix|core|auth)$/)) ? 1.7 : 1.8
+    sourceCompatibility = targetCompatibility = 1.8
 
     dependencies {
         if (project.name != "BOM" && project.name != "docs") {
+            compile "org.slf4j:slf4j-api:1.7.25"
 
-            compileOnly "org.immutables:value:2.7.1"
-            annotationProcessor "org.immutables:value:2.7.1"
-            compileOnly "org.immutables:gson:2.7.1"
-            annotationProcessor "org.immutables:gson:2.7.1"
-
-            compileOnly "org.projectlombok:lombok:1.18.2"
-            annotationProcessor "org.projectlombok:lombok:1.18.2"
+            compileOnly "org.projectlombok:lombok:1.18.4"
+            annotationProcessor "org.projectlombok:lombok:1.18.4"
 
             testCompile "ch.qos.logback:logback-classic:1.2.3"
+
+            testCompile "io.projectreactor:reactor-test"
         }
     }
 

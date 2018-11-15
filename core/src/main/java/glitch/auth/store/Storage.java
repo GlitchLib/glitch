@@ -1,21 +1,25 @@
 package glitch.auth.store;
 
 import glitch.auth.Credential;
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.functions.Predicate;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.function.Predicate;
 
 public interface Storage {
-    Single<Void> register(Credential credential);
+    Mono<Credential> register(Credential credential);
 
-    Single<Void> drop(Credential credential);
+    Mono<Void> drop(Credential credential);
 
-    Observable<Credential> fetchAll();
+    Flux<Credential> fetchAll();
 
-    Observable<Credential> get(Predicate<Credential> condition);
+    Flux<Credential> get(Predicate<Credential> condition);
 
-    Single<Credential> getById(Long id);
+    default Mono<Credential> getById(Long id) {
+        return get(credential -> credential.getUserId().equals(id)).next();
+    }
 
-    Maybe<Credential> getByLogin(String loginRegex);
+    default Mono<Credential> getByLogin(String loginRegex) {
+        return get(credential -> credential.getLogin().matches(loginRegex)).next();
+    }
 }

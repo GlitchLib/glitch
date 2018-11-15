@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Scope {
 
+    // --- Helix
+
     /**
      * View analytics data for your extensions.
      */
@@ -38,6 +40,9 @@ public enum Scope {
      * Read authorized user’s email address.
      */
     USER_READ_EMAIL("user:read:email"),
+
+    // --- Kraken
+
     /**
      * Read whether a user is subscribed to your channel.
      */
@@ -127,6 +132,9 @@ public enum Scope {
      * Turn on Viewer Heartbeat Service ability to record user data.
      */
     VIEWING_ACTIVITY_READ,
+
+    // --- Chat and PubSub
+
     /**
      * Perform moderation actions in a channel.
      */

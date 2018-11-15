@@ -14,6 +14,7 @@ test.enabled = false
 
 withPomXml { Node node ->
     node.appendNode("name").value = "Glitch BOM"
+    node.remove(node.dependencyManagement) // removes Project Reactor form dependency management
     Node deps = node.appendNode("dependencyManagement").appendNode("dependencies")
 
     project.rootProject.subprojects.each {

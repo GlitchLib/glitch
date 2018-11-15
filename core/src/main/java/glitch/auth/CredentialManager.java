@@ -1,171 +1,106 @@
 package glitch.auth;
 
-import com.google.common.collect.LinkedHashMultimap;
 import glitch.GlitchClient;
-import glitch.auth.json.AccessToken;
-import glitch.auth.json.Validate;
-import glitch.auth.json.converters.ExpireInstantDeserializer;
-import glitch.auth.store.EmptyStorage;
+import glitch.api.AbstractHttpService;
+import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpRequest;
+import glitch.auth.objects.AccessToken;
+import glitch.auth.objects.Validate;
+import glitch.auth.objects.converters.AccessTokenAdapter;
+import glitch.auth.objects.converters.ExpireInstantAdapter;
+import glitch.auth.objects.converters.ValidateAdapter;
 import glitch.auth.store.Storage;
-import glitch.core.api.AbstractService;
-import glitch.core.utils.GlitchUtils;
-import glitch.core.utils.http.HTTP;
-import glitch.core.utils.http.ResponseException;
-import io.reactivex.*;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
+import reactor.core.publisher.Mono;
+
 import java.lang.reflect.Type;
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nullable;
 
-public final class CredentialManager extends AbstractService<CredentialAPI> {
+public class CredentialManager extends AbstractHttpService {
+    private static final String BASE_URL = "https://id.twitch.tv/oauth2";
+
     private final Storage storage;
 
-    public CredentialManager(GlitchClient client, @Nullable Storage storage) {
-        super(client, HTTP.create(
-                LinkedHashMultimap.<String, String>create(),
-                GlitchUtils.createGson(CredentialManager.adapters(), true))
-                .target(new OAuth2Instance()));
-        this.storage = (storage != null) ? storage : new EmptyStorage();
+    public CredentialManager(GlitchClient client, Storage storage) {
+        super(client, GlitchHttpClient.builder().withBaseUrl(BASE_URL).build());
+        this.storage = storage;
     }
 
-    public Single<Validate> validate(final Credential credential) {
-        return validate(credential.getAccessToken());
+    public Mono<Validate> valid(Credential credential) {
+        return valid(credential.getAccessToken());
     }
 
-    private Single<Validate> validate(final String accessToken) {
-        return Single.unsafeCreate(new SingleSource<Validate>() {
-            @Override
-            public void subscribe(SingleObserver<? super Validate> observer) {
-                try {
-                    observer.onSuccess(api.validate("OAuth " + accessToken));
-                } catch (ResponseException e) {
-                    observer.onError(e);
-                }
-            }
-        });
+    public Mono<Validate> valid(UserCredential credential) {
+        return valid(credential.getAccessToken());
     }
 
-    public Single<Credential> create(final String code, final String redirectUri) {
-        return Single.unsafeCreate(new SingleSource<AccessToken>() {
-            @Override
-            public void subscribe(SingleObserver<? super AccessToken> observer) {
-                try {
-                    observer.onSuccess(api.getAccessToken(
-                            client.getConfiguration().getClientId(),
-                            client.getConfiguration().getClientSecret(),
-                            code,
-                            Objects.requireNonNull((redirectUri != null) ? redirectUri : client.getConfiguration().getRedirectUri(), "redirect_uri")
-                    ));
-                } catch (ResponseException e) {
-                    observer.onError(e);
-                }
-            }
-        }).flatMap(new Function<AccessToken, SingleSource<? extends Credential>>() {
-            @Override
-            public SingleSource<? extends Credential> apply(AccessToken accessToken) throws Exception {
-                return CredentialManager.this.build(accessToken);
-            }
-        });
+    private Mono<Validate> valid(AccessToken at) {
+        return valid(at.getAccessToken());
     }
 
-    public Single<Credential> refresh(final Credential credential) {
-        return Single.unsafeCreate(new SingleSource<AccessToken>() {
-            @Override
-            public void subscribe(SingleObserver<? super AccessToken> observer) {
-                try {
-                    observer.onSuccess(api.refreshToken(
-                            client.getConfiguration().getClientId(),
-                            client.getConfiguration().getClientSecret(),
-                            credential.getRefreshToken()
-                    ));
-                } catch (ResponseException e) {
-                    observer.onError(e);
-                }
-            }
-        }).flatMap(new Function<AccessToken, SingleSource<Credential>>() {
-            @Override
-            public SingleSource<Credential> apply(AccessToken accessToken) throws Exception {
-                return CredentialManager.this.build(accessToken);
-            }
-        });
+    private Mono<Validate> valid(String accessToken) {
+        return exchange(get("/validate", Validate.class)
+                .header("Authorization", "OAuth " + accessToken))
+                .toMono();
     }
 
-    private Single<Credential> build(AccessToken accessToken) {
-        final CredentialImpl.Builder cb = CredentialImpl.builder()
-                .from(accessToken);
+    public Mono<Credential> create(String code, String redirectUri) {
+        HttpRequest<AccessToken> accessTokenRequest = post("/token", AccessToken.class)
+                .queryParam("grant_type", "authorization_code")
+                .queryParam("client_id", getClient().getConfiguration().getClientId())
+                .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
+                .queryParam("code", code)
+                .queryParam("redirect_uri", Objects.requireNonNull((redirectUri != null) ? redirectUri : getClient().getConfiguration().getRedirectUri(), "redirect_uri == null"));
 
-        return validate(accessToken.getAccessToken())
-                .map(new Function<Validate, Credential>() {
-                    @Override
-                    public Credential apply(Validate validate) throws Exception {
-                        return cb.from(validate).build();
-                    }
-                })
+        return exchange(accessTokenRequest).toMono()
+                .zipWhen(this::valid)
+                .map(t -> new CredentialImpl(t.getT1(), t.getT2()))
                 .cast(Credential.class)
-                .doOnSuccess(new Consumer<Credential>() {
-                    @Override
-                    public void accept(Credential credential) throws Exception {
-                        storage.register(credential);
-                    }
-                });
+                .flatMap(storage::register);
     }
 
-    public Completable revoke(final Credential credential) {
-        return Completable.unsafeCreate(new CompletableSource() {
-            @Override
-            public void subscribe(CompletableObserver cs) {
-                try {
-                    api.revoke(credential.getClientId(), credential.getAccessToken());
-                    cs.onComplete();
-                } catch (ResponseException e) {
-                    cs.onError(e);
-                }
-            }
-        }).doOnComplete(new Action() {
-            @Override
-            public void run() {
-                storage.drop(credential);
-            }
-        });
+    public Mono<Credential> refresh(Credential credential) {
+        HttpRequest<AccessToken> accessTokenRequest = post("/token", AccessToken.class)
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("client_id", getClient().getConfiguration().getClientId())
+                .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
+                .queryParam("refresh", credential.getRefreshToken());
+
+        return exchange(accessTokenRequest).toMono()
+                .zipWhen(this::valid)
+                .map(t -> new CredentialImpl(t.getT1(), t.getT2()))
+                .cast(Credential.class)
+                .flatMap(storage::register);
     }
 
-    public Single<Credential> buildFromCredentials(String accessToken, String refreshToken) {
-        return buildFromCredentials(new UserCredential(accessToken, refreshToken));
+    public Mono<Void> revoke(Credential credential) {
+        HttpRequest<Void> revoke = post("/revoke", Void.class)
+                .queryParam("client_id", getClient().getConfiguration().getClientId())
+                .queryParam("token", credential.getAccessToken());
+
+        return exchange(revoke).toMono().then(storage.drop(credential));
     }
 
-    public Single<Credential> buildFromCredentials(UserCredential userCredential) {
-        final CredentialImpl.Builder cb = CredentialImpl.builder()
-                .accessToken(userCredential.getAccessToken())
-                .refreshToken(userCredential.getRefreshToken());
-
-        return validate(userCredential.getAccessToken())
-                .map(new Function<Validate, Credential>() {
-                    @Override
-                    public Credential apply(Validate validate) throws Exception {
-                        return cb.from(validate).build();
-                    }
-                }).doOnSuccess(new Consumer<Credential>() {
-                    @Override
-                    public void accept(Credential credential1) throws Exception {
-                        storage.register(credential1);
-                    }
-                });
+    public Mono<Credential> buildFromCredentials(UserCredential userCredential) {
+        return valid(userCredential)
+                .map(validate -> new CredentialImpl(userCredential, validate))
+                .cast(Credential.class)
+                .flatMap(storage::register);
     }
 
-    public Single<AuthorizationUriBuilder> buildAuthorization() {
-        return Single.just(new AuthorizationUriBuilder(OAuth2Instance.BASE_URL, client.getConfiguration()));
+    public AuthorizationUriBuilder buildAuthorization() {
+        return new AuthorizationUriBuilder(BASE_URL, getClient().getConfiguration());
     }
 
     @SuppressWarnings("unchecked")
-    private static  Map<Type, Object> adapters() {
+    private static Map<Type, Object> adapters() {
         Map<Type, Object> adapters = new LinkedHashMap<>();
 
-        adapters.put(Calendar.class, new ExpireInstantDeserializer());
+        adapters.put(Instant.class, new ExpireInstantAdapter());
+        adapters.put(AccessToken.class, new AccessTokenAdapter());
+        adapters.put(Validate.class, new ValidateAdapter());
 
         return adapters;
     }

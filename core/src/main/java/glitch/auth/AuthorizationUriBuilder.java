@@ -1,22 +1,18 @@
 package glitch.auth;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
 import glitch.Config;
-import java.util.*;
-import javax.annotation.Nullable;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Setter
-@Accessors(chain = true)
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+
 public class AuthorizationUriBuilder {
     private final String baseUrl;
     private final Config config;
     private final Set<Scope> scopes = new LinkedHashSet<>();
     private String state;
     private String redirectUri;
-    private boolean forceVerify = false;
+    private AtomicBoolean forceVerify = new AtomicBoolean(false);
 
     AuthorizationUriBuilder(String baseUrl, Config config) {
         this.baseUrl = baseUrl;
@@ -33,15 +29,35 @@ public class AuthorizationUriBuilder {
         return this;
     }
 
-    public String create() {
+    public AuthorizationUriBuilder withState(String state) {
+        this.state = state;
+        return this;
+    }
+
+    public AuthorizationUriBuilder withForceVerify() {
+        this.forceVerify.set(true);
+        return this;
+    }
+
+    public AuthorizationUriBuilder withoutForceVerify() {
+        this.forceVerify.set(false);
+        return this;
+    }
+
+    public AuthorizationUriBuilder withRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
+        return this;
+    }
+
+    public String build() {
         StringBuilder sb = new StringBuilder(baseUrl)
                 .append("/authorize?response_type=code")
                 .append("&client_id=").append(config.getClientId())
-                .append("&redirect_uri=").append(Objects.requireNonNull((redirectUri != null && !redirectUri.equals("")) ? redirectUri : config.getRedirectUri(), "redirect_uri"))
+                .append("&redirect_uri=").append(Objects.requireNonNull((redirectUri != null && !redirectUri.equals("")) ? redirectUri : config.getRedirectUri(), "redirect_uri == null"))
                 .append("&scope=").append(buildScope());
 
-        if (forceVerify) {
-            sb.append("&force_verify=").append(true);
+        if (forceVerify.get()) {
+            sb.append("&force_verify=true");
         }
 
         if (state != null && !state.equals("")) {
@@ -52,20 +68,6 @@ public class AuthorizationUriBuilder {
     }
 
     private String buildScope() {
-        return Joiner.on('+')
-                .join(Collections2.transform(
-                        (!scopes.isEmpty()) ?
-                                scopes :
-                                config.getDefaultScopes(),
-                        new com.google.common.base.Function<Scope, String>() {
-            @Nullable
-            @Override
-            public String apply(@Nullable Scope input) {
-                if (input != null) {
-                    return input.getValue();
-                } else return null;
-            }
-        }));
-
+        return (scopes.isEmpty()) ? "" : scopes.stream().map(Scope::getValue).collect(Collectors.joining("+"));
     }
 }

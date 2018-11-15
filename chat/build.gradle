@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":socket")
     compileOnly project(":core")
+    compileOnly project(":kraken")
     testCompile project(":core")
 }

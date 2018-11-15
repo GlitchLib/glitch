@@ -1,5 +1,6 @@
 dependencies {
-    compile project(":socket")
     compileOnly project(":core")
+    compileOnly project(":kraken")
+    compileOnly project(":helix")
     testCompile project(":core")
 }

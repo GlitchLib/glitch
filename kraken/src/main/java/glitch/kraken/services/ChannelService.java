@@ -1,23 +1,35 @@
 package glitch.kraken.services;
 
-public interface ChannelService {
-//    public ChannelService(GlitchClient client, HttpClient httpClient, BaseURL baseURL) {
-//        super(client, httpClient, baseURL);
+import glitch.api.AbstractHttpService;
+import glitch.auth.Credential;
+import glitch.exceptions.http.ResponseException;
+import glitch.kraken.GlitchKraken;
+import glitch.kraken.json.Channel;
+import reactor.core.publisher.Mono;
+
+public class ChannelService extends AbstractHttpService {
+    public ChannelService(GlitchKraken rest) {
+        super(rest);
+    }
+
+    public Mono<Channel> getChannel(Credential credential) {
+        return exchange(get("/channel", Channel.class).header("Authorization", "OAuth " + credential.getAccessToken())).toMono()
+                .onErrorResume(ResponseException.class, t -> {
+                    log.error("Cannot get channels from credentials", t);
+                    log.debug("Fetching channel from User ID: {}", credential.getUserId());
+                    return getChannel(credential.getUserId());
+                });
+    }
+
+    public Mono<Channel> getChannel(Long id) {
+        return exchange(get(String.format("/channels/%s", id), Channel.class)).toMono();
+    }
+
+//    public Mono<Channel> updateChannel(Credential credential, Consumer<ChannelData> data) {
+//        return updateChannel(credential.getUserId(), credential, data);
 //    }
 //
-//    public Single<ChannelVerified> getChannel(Credential credential) {
-//        if (!hasRequiredScope(credential, Scope.CHANNEL_READ)) {
-//            return Single.error(new ScopeIsMissingException(Scope.CHANNEL_READ));
-//        }
-//        return Router.create(HttpMethod.GET, baseURL.endpoint("/channel"), ChannelVerified.class)
-//                .request()
-//                .header("Authorization", authorization("OAuth", credential))
-//                .exchange(httpClient);
-//    }
+//    public Mono<Channel> updateChannel(Long id, Credential credential, Consumer<ChannelData> data) {
 //
-//    public Single<Channel> getChannel(Long id) {
-//        return Router.create(HttpMethod.GET, baseURL.endpoint("/channels/%s"), Channel.class)
-//                .request(id)
-//                .exchange(httpClient);
 //    }
 }

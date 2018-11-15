@@ -1,22 +1,18 @@
 package glitch;
 
 import glitch.auth.Scope;
-import glitch.core.utils.Immutable;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.immutables.value.Value;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Immutable
-@Value.Immutable
-public interface Config {
-    String getClientId();
-
-    String getClientSecret();
-
-    String getUserAgent();
-
-    Set<Scope> getDefaultScopes();
-
-    @Nullable
-    String getRedirectUri();
+@Data
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+public class Config {
+    private final String clientId;
+    private final String clientSecret;
+    private final String userAgent;
+    private final Set<Scope> defaultScopes;
+    @Nullable private final String redirectUri;
 }

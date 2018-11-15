@@ -1,4 +1,10 @@
 package glitch.kraken.services;
 
-public interface VideoService {
+import glitch.api.AbstractHttpService;
+import glitch.kraken.GlitchKraken;
+
+public class VideoService extends AbstractHttpService {
+    public VideoService(GlitchKraken rest) {
+        super(rest);
+    }
 }

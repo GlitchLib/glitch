@@ -1,4 +1,10 @@
 package glitch.kraken.services;
 
-public interface ChatService {
+import glitch.api.AbstractHttpService;
+import glitch.kraken.GlitchKraken;
+
+public class ChatService extends AbstractHttpService {
+    public ChatService(GlitchKraken rest) {
+        super(rest);
+    }
 }

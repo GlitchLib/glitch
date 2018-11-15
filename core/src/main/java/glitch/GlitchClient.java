@@ -4,11 +4,11 @@ import glitch.auth.CredentialManager;
 import glitch.auth.Scope;
 import glitch.auth.store.EmptyStorage;
 import glitch.auth.store.Storage;
-import io.reactivex.Single;
 import java.util.*;
 import javax.annotation.Nullable;
 import lombok.*;
 import lombok.experimental.Accessors;
+import reactor.core.publisher.Mono;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -25,8 +25,7 @@ public class GlitchClient {
         return new Builder();
     }
 
-    @Setter
-    @Getter
+    @Data
     @Accessors(chain = true, fluent = true)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Builder {
@@ -40,10 +39,6 @@ public class GlitchClient {
 
         private Storage storage = new EmptyStorage();
 
-        public Set<Scope> defaultScopes() {
-            return defaultScopes;
-        }
-
         public Builder defaultScopes(Scope... scopes) {
             return defaultScopes(Arrays.asList(scopes));
         }
@@ -53,8 +48,8 @@ public class GlitchClient {
             return this;
         }
 
-        public Single<GlitchClient> buildAsync() {
-            return Single.just(build());
+        public Mono<GlitchClient> buildAsync() {
+            return Mono.just(build());
         }
 
         public GlitchClient build() {
@@ -64,13 +59,12 @@ public class GlitchClient {
                 userAgent = String.format("Glitch v%s [Rev. %s]", properties.getProperty(Versions.APPLICATION_VERSION), properties.getProperty(Versions.GIT_COMMIT_ID_ABBREV));
             }
 
-            Config config = ConfigImpl.builder()
-                    .clientId(Objects.requireNonNull(this.clientId))
-                    .clientSecret(Objects.requireNonNull(this.clientSecret))
-                    .userAgent(this.userAgent)
-                    .defaultScopes(this.defaultScopes)
-                    .redirectUri(this.redirectUri)
-                    .build();
+            Config config = new Config(
+                    Objects.requireNonNull(this.clientId, "client_id == null"),
+                    Objects.requireNonNull(this.clientSecret, "client_secret == null"),
+                    this.userAgent,
+                    this.defaultScopes, this.redirectUri
+            );
 
             return new GlitchClient(config, storage);
         }

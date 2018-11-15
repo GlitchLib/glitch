@@ -1,39 +1,29 @@
 package glitch.auth.store;
 
 import glitch.auth.Credential;
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.functions.Predicate;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.function.Predicate;
 
 public class EmptyStorage implements Storage {
     @Override
-    public Single<Void> register(Credential credential) {
-        return Single.never();
+    public Mono<Credential> register(Credential credential) {
+        return Mono.just(credential);
     }
 
     @Override
-    public Single<Void> drop(Credential credential) {
-        return Single.never();
+    public Mono<Void> drop(Credential credential) {
+        return Mono.empty();
     }
 
     @Override
-    public Observable<Credential> fetchAll() {
-        return Observable.empty();
+    public Flux<Credential> fetchAll() {
+        return Flux.empty();
     }
 
     @Override
-    public Observable<Credential> get(Predicate<Credential> condition) {
-        return Observable.empty();
-    }
-
-    @Override
-    public Single<Credential> getById(Long id) {
-        return Single.never();
-    }
-
-    @Override
-    public Maybe<Credential> getByLogin(String loginRegex) {
-        return Maybe.empty();
+    public Flux<Credential> get(Predicate<Credential> condition) {
+        return Flux.empty();
     }
 }
