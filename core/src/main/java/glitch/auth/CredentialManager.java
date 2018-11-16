@@ -4,11 +4,13 @@ import glitch.GlitchClient;
 import glitch.api.AbstractHttpService;
 import glitch.api.http.GlitchHttpClient;
 import glitch.api.http.HttpRequest;
-import glitch.auth.objects.AccessToken;
-import glitch.auth.objects.Validate;
-import glitch.auth.objects.converters.AccessTokenAdapter;
-import glitch.auth.objects.converters.ExpireInstantAdapter;
-import glitch.auth.objects.converters.ValidateAdapter;
+import glitch.auth.objects.json.Credential;
+import glitch.auth.objects.json.impl.CredentialImpl;
+import glitch.auth.objects.json.AccessToken;
+import glitch.auth.objects.json.Validate;
+import glitch.auth.objects.adapters.AccessTokenAdapter;
+import glitch.auth.objects.adapters.ExpireInstantAdapter;
+import glitch.auth.objects.adapters.ValidateAdapter;
 import glitch.auth.store.Storage;
 import reactor.core.publisher.Mono;
 
@@ -24,7 +26,14 @@ public class CredentialManager extends AbstractHttpService {
     private final Storage storage;
 
     public CredentialManager(GlitchClient client, Storage storage) {
-        super(client, GlitchHttpClient.builder().withBaseUrl(BASE_URL).build());
+        super(
+                client,
+                GlitchHttpClient.builder()
+                        .withBaseUrl(BASE_URL)
+                        .withDefaultTypeAdapters()
+                        .addTypeAdapters(authAdapters())
+                        .build()
+        );
         this.storage = storage;
     }
 
@@ -56,7 +65,7 @@ public class CredentialManager extends AbstractHttpService {
 
         return exchange(accessTokenRequest).toMono()
                 .zipWhen(this::valid)
-                .map(t -> new CredentialImpl(t.getT1(), t.getT2()))
+                .map(CredentialImpl::new)
                 .cast(Credential.class)
                 .flatMap(storage::register);
     }
@@ -70,7 +79,7 @@ public class CredentialManager extends AbstractHttpService {
 
         return exchange(accessTokenRequest).toMono()
                 .zipWhen(this::valid)
-                .map(t -> new CredentialImpl(t.getT1(), t.getT2()))
+                .map(CredentialImpl::new)
                 .cast(Credential.class)
                 .flatMap(storage::register);
     }
@@ -85,17 +94,17 @@ public class CredentialManager extends AbstractHttpService {
 
     public Mono<Credential> buildFromCredentials(UserCredential userCredential) {
         return valid(userCredential)
-                .map(validate -> new CredentialImpl(userCredential, validate))
+                .zipWith(Mono.just(userCredential), CredentialImpl::new)
                 .cast(Credential.class)
                 .flatMap(storage::register);
     }
 
-    public AuthorizationUriBuilder buildAuthorization() {
+    public AuthorizationUriBuilder buildAuthorizationUrl() {
         return new AuthorizationUriBuilder(BASE_URL, getClient().getConfiguration());
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<Type, Object> adapters() {
+    private static Map<Type, Object> authAdapters() {
         Map<Type, Object> adapters = new LinkedHashMap<>();
 
         adapters.put(Instant.class, new ExpireInstantAdapter());

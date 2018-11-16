@@ -10,7 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class GlitchKraken extends AbstractRestService {
-    protected GlitchKraken(GlitchClient client, GlitchHttpClient http) {
+    private static final String BASE_URL = "https://api.twitch.tv/kraken";
+
+    private GlitchKraken(GlitchClient client, GlitchHttpClient http) {
         super(client, http);
 
         registerAllServices();
@@ -35,6 +37,7 @@ public class GlitchKraken extends AbstractRestService {
 
     public static GlitchKraken create(GlitchClient client) {
         GlitchHttpClient httpClient = GlitchHttpClient.builder()
+                .withBaseUrl(BASE_URL)
                 .withDefaultTypeAdapters()
                 .addTypeAdapters(krakenAdapters())
                 .addHeader("Client-ID", client.getConfiguration().getClientId())

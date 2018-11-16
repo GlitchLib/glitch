@@ -1,8 +1,8 @@
-package glitch.auth.objects.converters;
+package glitch.auth.objects.adapters;
 
 import com.google.gson.*;
-import glitch.auth.objects.Validate;
-import glitch.auth.objects.impl.ValidateImpl;
+import glitch.auth.objects.json.Validate;
+import glitch.auth.objects.json.impl.ValidateImpl;
 
 import java.lang.reflect.Type;
 

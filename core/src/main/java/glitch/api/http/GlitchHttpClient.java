@@ -5,10 +5,11 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import glitch.auth.Scope;
+import glitch.auth.objects.adapters.ScopeAdapter;
 import glitch.exceptions.http.ResponseException;
+import lombok.Getter;
 import okhttp3.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class GlitchHttpClient {
     private final String baseUrl;
 
     private final OkHttpClient httpClient;
+    @Getter
     private final Gson gson;
 
     @Nullable
@@ -236,7 +238,7 @@ public class GlitchHttpClient {
          * @return
          */
         public Builder withDefaultTypeAdapters() {
-
+            addTypeAdapter(Scope.class, new ScopeAdapter());
             return this;
         }
 

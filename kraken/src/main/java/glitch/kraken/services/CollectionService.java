@@ -5,6 +5,6 @@ import glitch.kraken.GlitchKraken;
 
 public class CollectionService extends AbstractHttpService {
     public CollectionService(GlitchKraken rest) {
-        super(rest);
+        super(rest.getClient(), rest.getHttpClient());
     }
 }

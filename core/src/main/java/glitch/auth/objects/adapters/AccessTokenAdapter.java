@@ -1,8 +1,8 @@
-package glitch.auth.objects.converters;
+package glitch.auth.objects.adapters;
 
 import com.google.gson.*;
-import glitch.auth.objects.AccessToken;
-import glitch.auth.objects.impl.AccessTokenImpl;
+import glitch.auth.objects.json.AccessToken;
+import glitch.auth.objects.json.impl.AccessTokenImpl;
 
 import java.lang.reflect.Type;
 

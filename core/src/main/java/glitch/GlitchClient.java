@@ -1,5 +1,6 @@
 package glitch;
 
+import glitch.api.AbstractRestService;
 import glitch.auth.CredentialManager;
 import glitch.auth.Scope;
 import glitch.auth.store.EmptyStorage;

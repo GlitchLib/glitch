@@ -1,5 +1,6 @@
 package glitch.api;
 
+import glitch.GlitchClient;
 import glitch.api.http.GlitchHttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpRequest;
@@ -22,11 +23,12 @@ public abstract class AbstractHttpService {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Getting Rest Client Service
-     * @return the service extends {@link AbstractRestService}
+     * Main Glitch Client
+     * @return the Glitch Client
      */
     @Getter
-    private final AbstractRestService rest;
+    private final GlitchClient client;
+    private final GlitchHttpClient http;
 
     /**
      * Create {@link HttpMethod#GET GET} Request
@@ -37,7 +39,7 @@ public abstract class AbstractHttpService {
      * @see #exchange(HttpRequest)
      */
     protected final <T> HttpRequest<T> get(String endpoint, Class<T> responseType) {
-        return rest.getHttpClient().create(HttpMethod.GET, endpoint, responseType);
+        return http.create(HttpMethod.GET, endpoint, responseType);
     }
 
 
@@ -50,7 +52,7 @@ public abstract class AbstractHttpService {
      * @see #exchange(HttpRequest)
      */
     protected final <T> HttpRequest<T> post(String endpoint, Class<T> responseType) {
-        return rest.getHttpClient().create(HttpMethod.POST, endpoint, responseType);
+        return http.create(HttpMethod.POST, endpoint, responseType);
     }
 
 
@@ -63,7 +65,7 @@ public abstract class AbstractHttpService {
      * @see #exchange(HttpRequest)
      */
     protected final <T> HttpRequest<T> put(String endpoint, Class<T> responseType) {
-        return rest.getHttpClient().create(HttpMethod.PUT, endpoint, responseType);
+        return http.create(HttpMethod.PUT, endpoint, responseType);
     }
 
 
@@ -76,7 +78,7 @@ public abstract class AbstractHttpService {
      * @see #exchange(HttpRequest)
      */
     protected final <T> HttpRequest<T> patch(String endpoint, Class<T> responseType) {
-        return rest.getHttpClient().create(HttpMethod.PATCH, endpoint, responseType);
+        return http.create(HttpMethod.PATCH, endpoint, responseType);
     }
 
 
@@ -89,7 +91,7 @@ public abstract class AbstractHttpService {
      * @see #exchange(HttpRequest)
      */
     protected final <T> HttpRequest<T> delete(String endpoint, Class<T> responseType) {
-        return rest.getHttpClient().create(HttpMethod.DELETE, endpoint, responseType);
+        return http.create(HttpMethod.DELETE, endpoint, responseType);
     }
 
     /**
@@ -104,7 +106,7 @@ public abstract class AbstractHttpService {
      * @see #delete(String, Class)
      */
     protected final <T> HttpResponse<T> exchange(HttpRequest<T> request) {
-        return rest.getHttpClient().exchange(request);
+        return http.exchange(request);
     }
 
     protected final boolean checkRequiredScope(Collection<Scope> scopes, Scope requiredScope) {

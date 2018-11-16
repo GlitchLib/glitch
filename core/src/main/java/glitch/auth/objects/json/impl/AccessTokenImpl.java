@@ -1,8 +1,8 @@
-package glitch.auth.objects.impl;
+package glitch.auth.objects.json.impl;
 
 import com.google.gson.annotations.SerializedName;
 import glitch.auth.Scope;
-import glitch.auth.objects.AccessToken;
+import glitch.auth.objects.json.AccessToken;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.Set;
 
 @Data
-public class AccessTokenImpl implements AccessToken {
+public final class AccessTokenImpl implements AccessToken {
     private final String accessToken;
 
     private final String refreshToken;

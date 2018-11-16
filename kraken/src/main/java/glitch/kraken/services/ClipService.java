@@ -5,6 +5,6 @@ import glitch.kraken.GlitchKraken;
 
 public class ClipService extends AbstractHttpService {
     public ClipService(GlitchKraken rest) {
-        super(rest);
+        super(rest.getClient(), rest.getHttpClient());
     }
 }

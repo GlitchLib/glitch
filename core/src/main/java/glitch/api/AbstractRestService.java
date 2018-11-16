@@ -27,7 +27,7 @@ public abstract class AbstractRestService<T extends AbstractHttpService> {
     public Mono<T> use(Class<T> service) {
         return Flux.fromIterable(this.services)
                 .filter(s -> s.getClass().equals(service)).next().cast(service)
-                .switchIfEmpty(Mono.error(new ServiceNotFoundException<>(service)));
+                .switchIfEmpty(Mono.error(new ServiceNotFoundException(service)));
     }
 
     protected final boolean unregister(T service) {

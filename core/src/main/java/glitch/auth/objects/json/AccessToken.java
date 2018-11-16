@@ -1,4 +1,4 @@
-package glitch.auth.objects;
+package glitch.auth.objects.json;
 
 import com.google.gson.annotations.SerializedName;
 import glitch.auth.Scope;
