@@ -4,8 +4,7 @@ import glitch.api.AbstractWebSocketService;
 import glitch.api.ws.CloseStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Emitting Close Event with {@link CloseStatus}
@@ -13,11 +12,12 @@ import lombok.RequiredArgsConstructor;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CloseEvent<S extends AbstractWebSocketService<S, ? extends Event<S>>> extends Event<S> {
-    private final CloseStatus status;
+public class CloseEvent<S extends AbstractWebSocketService<S>> extends CloseStatus implements IEvent<S> {
+    @ToString.Exclude
+    private final S client;
 
     public CloseEvent(S client, CloseStatus status) {
-        super(client);
-        this.status = status;
+        super(status.getCode(), status.getReason());
+        this.client = client;
     }
 }

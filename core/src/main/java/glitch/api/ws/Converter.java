@@ -1,8 +1,9 @@
 package glitch.api.ws;
 
 import glitch.api.AbstractWebSocketService;
-import glitch.api.ws.events.Event;
+import glitch.api.ws.events.IEvent;
+import okio.ByteString;
 
-public interface Converter<F, E extends Event<S>, S extends AbstractWebSocketService<S, E>> {
-    E convert(F value, S client);
+public interface Converter<S extends AbstractWebSocketService<S>> {
+    IEvent<S> convert(ByteString value, S client);
 }

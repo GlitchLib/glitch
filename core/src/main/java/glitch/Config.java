@@ -1,14 +1,15 @@
 package glitch;
 
 import glitch.auth.Scope;
-import java.util.Set;
-import javax.annotation.Nullable;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+import javax.annotation.Nullable;
+import java.util.Set;
 
 @Data
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class Config {
     private final String clientId;
     private final String clientSecret;

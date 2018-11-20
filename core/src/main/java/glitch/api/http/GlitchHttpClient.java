@@ -5,6 +5,11 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import glitch.api.objects.adapters.ColorAdapter;
+import glitch.api.objects.adapters.SubscriptionTypeAdapter;
+import glitch.api.objects.adapters.UserTypeAdapter;
+import glitch.api.objects.enums.SubscriptionType;
+import glitch.api.objects.enums.UserType;
 import glitch.auth.Scope;
 import glitch.auth.objects.adapters.ScopeAdapter;
 import glitch.exceptions.http.ResponseException;
@@ -12,6 +17,7 @@ import lombok.Getter;
 import okhttp3.*;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -239,6 +245,9 @@ public class GlitchHttpClient {
          */
         public Builder withDefaultTypeAdapters() {
             addTypeAdapter(Scope.class, new ScopeAdapter());
+            addTypeAdapter(Color.class, new ColorAdapter());
+            addTypeAdapter(UserType.class, new UserTypeAdapter());
+            addTypeAdapter(SubscriptionType.class, new SubscriptionTypeAdapter());
             return this;
         }
 

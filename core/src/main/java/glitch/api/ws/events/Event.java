@@ -15,13 +15,17 @@ import java.util.UUID;
  */
 @Data
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class Event<S extends AbstractWebSocketService<S, ? extends Event<S>>> {
+public abstract class Event<S extends AbstractWebSocketService<S>> implements IEvent<S> {
     @ToString.Exclude
     private final S client;
     private final Instant createdAt;
     private final UUID eventId;
 
     protected Event(S client) {
-        this(client, Instant.now(), UUID.randomUUID());
+        this(client, Instant.now());
+    }
+
+    protected Event(S client, Instant createdAt) {
+        this(client, createdAt, UUID.randomUUID());
     }
 }

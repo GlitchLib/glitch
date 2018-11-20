@@ -3,16 +3,14 @@ package glitch.api;
 import glitch.GlitchClient;
 import glitch.api.ws.CloseStatus;
 import glitch.api.ws.Converter;
-import glitch.api.ws.events.CloseEvent;
-import glitch.api.ws.events.Event;
-import glitch.api.ws.events.OpenEvent;
-import glitch.api.ws.events.QueuedMessageEvent;
-import glitch.exceptions.ws.RemoteCloseException;
+import glitch.api.ws.events.*;
+import glitch.exceptions.ws.ClosedByRemoteException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.*;
 import okio.ByteString;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxProcessor;
@@ -32,10 +30,9 @@ import java.util.logging.Level;
  * <p>
  *
  * @param <S> extending {@link AbstractWebSocketService this class}
- * @param <E> extending {@link Event}
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractWebSocketService<S extends AbstractWebSocketService<S, E>, E extends Event<S>> {
+public abstract class AbstractWebSocketService<S extends AbstractWebSocketService<S>> {
 
     /**
      * Getting {@link GlitchClient}
@@ -44,8 +41,8 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
     @Getter
     private final GlitchClient client;
     private final Request request;
-    private final FluxProcessor<E, E> eventProcessor;
-    private final Converter<ByteString, E, S> eventConverter;
+    private final FluxProcessor<IEvent<S>, IEvent<S>> eventProcessor;
+    private final Converter<S> eventConverter;
 
     private final AtomicBoolean closedByUser = new AtomicBoolean(false);
 
@@ -62,8 +59,8 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
     protected AbstractWebSocketService(
             GlitchClient client,
             String uri,
-            FluxProcessor<E, E> eventProcessor,
-            Converter<ByteString, E, S> eventConverter) {
+            FluxProcessor<IEvent<S>, IEvent<S>> eventProcessor,
+            Converter<S> eventConverter) {
         Objects.requireNonNull(uri, "uri == null");
         if (!uri.matches("^ws(s)://(.+)")) {
             throw new IllegalArgumentException("URI must contain a WebSocket prefix.");
@@ -84,7 +81,7 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
     protected AbstractWebSocketService(
             GlitchClient client,
             String uri,
-            Converter<ByteString, E, S> eventConverter) {
+            Converter<S> eventConverter) {
         this(client, uri, EmitterProcessor.create(false), eventConverter);
     }
 
@@ -94,63 +91,51 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
 
     /**
      * Connecting to WebSocket Service
-     * @return {@code {@link OpenEvent}} ready to subscribe
+     * @return connection established
      * @throws AlreadyConnectedException WebSocket is already connected to their service
      */
-    public Mono<OpenEvent<S>> connect() {
-        return getEventProcessor()
-                .doOnSubscribe(s -> doConnect())
-                .ofType(OpenEvent.class)
-                .map(e -> (OpenEvent<S>) e)
-                .next();
+    public Mono<Void> connect() {
+        return Mono.fromCallable(() -> {
+            if (!isOpen()) {
+                return new OkHttpClient().newWebSocket(request, adaptListener());
+            } else throw new AlreadyConnectedException();
+        }).then();
     }
 
-    public Flux<E> listenOn(Class<E> type) {
+    public <E extends IEvent<S>> Flux<E> listenOn(Class<E> type) {
         return getEventProcessor()
                 .ofType(type);
     }
 
     /**
      * Sending Message and adding them to {@link QueuedMessageEvent}
-     * @param message byte message
-     * @return {@code {@link QueuedMessageEvent}} ready to subscribe
+     * @param message stringify reactive message using {@link Publisher}
+     * @return Message Send using non-blocking operation
      * @throws NotYetConnectedException WebSocket is not connected
      */
-    protected Mono<QueuedMessageEvent<S>> send(byte[] message) {
-        return getEventProcessor()
-                .doOnSubscribe(s -> doQueueMessage(message))
-                .ofType(QueuedMessageEvent.class)
-                .map(e -> (QueuedMessageEvent<S>) e)
-                .next();
-    }
-
-    /**
-     * Sending Message and adding them to {@link QueuedMessageEvent}
-     * @param message stringify message
-     * @return {@code {@link QueuedMessageEvent}} ready to subscribe
-     * @throws NotYetConnectedException WebSocket is not connected
-     */
-    protected Mono<QueuedMessageEvent<S>> send(String message) {
-        return getEventProcessor()
-                .doOnSubscribe(s -> doQueueMessage(message))
-                .ofType(QueuedMessageEvent.class)
-                .map(e -> (QueuedMessageEvent<S>) e)
-                .next();
+    public Mono<Void> send(Publisher<String> message) {
+        return Flux.from(message).log()
+                .doOnEach(stringSignal -> {
+                    if (stringSignal.isOnNext()) {
+                        doQueueMessage(stringSignal.get());
+                    }
+                }).then();
     }
 
     /**
      * Sending shutdown WebSocket
      * @param code {@link WebSocket} code
      * @param reason Reason
-     * @return Shutting down WebSocket and handling {@code {@link CloseEvent}} ready to subscribe
+     * @return Shutting down WebSocket
      * @throws NotYetConnectedException WebSocket is not connected
      */
-    public Mono<CloseEvent<S>> close(int code, String reason) {
-        return getEventProcessor()
-                .doOnSubscribe(s -> doDisconnect(code, reason))
-                .ofType(CloseEvent.class)
-                .map(e -> (CloseEvent<S>) e)
-                .next();
+    public Mono<Void> close(int code, String reason) {
+        return Mono.fromCallable(() -> {
+            if (isOpen()) {
+                closedByUser.set(ws.close(code, reason));
+                return null;
+            } else throw new NotYetConnectedException();
+        }).then();
     }
 
     /**
@@ -158,38 +143,16 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
      * @return {@link Event Events} composed into {@link Flux}
      */
 
-    protected Flux<E> getEventProcessor() {
-        return eventProcessor
+    protected <E extends IEvent<S>> Flux<E> getEventProcessor() {
+        return (Flux<E>) eventProcessor
                 .subscribeOn(Schedulers.parallel())
                 .log("glitch.http.ws", Level.ALL);
-    }
-
-    private void doConnect() {
-        if (!isOpen()) {
-            new OkHttpClient().newWebSocket(request, adaptListener());
-        } else throw new AlreadyConnectedException();
-    }
-
-    private void doDisconnect(int code, String reason) {
-        if (isOpen()) {
-            closedByUser.set(true);
-            ws.close(code, reason);
-        } else throw new NotYetConnectedException();
-    }
-
-    private void doQueueMessage(byte[] message) {
-        if (isOpen() && message != null) {
-            ByteString bytes = ByteString.of(message);
-            if (ws.send(bytes)) {
-                eventProcessor.onNext((E) new QueuedMessageEvent<>((S) AbstractWebSocketService.this, bytes));
-            }
-        } else throw new NotYetConnectedException();
     }
 
     private void doQueueMessage(String message) {
         if (isOpen() && message != null) {
             if (ws.send(message)) {
-                eventProcessor.onNext((E) new QueuedMessageEvent<>((S) AbstractWebSocketService.this, ByteString.encodeUtf8((String) message)));
+                eventProcessor.onNext(new QueuedMessageEvent<>((S) AbstractWebSocketService.this, ByteString.encodeUtf8(message)));
             }
         }
     }
@@ -199,7 +162,7 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 setWs(webSocket);
-                eventProcessor.onNext((E) new OpenEvent<>((S) AbstractWebSocketService.this));
+                eventProcessor.onNext(new OpenEvent<>((S) AbstractWebSocketService.this));
             }
 
             @Override
@@ -211,10 +174,10 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
             public void onClosed(WebSocket webSocket, int code, String reason) {
                 CloseStatus status = new CloseStatus(code, reason);
                 if (closedByUser.get()) {
-                    eventProcessor.onNext((E) new CloseEvent<>((S) AbstractWebSocketService.this, status));
+                    eventProcessor.onNext(new CloseEvent<>((S) AbstractWebSocketService.this, status));
                     eventProcessor.onComplete();
                 } else {
-                    eventProcessor.onError(new RemoteCloseException(status));
+                    eventProcessor.onError(new ClosedByRemoteException(status));
                 }
                 setWs(null);
             }

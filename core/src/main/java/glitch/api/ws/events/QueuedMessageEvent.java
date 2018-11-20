@@ -2,7 +2,7 @@ package glitch.api.ws.events;
 
 import glitch.api.AbstractWebSocketService;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import okio.ByteString;
 
 /**
@@ -10,12 +10,8 @@ import okio.ByteString;
  * @param <S> client extended {@link AbstractWebSocketService}
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class QueuedMessageEvent<S extends AbstractWebSocketService<S, ? extends Event<S>>> extends Event<S> {
+public class QueuedMessageEvent<S extends AbstractWebSocketService<S>> implements IEvent<S> {
+    @ToString.Exclude
+    private final S client;
     private final ByteString message;
-
-    public QueuedMessageEvent(S client, ByteString message) {
-        super(client);
-        this.message = message;
-    }
 }

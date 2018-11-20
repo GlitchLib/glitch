@@ -1,15 +1,15 @@
 package glitch;
 
-import glitch.api.AbstractRestService;
 import glitch.auth.CredentialManager;
 import glitch.auth.Scope;
 import glitch.auth.store.EmptyStorage;
 import glitch.auth.store.Storage;
-import java.util.*;
-import javax.annotation.Nullable;
 import lombok.*;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Mono;
+
+import javax.annotation.Nullable;
+import java.util.*;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
