@@ -124,6 +124,16 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
 
     /**
      * Sending shutdown WebSocket
+     *
+     * @return Shutting down WebSocket
+     * @throws NotYetConnectedException WebSocket is not connected
+     */
+    public Mono<Void> close() {
+        return close(1000, "Disconnect");
+    }
+
+    /**
+     * Sending shutdown WebSocket
      * @param code {@link WebSocket} code
      * @param reason Reason
      * @return Shutting down WebSocket

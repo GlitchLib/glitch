@@ -27,6 +27,7 @@ public class GlitchClient {
     }
 
     @Data
+    @Getter(AccessLevel.NONE)
     @Accessors(chain = true, fluent = true)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Builder {

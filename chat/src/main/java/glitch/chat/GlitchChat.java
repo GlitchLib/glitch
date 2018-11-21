@@ -15,10 +15,7 @@ import glitch.chat.object.entities.ChannelEntity;
 import glitch.chat.object.entities.UserEntity;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.services.UserService;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -151,15 +148,18 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
     }
 
     @Data
+    @Getter(AccessLevel.NONE)
     @Accessors(fluent = true, chain = true)
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    static class Builder {
+    public static class Builder {
         private final GlitchClient client;
         private FluxProcessor<IEvent<GlitchChat>, IEvent<GlitchChat>> eventProcessor = EmitterProcessor.create(true);
         private final AtomicBoolean secure = new AtomicBoolean(true);
         private final Set<String> channels = new LinkedHashSet<>();
         private UserCredential botCredential;
         private final AtomicBoolean forceQuery = new AtomicBoolean(false);
+        @Setter(AccessLevel.NONE)
+        private final AtomicBoolean shutdownHook = new AtomicBoolean(false);
 
         @Nullable
         private GlitchKraken krakenApi;
@@ -174,6 +174,11 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
 
         public Builder joinChannel(Collection<String> channels) {
             this.channels.addAll(channels);
+            return this;
+        }
+
+        public Builder addShutdownHook() {
+            this.shutdownHook.set(true);
             return this;
         }
 
@@ -195,7 +200,12 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
 
         public Mono<GlitchChat> build() {
             return createBotConfig().map(credential -> new GlitchChat(client, new Configuration(credential, forceQuery.get()), eventProcessor, secure.get(), getApi()))
-                    .doOnSuccess(client -> channels.forEach(client::joinChannel));
+                    .doOnSuccess(client -> {
+                        channels.forEach(client::joinChannel);
+                        if (shutdownHook.get()) {
+                            Runtime.getRuntime().addShutdownHook(new Thread(client::close));
+                        }
+                    });
         }
 
         @Nullable
