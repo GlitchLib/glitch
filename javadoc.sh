@@ -14,7 +14,7 @@ for PROJECT in "auth" "chat" "core" "docs" "helix" "kraken" "pubsub"; do
 
     JAVADOC_DESTINATION=build/javadocs/${TRAVIS_TAG}/${PROJECT}
 
-    cp -ar ${DIRECTORY} ${JAVADOC_DESTINATION}
+    cp -arf ${DIRECTORY} ${JAVADOC_DESTINATION}
 done
 
 cd ./build/javadocs
