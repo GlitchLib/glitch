@@ -7,10 +7,6 @@ import java.util.UUID;
 
 public interface IEvent<S extends AbstractWebSocketService<S>> {
     S getClient();
-    default Instant getCreatedAt() {
-        return Instant.now();
-    }
-    default UUID getEventId() {
-        return UUID.randomUUID();
-    }
+    Instant getCreatedAt();
+    UUID getEventId();
 }

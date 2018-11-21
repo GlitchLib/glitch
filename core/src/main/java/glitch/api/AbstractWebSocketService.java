@@ -140,7 +140,7 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
 
     /**
      * Getting Event Processor
-     * @return {@link Event Events} composed into {@link Flux}
+     * @return {@link AbstractEvent Events} composed into {@link Flux}
      */
 
     protected <E extends IEvent<S>> Flux<E> getEventProcessor() {

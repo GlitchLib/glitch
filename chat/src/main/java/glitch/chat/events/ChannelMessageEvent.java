@@ -2,7 +2,8 @@ package glitch.chat.events;
 
 import com.google.common.collect.ImmutableSet;
 import glitch.api.objects.json.Badge;
-import glitch.api.ws.events.Event;
+import glitch.api.ws.events.AbstractEvent;
+import glitch.api.ws.events.IEvent;
 import glitch.chat.GlitchChat;
 import glitch.chat.object.entities.ChannelEntity;
 import glitch.chat.object.entities.ChannelUserEntity;
@@ -13,7 +14,7 @@ import reactor.core.publisher.Mono;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ChannelMessageEvent extends Event<GlitchChat> {
+public class ChannelMessageEvent extends AbstractEvent<GlitchChat> implements IEvent<GlitchChat> {
     private final Mono<ChannelEntity> channel;
     private final Mono<ChannelUserEntity> user;
     private final String content;

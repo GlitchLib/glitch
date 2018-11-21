@@ -4,14 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
-import glitch.api.objects.json.Badge;
 import glitch.api.objects.enums.UserType;
+import glitch.api.objects.json.Badge;
 
-import java.awt.Color;
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 /**
  * Tags are be part Immutable {@link java.util.Map Map} of {@link java.lang.String Strings}.

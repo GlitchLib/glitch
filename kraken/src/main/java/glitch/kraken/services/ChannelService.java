@@ -2,15 +2,10 @@ package glitch.kraken.services;
 
 import glitch.api.AbstractHttpService;
 import glitch.auth.objects.json.Credential;
-import glitch.exceptions.http.ResponseException;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.AuthorizedChannel;
 import glitch.kraken.object.json.Channel;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 public class ChannelService extends AbstractHttpService {
     public ChannelService(GlitchKraken rest) {

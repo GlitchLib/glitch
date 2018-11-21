@@ -5,7 +5,6 @@ import glitch.api.objects.enums.UserType;
 import glitch.kraken.object.json.interfaces.IAuthorizedUser;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.time.Instant;
 

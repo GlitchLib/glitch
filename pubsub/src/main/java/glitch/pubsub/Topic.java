@@ -1,33 +1,51 @@
 package glitch.pubsub;
 
-import glitch.auth.Credential;
+import glitch.api.http.Unofficial;
 import glitch.auth.Scope;
-import glitch.auth.ScopeIsMissingException;
-import glitch.core.utils.Immutable;
-import glitch.core.utils.Unofficial;
+import glitch.auth.objects.json.Credential;
+import glitch.exceptions.http.ScopeIsMissingException;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.UUID;
-import javax.annotation.Nullable;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.immutables.value.Value;
 
-@Immutable
-@Value.Immutable
-public interface Topic {
+@Data
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class Topic {
+    private final Topic.Type type;
+    private final String[] suffix;
+    @Nullable
+    private final Credential credential;
+
+    public UUID getCode() {
+        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
+    }
+
+    public String getRawType() {
+        return getType().toRaw(suffix);
+    }
+
+    public String toString() {
+        return String.format("Topic(\"%s\")", getRawType());
+    }
+
     /**
      * Anyone cheers on a specified channel.
      */
-    static Topic bits(Long channelId, Credential credential) {
-        return TopicImpl.of(Type.CHANNEL_BITS, toArray(channelId), credential);
+    public static Topic bits(Long channelId, Credential credential) {
+        return new Topic(Type.CHANNEL_BITS, toArray(channelId), credential);
     }
 
     /**
      * Anyone cheers on a authorized channel.
      */
-    static Topic bits(Credential credential) {
+    public static Topic bits(Credential credential) {
         return bits(credential.getUserId(), credential);
     }
 
@@ -36,9 +54,9 @@ public interface Topic {
      * <p>
      * Subgift subscription messages contain recipient information.
      */
-    static Topic subscription(Long channelId, Credential credential) throws ScopeIsMissingException {
+    public static Topic subscription(Long channelId, Credential credential) throws ScopeIsMissingException {
         if (credential.getScopes().contains(Scope.CHANNEL_SUBSCRIPTIONS)) {
-            return TopicImpl.of(Type.CHANNEL_SUBSCRIPTION, toArray(channelId), credential);
+            return new Topic(Type.CHANNEL_SUBSCRIPTION, toArray(channelId), credential);
         } else throw new ScopeIsMissingException(Scope.CHANNEL_SUBSCRIPTIONS);
     }
 
@@ -47,91 +65,88 @@ public interface Topic {
      * <p>
      * Subgift subscription messages contain recipient information.
      */
-    static Topic subscription(Credential credential) throws ScopeIsMissingException {
+    public static Topic subscription(Credential credential) throws ScopeIsMissingException {
         return subscription(credential.getUserId(), credential);
     }
 
     /**
      * Anyone whispers the specified user.
      */
-    static Topic whispers(Credential credential) throws ScopeIsMissingException {
+    public static Topic whispers(Credential credential) throws ScopeIsMissingException {
         if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.WHISPERS_READ)) {
-            return TopicImpl.of(Type.WHISPERS, toArray(credential.getUserId()), credential);
+            return new Topic(Type.WHISPERS, toArray(credential.getUserId()), credential);
         } else throw new ScopeIsMissingException(Scope.WHISPERS_READ);
     }
 
     /**
      * Anyone follow on a specified channel.
      */
-    static Topic following(Long channelId) {
-        return TopicImpl.of(Type.FOLLOW, toArray(channelId), null);
+    public static Topic following(Long channelId) {
+        return new Topic(Type.FOLLOW, toArray(channelId), null);
     }
 
     /**
      * Listening moderation actions in specific channel.
      * Owner ID must be a moderator in specific channel.
      */
-    static Topic moderationActions(Long channelId, Credential credential) throws ScopeIsMissingException {
+    public static Topic moderationActions(Long channelId, Credential credential) throws ScopeIsMissingException {
         if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.CHANNEL_MODERATE)) {
-            return TopicImpl.of(Type.CHAT_MODERATION_ACTIONS, toArray(channelId, credential.getUserId()), credential);
+            return new Topic(Type.CHAT_MODERATION_ACTIONS, toArray(channelId, credential.getUserId()), credential);
         } else throw new ScopeIsMissingException(Scope.CHANNEL_MODERATE);
     }
 
     /**
      * Listening moderation actions on the own channel.
      */
-    static Topic moderationActions(Credential credential) throws ScopeIsMissingException {
+    public static Topic moderationActions(Credential credential) throws ScopeIsMissingException {
         return moderationActions(credential.getUserId(), credential);
     }
 
     /**
      * Listens EBS broadcast sent to specific extension on a specific channel
      */
-    static Topic extensionBroadcast() {
+    public static Topic extensionBroadcast() {
         throw new UnsupportedOperationException("Extensions is currently unsupported");
     }
 
     /**
      * Listening live stream with view counter in specific channel name
      */
-    static Topic videoPlayback(String channelName) {
-        return TopicImpl.of(Type.VIDEO_PLAYBACK, toArray(channelName), null);
+    public static Topic videoPlayback(String channelName) {
+        return new Topic(Type.VIDEO_PLAYBACK, toArray(channelName), null);
     }
 
     /**
      * Anyone makes a purchase on a channel.
      */
-    static Topic commerce(Long channelId, Credential credential) {
-        return TopicImpl.of(Type.CHANNEL_COMMERCE, toArray(channelId), credential);
+    public static Topic commerce(Long channelId, Credential credential) {
+        return new Topic(Type.CHANNEL_COMMERCE, toArray(channelId), credential);
     }
 
     /**
      * Anyone makes a purchase on your channel.
      */
-    static Topic commerce(Credential credential) {
+    public static Topic commerce(Credential credential) {
         return commerce(credential.getUserId(), credential);
     }
 
-    static <S extends Serializable> String[] toArray(S... serialized) {
+    private static <S extends Serializable> String[] toArray(S... serialized) {
         return Arrays.stream(serialized).map(String::valueOf).toArray(String[]::new);
     }
 
-    Type getType();
+    public static Topic fromRaw(String raw) {
+        String[] split = raw.split(".");
 
-    String[] getSuffix();
+        String[] suffix = Arrays.stream(split).filter(e -> !e.equals(split[0]))
+                .map(s -> s.replace("-broadcast", ""))
+                .toArray(String[]::new);
 
-    @Value.Lazy
-    default UUID getCode() {
-        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
+        if (split.length > 2 && split[0].equals(Type.CHAT_MODERATION_ACTIONS.value)) {
+            return new Topic(Type.CHAT_MODERATION_ACTIONS, suffix, null);
+        } else {
+            return new Topic(Type.readType(split[0]), suffix, null);
+        }
     }
-
-    @Value.Lazy
-    default String getRawType() {
-        return getType().toRaw(getSuffix());
-    }
-
-    @Nullable
-    Credential getCredential();
 
     @RequiredArgsConstructor
     enum Type {
@@ -193,6 +208,13 @@ public interface Topic {
 
         @Getter
         private final String value;
+
+        private static Type readType(String raw) {
+            for (Type t : values()) {
+                if (t.value.equals(raw)) return t;
+            }
+            return null;
+        }
 
         String toRaw(String... subject) {
             return String.format("%s.%s", value, String.join(".", subject));

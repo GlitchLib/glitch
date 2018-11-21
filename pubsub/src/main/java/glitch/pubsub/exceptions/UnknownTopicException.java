@@ -1,8 +1,6 @@
 package glitch.pubsub.exceptions;
 
-import java.io.IOException;
-
-public class UnknownTopicException extends IOException {
+public class UnknownTopicException extends PubSubException {
     public UnknownTopicException(String message) {
         super(message);
     }

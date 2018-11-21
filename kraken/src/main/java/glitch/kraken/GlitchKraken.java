@@ -1,7 +1,6 @@
 package glitch.kraken;
 
 import glitch.GlitchClient;
-import glitch.api.AbstractHttpService;
 import glitch.api.AbstractRestService;
 import glitch.api.http.GlitchHttpClient;
 import glitch.kraken.services.*;

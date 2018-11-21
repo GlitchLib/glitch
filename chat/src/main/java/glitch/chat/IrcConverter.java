@@ -1,7 +1,7 @@
 package glitch.chat;
 
 import glitch.api.ws.Converter;
-import glitch.api.ws.events.Event;
+import glitch.api.ws.events.IEvent;
 import glitch.chat.events.ChannelMessageEvent;
 import glitch.chat.events.JoinUserChannelEvent;
 import glitch.chat.events.PartUserChannelEvent;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class IrcConverter implements Converter<GlitchChat> {
     @Override
-    public Event<GlitchChat> convert(ByteString value, GlitchChat chat) {
+    public IEvent<GlitchChat> convert(ByteString value, GlitchChat chat) {
         Message message = toMessage(value.utf8());
         return doConvert(message, chat);
     }
@@ -72,7 +72,7 @@ public class IrcConverter implements Converter<GlitchChat> {
         return rawMsg.build();
     }
 
-    private Event<GlitchChat> doConvert(Message message, GlitchChat chat) {
+    private IEvent<GlitchChat> doConvert(Message message, GlitchChat chat) {
         switch (message.getCommand()) {
             case JOIN:
                 return new JoinUserChannelEvent(chat, message);

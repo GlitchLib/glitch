@@ -2,14 +2,16 @@ package glitch.api.ws.events;
 
 import glitch.api.AbstractWebSocketService;
 import lombok.Data;
-import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
  * Open Event emitting while connection in {@link AbstractWebSocketService} has started
  * @param <S> client extended {@link AbstractWebSocketService}
  */
 @Data
-public class OpenEvent<S extends AbstractWebSocketService<S>> implements IEvent<S> {
-    @ToString.Exclude
-    private final S client;
+@EqualsAndHashCode(callSuper = true)
+public class OpenEvent<S extends AbstractWebSocketService<S>> extends AbstractEvent<S> implements IEvent<S> {
+    public OpenEvent(S client) {
+        super(client);
+    }
 }

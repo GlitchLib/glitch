@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import glitch.api.objects.enums.UserType;
 import glitch.kraken.object.json.interfaces.IUser;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
 

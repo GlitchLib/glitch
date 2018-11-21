@@ -4,16 +4,16 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import glitch.GlitchClient;
 import glitch.api.AbstractWebSocketService;
+import glitch.api.ws.events.IEvent;
 import glitch.api.ws.events.OpenEvent;
-import glitch.auth.objects.json.Credential;
 import glitch.auth.UserCredential;
+import glitch.auth.objects.json.Credential;
 import glitch.chat.exceptions.AlreadyJoinedChannelException;
 import glitch.chat.exceptions.NotJoinedChannelException;
 import glitch.chat.exceptions.WhispersExceededException;
 import glitch.chat.object.entities.ChannelEntity;
 import glitch.chat.object.entities.UserEntity;
 import glitch.kraken.GlitchKraken;
-import glitch.api.ws.events.Event;
 import glitch.kraken.services.UserService;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -56,7 +56,7 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
     protected GlitchChat(
             GlitchClient client,
             Configuration configuration,
-            FluxProcessor<Event<GlitchChat>, Event<GlitchChat>> eventProcessor,
+            FluxProcessor<IEvent<GlitchChat>, IEvent<GlitchChat>> eventProcessor,
             boolean secure,
             @Nullable GlitchKraken api) {
         super(client, (secure) ? URI_SECURE : URI, eventProcessor, new IrcConverter());
@@ -155,7 +155,7 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     static class Builder {
         private final GlitchClient client;
-        private FluxProcessor<Event<GlitchChat>, Event<GlitchChat>> eventProcessor = EmitterProcessor.create(true);
+        private FluxProcessor<IEvent<GlitchChat>, IEvent<GlitchChat>> eventProcessor = EmitterProcessor.create(true);
         private final AtomicBoolean secure = new AtomicBoolean(true);
         private final Set<String> channels = new LinkedHashSet<>();
         private UserCredential botCredential;

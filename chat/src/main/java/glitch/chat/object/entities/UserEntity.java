@@ -5,7 +5,6 @@ import glitch.kraken.object.json.GlobalUserState;
 import glitch.kraken.services.UserService;
 import lombok.Getter;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Getter

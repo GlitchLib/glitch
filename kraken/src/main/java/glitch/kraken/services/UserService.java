@@ -12,7 +12,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 public class UserService extends AbstractHttpService {
     public UserService(GlitchKraken rest) {

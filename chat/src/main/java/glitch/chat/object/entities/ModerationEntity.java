@@ -21,7 +21,12 @@ public class ModerationEntity {
     @Getter
     private final ChannelEntity channel;
 
-    private final Mono<ChannelUserEntity> bot = this.channel.getBot();
+    private final Mono<ChannelUserEntity> bot;
+
+    ModerationEntity(ChannelEntity channel) {
+        this.channel = channel;
+        this.bot = channel.getBot();
+    }
 
     /**
      *

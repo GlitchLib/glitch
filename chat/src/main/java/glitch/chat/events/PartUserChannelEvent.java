@@ -1,6 +1,6 @@
 package glitch.chat.events;
 
-import glitch.api.ws.events.Event;
+import glitch.api.ws.events.AbstractEvent;
 import glitch.chat.GlitchChat;
 import glitch.chat.object.entities.ChannelEntity;
 import glitch.chat.object.entities.ChannelUserEntity;
@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PartUserChannelEvent extends Event<GlitchChat> {
+public class PartUserChannelEvent extends AbstractEvent<GlitchChat> {
     private final Mono<ChannelUserEntity> user;
     private final Mono<ChannelEntity> channel;
 
