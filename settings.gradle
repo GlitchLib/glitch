@@ -6,8 +6,8 @@ include("chat")
 include("kraken")
 include("helix")
 include("pubsub")
-include("socket")
 include("BOM")
 include("docs")
 
+// TODO: removing in Gradle 5.0
 enableFeaturePreview('STABLE_PUBLISHING')

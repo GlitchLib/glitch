@@ -1,4 +1,10 @@
 package glitch.kraken.services;
 
-public interface CollectionService {
+import glitch.api.AbstractHttpService;
+import glitch.kraken.GlitchKraken;
+
+public class CollectionService extends AbstractHttpService {
+    public CollectionService(GlitchKraken rest) {
+        super(rest.getClient(), rest.getHttpClient());
+    }
 }

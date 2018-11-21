@@ -1,23 +1,30 @@
 package glitch.kraken.services;
 
-public interface ChannelService {
-//    public ChannelService(GlitchClient client, HttpClient httpClient, BaseURL baseURL) {
-//        super(client, httpClient, baseURL);
+import glitch.api.AbstractHttpService;
+import glitch.auth.objects.json.Credential;
+import glitch.kraken.GlitchKraken;
+import glitch.kraken.object.json.AuthorizedChannel;
+import glitch.kraken.object.json.Channel;
+import reactor.core.publisher.Mono;
+
+public class ChannelService extends AbstractHttpService {
+    public ChannelService(GlitchKraken rest) {
+        super(rest.getClient(), rest.getHttpClient());
+    }
+
+    public Mono<AuthorizedChannel> getChannel(Credential credential) {
+        return exchange(get("/channel", AuthorizedChannel.class).header("Authorization", "OAuth " + credential.getAccessToken())).toMono();
+    }
+
+    public Mono<Channel> getChannel(Long id) {
+        return exchange(get(String.format("/channels/%s", id), Channel.class)).toMono();
+    }
+
+//    public Mono<Channel> updateChannel(Credential credential, Consumer<ChannelData> data) {
+//        return updateChannel(credential.getUserId(), credential, data);
 //    }
 //
-//    public Single<ChannelVerified> getChannel(Credential credential) {
-//        if (!hasRequiredScope(credential, Scope.CHANNEL_READ)) {
-//            return Single.error(new ScopeIsMissingException(Scope.CHANNEL_READ));
-//        }
-//        return Router.create(HttpMethod.GET, baseURL.endpoint("/channel"), ChannelVerified.class)
-//                .request()
-//                .header("Authorization", authorization("OAuth", credential))
-//                .exchange(httpClient);
-//    }
+//    public Mono<Channel> updateChannel(Long id, Credential credential, Consumer<ChannelData> data) {
 //
-//    public Single<Channel> getChannel(Long id) {
-//        return Router.create(HttpMethod.GET, baseURL.endpoint("/channels/%s"), Channel.class)
-//                .request(id)
-//                .exchange(httpClient);
 //    }
 }

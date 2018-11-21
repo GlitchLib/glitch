@@ -4,6 +4,7 @@ javadoc {
         encoding = "UTF-8"
     }
     exclude "**/*Impl.java"
+    exclude "**/GsonAdapters*.java"
 }
 
 task javadocJar(type: Jar,

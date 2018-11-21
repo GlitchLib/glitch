@@ -1,15 +1,18 @@
 package glitch.kraken.services;
 
-import glitch.core.utils.http.ResponseException;
-import glitch.kraken.json.lists.CheermoteList;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import glitch.api.AbstractHttpService;
+import glitch.kraken.GlitchKraken;
 
-public interface BitsService {
-    @GET @Path("/bits/actions")
-    CheermoteList getCheermotes() throws ResponseException;
+public class BitsService extends AbstractHttpService {
+    public BitsService(GlitchKraken rest) {
+        super(rest.getClient(), rest.getHttpClient());
+    }
 
-    @GET @Path("/bits/actions")
-    CheermoteList getCheermoteList(@QueryParam("channel_id") Long channelId) throws ResponseException;
+//    public HttpResponse<CheermoteList> getCheermotes() {
+//        return exchange(get("/bits/actions", CheermoteList.class));
+//    }
+
+//    public HttpResponse<CheermoteList> getCheermotes(Long channelId) {
+//        return exchange(get("/bits/actions", CheermoteList.class).queryParam("channel_id", channelId));
+//    }
 }
