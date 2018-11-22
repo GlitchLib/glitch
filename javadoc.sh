@@ -2,10 +2,11 @@
 
 ./gradlew javadoc
 
+JAVADOC_PATH=./build/javadocs
 JAVADOC_REPO=https://github.com/GlitchLib/docs.git
-JAVADOC_DESTINATION=build/javadocs/${TRAVIS_TAG}
+JAVADOC_DESTINATION=${JAVADOC_PATH}/${TRAVIS_TAG}
 
-git clone ${JAVADOC_REPO} ./build/javadocs
+git clone ${JAVADOC_REPO} ${JAVADOC_PATH}
 
 mkdir ${JAVADOC_DESTINATION}
 
@@ -18,9 +19,9 @@ for PROJECT in "auth" "chat" "core" "docs" "helix" "kraken" "pubsub"; do
     cp -ar ${DIRECTORY} ${JAVADOC_DESTINATION}/${PROJECT}
 done
 
-cd ./build/javadocs
+cd ${JAVADOC_PATH}
 
-cp ./latest/index.html ./${TRAVIS_TAG}/index.html
+cp -L ./latest/index.html ./${TRAVIS_TAG}/index.html
 ln -sfn ./${TRAVIS_TAG} ./latest
 
 git add .
