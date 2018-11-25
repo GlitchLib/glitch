@@ -109,12 +109,12 @@ public final class GlitchPubSub extends AbstractWebSocketService<GlitchPubSub> {
             return this;
         }
 
-        public Mono<GlitchPubSub> build() {
-            return Mono.just(new GlitchPubSub(client, eventProcessor, secure.get()));
+        public GlitchPubSub build() {
+            return new GlitchPubSub(client, eventProcessor, secure.get());
         }
 
-        public GlitchPubSub buildBlocking() {
-            return build().block();
+        public Mono<GlitchPubSub> buildAsync() {
+            return Mono.just(build());
         }
     }
 }

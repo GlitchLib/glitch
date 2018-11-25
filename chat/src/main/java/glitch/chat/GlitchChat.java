@@ -30,7 +30,6 @@ import java.nio.channels.NotYetConnectedException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 @Slf4j
 public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
@@ -198,7 +197,7 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
             return client.getCredentialManager().buildFromCredentials(botCredential);
         }
 
-        public Mono<GlitchChat> build() {
+        public Mono<GlitchChat> buildAsync() {
             return createBotConfig().map(credential -> new GlitchChat(client, new Configuration(credential, forceQuery.get()), eventProcessor, secure.get(), getApi()))
                     .doOnSuccess(client -> {
                         channels.forEach(client::joinChannel);
@@ -220,12 +219,8 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
             }
         }
 
-        public void buildConsume(Consumer<GlitchChat> chat) {
-            build().subscribe(chat);
-        }
-
-        public GlitchChat buildBlocking() {
-            return build().block();
+        public GlitchChat build() {
+            return buildAsync().block();
         }
     }
 }
