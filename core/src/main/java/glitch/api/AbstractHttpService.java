@@ -6,6 +6,7 @@ import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
 import glitch.auth.Scope;
+import glitch.exceptions.http.ScopeIsMissingException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -109,7 +110,24 @@ public abstract class AbstractHttpService {
         return http.exchange(request);
     }
 
+    /**
+     * Checks Required scopes
+     *
+     * @param scopes        list of {@link Scope}
+     * @param requiredScope required {@link Scope}
+     * @return scope is exist
+     */
     protected final boolean checkRequiredScope(Collection<Scope> scopes, Scope requiredScope) {
         return scopes.contains(requiredScope);
+    }
+
+    /**
+     * Handling {@link ScopeIsMissingException}
+     *
+     * @param requiredScope required {@link Scope}
+     * @return throwable exception called {@link ScopeIsMissingException}
+     */
+    protected ScopeIsMissingException handleScopeMissing(Scope requiredScope) {
+        return new ScopeIsMissingException(requiredScope);
     }
 }
