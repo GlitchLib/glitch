@@ -5,7 +5,14 @@ import com.google.gson.annotations.SerializedName;
 
 public interface OrdinalList<E> {
     @SerializedName(value = "data", alternate = {
-            "rooms"
+            "rooms",
+            "users",
+            "follows",
+            "teams",
+            "subscriptions",
+            "videos",
+            "communities",
+
     })
     ImmutableList<E> getData();
 
