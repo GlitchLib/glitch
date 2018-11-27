@@ -10,5 +10,7 @@ public interface OrdinalList<E> {
     ImmutableList<E> getData();
 
     @SerializedName("_total")
-    int size();
+    default int size() {
+        return getData().size();
+    }
 }
