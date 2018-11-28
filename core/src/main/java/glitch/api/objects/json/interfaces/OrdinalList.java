@@ -14,6 +14,7 @@ public interface OrdinalList<E> {
             "communities",
             "emoticons",
             "clips",
+            "ingests",
             "teams"
     })
     ImmutableList<E> getData();
