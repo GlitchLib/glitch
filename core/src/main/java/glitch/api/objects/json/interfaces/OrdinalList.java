@@ -12,6 +12,7 @@ public interface OrdinalList<E> {
             "subscriptions",
             "videos",
             "communities",
+            "emoticons",
 
     })
     ImmutableList<E> getData();
