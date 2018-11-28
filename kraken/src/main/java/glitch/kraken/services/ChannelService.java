@@ -201,7 +201,7 @@ public class ChannelService extends AbstractHttpService {
         }
 
         if (languages != null && languages.size() > 0) {
-            request.queryParam("language", languages.stream().map(Locale::toLanguageTag).collect(Collectors.joining(",")));
+            request.queryParam("language", languages.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
         }
 
         return exchange(request).toMono();
