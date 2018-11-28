@@ -12,7 +12,7 @@
 # Glitch
 A hybrid-reactive Java wrapper for the Twitch. Supports using:
 
-* [OkHttpClient](http://square.github.io/okhttp) - a Retrofit alternatives
+* [OkHttpClient](http://square.github.io/okhttp) - http client
 * [Gson](https://github.com/google/gson) - JSON
 * [Project Reactor](http://projectreactor.io/)
 
