@@ -13,7 +13,7 @@ public interface OrdinalList<E> {
             "videos",
             "communities",
             "emoticons",
-
+            "clips"
     })
     ImmutableList<E> getData();
 
