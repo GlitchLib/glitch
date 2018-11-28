@@ -29,7 +29,7 @@ public abstract class AbstractHttpService {
      */
     @Getter
     private final GlitchClient client;
-    private final GlitchHttpClient http;
+    protected final GlitchHttpClient http;
 
     /**
      * Create {@link HttpMethod#GET GET} Request

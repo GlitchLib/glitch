@@ -16,7 +16,8 @@ public interface OrdinalList<E> {
             "clips",
             "top",
             "ingests",
-            "teams"
+            "teams",
+            "vods"
     })
     ImmutableList<E> getData();
 
