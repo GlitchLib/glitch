@@ -1,19 +1,14 @@
 plugins {
-    id "net.ltgt.apt" version "0.18"
+    id "net.ltgt.apt" version "0.19"
     id "com.jfrog.bintray" version "1.8.4"
-    id "com.jfrog.artifactory" version "4.7.5"
     id "de.lukaskoerfer.gradle.delombok" version "0.2"
-    id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
 allprojects {
-    apply plugin: "io.spring.dependency-management"
-
-    dependencyManagement {
-        imports {
-            mavenBom "io.projectreactor:reactor-bom:Californium-SR2"
-        }
-    }
+    apply plugin: "net.ltgt.apt"
+    apply plugin: "net.ltgt.apt-idea"
+    apply plugin: "net.ltgt.apt-eclipse"
+    apply plugin: "de.lukaskoerfer.gradle.delombok"
 
     repositories {
         jcenter()
@@ -22,11 +17,7 @@ allprojects {
 
 subprojects {
     apply plugin: "java"
-    apply plugin: "net.ltgt.apt"
     apply plugin: "maven-publish"
-    apply plugin: "net.ltgt.apt-idea"
-    apply plugin: "net.ltgt.apt-eclipse"
-    apply plugin: "de.lukaskoerfer.gradle.delombok"
 
     tasks.withType(JavaCompile) {
         options.incremental = true
@@ -40,6 +31,9 @@ subprojects {
 
     dependencies {
         if (project.name != "BOM" && project.name != "docs") {
+            // https://docs.gradle.org/5.0/userguide/managing_transitive_dependencies.html#sec:bom_import
+            compile enforcedPlatform("io.projectreactor:reactor-bom:Californium-SR3")
+
             compile "org.slf4j:slf4j-api:1.7.25"
 
             compileOnly "org.projectlombok:lombok:1.18.4"
@@ -59,6 +53,6 @@ subprojects {
 }
 
 wrapper {
-    gradleVersion = "4.10.2"
+    gradleVersion = "5.0"
     distributionType = Wrapper.DistributionType.ALL
 }
