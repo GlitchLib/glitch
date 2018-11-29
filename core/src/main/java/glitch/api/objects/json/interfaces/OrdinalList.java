@@ -3,12 +3,30 @@ package glitch.api.objects.json.interfaces;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 
-public interface OrdinalList<E extends IDObject<?>> {
+public interface OrdinalList<E> {
     @SerializedName(value = "data", alternate = {
-            "rooms"
+            "rooms",
+            "users",
+            "follows",
+            "teams",
+            "subscriptions",
+            "videos",
+            "communities",
+            "emoticons",
+            "clips",
+            "top",
+            "ingests",
+            "channels",
+            "games",
+            "streams",
+            "teams",
+            "vods",
+            "featured"
     })
     ImmutableList<E> getData();
 
     @SerializedName("_total")
-    int size();
+    default int size() {
+        return getData().size();
+    }
 }

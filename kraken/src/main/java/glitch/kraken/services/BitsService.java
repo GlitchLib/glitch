@@ -1,18 +1,25 @@
 package glitch.kraken.services;
 
 import glitch.api.AbstractHttpService;
+import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.kraken.GlitchKraken;
+import glitch.kraken.object.json.Cheermote;
+import glitch.kraken.object.json.list.CheermoteList;
+import reactor.core.publisher.Flux;
 
 public class BitsService extends AbstractHttpService {
     public BitsService(GlitchKraken rest) {
         super(rest.getClient(), rest.getHttpClient());
     }
 
-//    public HttpResponse<CheermoteList> getCheermotes() {
-//        return exchange(get("/bits/actions", CheermoteList.class));
-//    }
+    public Flux<Cheermote> getCheermotes() {
+        return exchange(get("/bits/actions", CheermoteList.class))
+                .toFlux(OrdinalList::getData);
+    }
 
-//    public HttpResponse<CheermoteList> getCheermotes(Long channelId) {
-//        return exchange(get("/bits/actions", CheermoteList.class).queryParam("channel_id", channelId));
-//    }
+    public Flux<Cheermote> getCheermotes(Long channelId) {
+        return exchange(get("/bits/actions", CheermoteList.class)
+                .queryParam("channel_id", channelId))
+                .toFlux(OrdinalList::getData);
+    }
 }

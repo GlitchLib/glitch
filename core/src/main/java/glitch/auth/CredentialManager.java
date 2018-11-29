@@ -12,6 +12,7 @@ import glitch.auth.objects.json.Credential;
 import glitch.auth.objects.json.Validate;
 import glitch.auth.objects.json.impl.CredentialImpl;
 import glitch.auth.store.Storage;
+import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Type;
@@ -23,9 +24,10 @@ import java.util.Objects;
 public class CredentialManager extends AbstractHttpService {
     private static final String BASE_URL = "https://id.twitch.tv/oauth2";
 
-    private final Storage storage;
+    @Getter
+    private final Storage credentialStorage;
 
-    public CredentialManager(GlitchClient client, Storage storage) {
+    public CredentialManager(GlitchClient client, Storage credentialStorage) {
         super(
                 client,
                 GlitchHttpClient.builder()
@@ -34,7 +36,7 @@ public class CredentialManager extends AbstractHttpService {
                         .addTypeAdapters(authAdapters())
                         .build()
         );
-        this.storage = storage;
+        this.credentialStorage = credentialStorage;
     }
 
     public Mono<Validate> valid(Credential credential) {
@@ -67,7 +69,7 @@ public class CredentialManager extends AbstractHttpService {
                 .zipWhen(this::valid)
                 .map(CredentialImpl::new)
                 .cast(Credential.class)
-                .flatMap(storage::register);
+                .flatMap(credentialStorage::register);
     }
 
     public Mono<Credential> refresh(Credential credential) {
@@ -81,7 +83,7 @@ public class CredentialManager extends AbstractHttpService {
                 .zipWhen(this::valid)
                 .map(CredentialImpl::new)
                 .cast(Credential.class)
-                .flatMap(storage::register);
+                .flatMap(credentialStorage::register);
     }
 
     public Mono<Void> revoke(Credential credential) {
@@ -89,21 +91,20 @@ public class CredentialManager extends AbstractHttpService {
                 .queryParam("client_id", getClient().getConfiguration().getClientId())
                 .queryParam("token", credential.getAccessToken());
 
-        return exchange(revoke).toMono().then(storage.drop(credential));
+        return exchange(revoke).toMono().then(credentialStorage.drop(credential));
     }
 
     public Mono<Credential> buildFromCredentials(UserCredential userCredential) {
         return valid(userCredential)
                 .zipWith(Mono.just(userCredential), CredentialImpl::new)
                 .cast(Credential.class)
-                .flatMap(storage::register);
+                .flatMap(credentialStorage::register);
     }
 
     public AuthorizationUriBuilder buildAuthorizationUrl() {
         return new AuthorizationUriBuilder(BASE_URL, getClient().getConfiguration());
     }
 
-    @SuppressWarnings("unchecked")
     private static Map<Type, Object> authAdapters() {
         Map<Type, Object> adapters = new LinkedHashMap<>();
 

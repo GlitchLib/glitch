@@ -17,7 +17,7 @@ public class UserEntity implements AbstractEntity<GlobalUserState> {
         this.client = client;
         this.username = username;
         this.data = (getClient().getApi() != null) ? getClient().getApi()
-                .use(UserService.class).zipWhen(service -> service.getUser(username).next())
+                .use(UserService.class).zipWhen(service -> service.getUsers(username).next())
                 .flatMap(tuple -> tuple.getT1().getChatUserState(tuple.getT2())) :
                 Mono.empty();
     }

@@ -58,7 +58,7 @@ public class ChannelUserEntity {
     }
 
     public Mono<User> getData() {
-        return (getClient().getApi() != null) ? getClient().getApi().use(UserService.class).flatMap(service -> service.getUser(username).next()).switchIfEmpty(Mono.empty()) : Mono.empty();
+        return (getClient().getApi() != null) ? getClient().getApi().use(UserService.class).flatMap(service -> service.getUsers(username).next()).switchIfEmpty(Mono.empty()) : Mono.empty();
     }
 
     public Mono<Long> getFollowTime() {

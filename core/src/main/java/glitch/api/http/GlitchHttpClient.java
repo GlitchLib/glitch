@@ -3,6 +3,7 @@ package glitch.api.http;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import glitch.api.objects.adapters.ColorAdapter;
@@ -135,7 +136,7 @@ public class GlitchHttpClient {
 
     private Request doRequest(HttpRequest<?> httpRequest) {
         return new Request.Builder()
-                .method(httpRequest.method.name(), getBody(httpRequest.body))
+                .method(httpRequest.method.name(), getBody(httpRequest.body, httpRequest.serializeNullsBody.get()))
                 .url(buildUrl(httpRequest.endpoint, httpRequest.queryParams))
                 .headers(buildHeaders(httpRequest.headers)).build();
     }
@@ -163,14 +164,16 @@ public class GlitchHttpClient {
     }
 
     @Nullable
-    private RequestBody getBody(@Nullable Object body) {
+    private RequestBody getBody(@Nullable Object body, boolean serializeNulls) {
+        String requestBody = (serializeNulls) ? gson.newBuilder().serializeNulls().create().toJson(body) : gson.toJson(body);
         if (body == null) return null;
-        else return RequestBody.create(MediaType.get("application/json"), gson.toJson(body));
+        else return RequestBody.create(MediaType.get("application/json"), requestBody);
     }
 
     public static class Builder {
         private final Multimap<String, String> headers = LinkedListMultimap.create();
-        private final GsonBuilder gsonBuilder = new GsonBuilder();
+        private final GsonBuilder gsonBuilder = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
         private String baseUrl;
 
         @Nullable
