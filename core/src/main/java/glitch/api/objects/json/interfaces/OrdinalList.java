@@ -16,8 +16,12 @@ public interface OrdinalList<E> {
             "clips",
             "top",
             "ingests",
+            "channels",
+            "games",
+            "streams",
             "teams",
-            "vods"
+            "vods",
+            "featured"
     })
     ImmutableList<E> getData();
 

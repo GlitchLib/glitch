@@ -29,7 +29,7 @@ public class VideoService extends AbstractHttpService {
         return new FollowedVideosRequest(http, get("/videos/followed", Videos.class), credential);
     }
 
-    public void createUpload() {
+    public void createUpload(Credential credential) {
         throw new UnsupportedOperationException("Uploading videos is currently not supported. Checkout GitHub feature issues: https://github.com/GlitchLib/glitch/issues/25");
     }
 
