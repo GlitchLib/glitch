@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class TopVideosRequest extends AbstractRequest<Videos> {
+public class TopVideosRequest extends AbstractRequest<Videos, Video> {
     private Integer limit;
     private Integer offset;
     private Game game;

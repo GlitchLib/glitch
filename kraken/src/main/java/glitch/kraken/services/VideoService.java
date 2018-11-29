@@ -7,12 +7,10 @@ import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.Video;
 import glitch.kraken.object.json.list.Videos;
-import glitch.kraken.object.json.requests.VideoBodyData;
+import glitch.kraken.object.json.requests.VideoBody;
 import glitch.kraken.services.request.FollowedVideosRequest;
 import glitch.kraken.services.request.TopVideosRequest;
 import reactor.core.publisher.Mono;
-
-import java.util.function.Consumer;
 
 public class VideoService extends AbstractHttpService {
     public VideoService(GlitchKraken rest) {
@@ -35,14 +33,13 @@ public class VideoService extends AbstractHttpService {
         throw new UnsupportedOperationException("Uploading videos is currently not supported. Checkout GitHub feature issues: https://github.com/GlitchLib/glitch/issues/25");
     }
 
-    public Mono<Video> updateVideo(Long id, Credential credential, Consumer<VideoBodyData> requestBody) {
-        VideoBodyData bodyData = new VideoBodyData();
+    public Mono<Video> updateVideo(Long id, Credential credential, VideoBody body) {
+
         return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_EDITOR))
                 .flatMap(b -> {
                     if (b) {
-                        requestBody.accept(bodyData);
                         return exchange(put(String.format("/videos/%s", id), Video.class)
-                                .body(bodyData)
+                                .body(body)
                                 .queryParam("Authorization", "OAuth " + credential.getAccessToken()))
                                 .toMono();
                     } else {

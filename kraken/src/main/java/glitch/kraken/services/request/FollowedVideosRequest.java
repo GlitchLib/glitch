@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class FollowedVideosRequest extends AbstractRequest<Videos> {
+public class FollowedVideosRequest extends AbstractRequest<Videos, Video> {
     private final Credential credential;
 
     private Integer limit;

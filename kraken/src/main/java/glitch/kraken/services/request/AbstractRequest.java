@@ -6,15 +6,21 @@ import glitch.api.http.HttpResponse;
 import glitch.auth.Scope;
 import glitch.exceptions.http.ScopeIsMissingException;
 import lombok.Data;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 
 @Data
-public abstract class AbstractRequest<R> {
+public abstract class AbstractRequest<SINGLE, ITERABLE> {
     protected final GlitchHttpClient httpClient;
-    protected final HttpRequest<R> request;
+    protected final HttpRequest<SINGLE> request;
 
-    protected abstract HttpResponse<R> exchange();
+    protected abstract HttpResponse<SINGLE> exchange();
+
+    public abstract Mono<SINGLE> get();
+
+    public abstract Flux<ITERABLE> getIterable();
 
     /**
      * Checks Required scopes
