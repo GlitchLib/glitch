@@ -1,5 +1,5 @@
 plugins {
-    id "ru.vyarus.pom" version "1.3.0"
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
 description = "Bills of Materials (BOM) for Glitch packages"
@@ -12,17 +12,13 @@ tasks.withType(Jar) {
 delombok.enabled = false
 test.enabled = false
 
-withPomXml { Node node ->
-    node.appendNode("name").value = "Glitch BOM"
-    node.remove(node.dependencyManagement) // removes Project Reactor form dependency management
-    Node deps = node.appendNode("dependencyManagement").appendNode("dependencies")
-
-    project.rootProject.subprojects.each {
-        if (it.name != "BOM" && it.name != "docs") {
-            Node dep = deps.appendNode('dependency')
-            dep.appendNode('groupId', it.group)
-            dep.appendNode('artifactId', it.archivesBaseName)
-            dep.appendNode('version', it.version)
+dependencyManagement {
+    dependencies {
+        rootProject.subprojects.each {
+            if (it.name != "BOM" && it.name != "docs") {
+                dependency(group: it.group, name: it.archivesBaseName, version: it.version)
+            }
         }
     }
 }
+
