@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class Emote implements IDObject<Long> {
     private final Long id;
-    @SerializedName("regex")
+    @SerializedName(value = "regex", alternate = {"code"})
     private final String name;
 
     private final ImmutableList<EmoteImage> images;
