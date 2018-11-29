@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * HTTP Request created by {@code {@link GlitchHttpClient#create(HttpMethod, String, Class)}}.
@@ -19,6 +20,7 @@ public class HttpRequest<T> {
 
     @Nullable
     Object body;
+    final AtomicBoolean serializeNullsBody = new AtomicBoolean(false);
 
     final Multimap<String, String> headers = HashMultimap.create();
     final Multimap<String, ? extends Serializable> queryParams = HashMultimap.create();
@@ -32,11 +34,23 @@ public class HttpRequest<T> {
     /**
      * Set Request Body
      * @param body body Object
+     * @param serializeNulls serialize nulls
+     * @return this
+     */
+    public HttpRequest<T> body(Object body, boolean serializeNulls) {
+        this.body = body;
+        this.serializeNullsBody.set(serializeNulls);
+        return this;
+    }
+
+    /**
+     * Set Request Body without serializing nulls
+     *
+     * @param body body Object
      * @return this
      */
     public HttpRequest<T> body(Object body) {
-        this.body = body;
-        return this;
+        return body(body, false);
     }
 
     /**

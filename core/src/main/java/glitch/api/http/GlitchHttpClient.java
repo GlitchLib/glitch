@@ -136,7 +136,7 @@ public class GlitchHttpClient {
 
     private Request doRequest(HttpRequest<?> httpRequest) {
         return new Request.Builder()
-                .method(httpRequest.method.name(), getBody(httpRequest.body))
+                .method(httpRequest.method.name(), getBody(httpRequest.body, httpRequest.serializeNullsBody.get()))
                 .url(buildUrl(httpRequest.endpoint, httpRequest.queryParams))
                 .headers(buildHeaders(httpRequest.headers)).build();
     }
@@ -164,9 +164,10 @@ public class GlitchHttpClient {
     }
 
     @Nullable
-    private RequestBody getBody(@Nullable Object body) {
+    private RequestBody getBody(@Nullable Object body, boolean serializeNulls) {
+        String requestBody = (serializeNulls) ? gson.newBuilder().serializeNulls().create().toJson(body) : gson.toJson(body);
         if (body == null) return null;
-        else return RequestBody.create(MediaType.get("application/json"), gson.toJson(body));
+        else return RequestBody.create(MediaType.get("application/json"), requestBody);
     }
 
     public static class Builder {
