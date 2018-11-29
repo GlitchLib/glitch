@@ -1,5 +1,6 @@
 package glitch.kraken.object.json.list;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import glitch.kraken.object.json.Emote;
 import glitch.kraken.object.json.EmoteSet;
@@ -8,17 +9,18 @@ import lombok.Data;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Data
 public class EmoteSets {
     @Getter(AccessLevel.NONE)
     private final Multimap<Integer, Emote> emoticonSets;
 
-    public EmoteSet get(Integer id) {
-        if (emoticonSets.containsKey(id)) {
-            return new EmoteSet(id, new ArrayList<>(emoticonSets.get(id)));
-        }
+    public ImmutableSet<EmoteSet> toEmoteSets() {
+        return ImmutableSet.copyOf(emoticonSets.asMap().entrySet().stream().map(e -> new EmoteSet(e.getKey(), new ArrayList<>(e.getValue()))).collect(Collectors.toSet()));
+    }
 
-        return null;
+    public EmoteSet get(Integer id) {
+        return toEmoteSets().stream().filter(s -> s.getId().equals(id)).findFirst().orElse(null);
     }
 }

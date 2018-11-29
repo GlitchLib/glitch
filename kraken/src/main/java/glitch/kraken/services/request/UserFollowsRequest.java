@@ -1,10 +1,11 @@
 package glitch.kraken.services.request;
 
 import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpRequest;
+import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.kraken.object.enums.Direction;
+import glitch.kraken.object.enums.Sorting;
 import glitch.kraken.object.json.UserFollow;
 import glitch.kraken.object.json.list.UserFollowers;
 import lombok.Setter;
@@ -14,14 +15,14 @@ import reactor.core.publisher.Mono;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class ChannelFollowersRequest extends AbstractRequest<UserFollowers, UserFollow> {
+public class UserFollowsRequest extends AbstractRequest<UserFollowers, UserFollow> {
     private Integer limit;
     private Integer offset;
-    private String cursor;
     private Direction direction;
+    private Sorting sortBy;
 
-    public ChannelFollowersRequest(GlitchHttpClient httpClient, HttpRequest<UserFollowers> request) {
-        super(httpClient, request);
+    public UserFollowsRequest(GlitchHttpClient http, Long id) {
+        super(http, http.create(HttpMethod.GET, String.format("/users/%s/follows/channels", id), UserFollowers.class));
     }
 
     @Override
@@ -34,21 +35,23 @@ public class ChannelFollowersRequest extends AbstractRequest<UserFollowers, User
             request.queryParam("offset", offset);
         }
 
-        if (cursor != null) {
-            request.queryParam("cursor", cursor);
-        }
-
         if (direction != null) {
             request.queryParam("direction", direction.name().toLowerCase());
+        }
+
+        if (sortBy != null) {
+            request.queryParam("sortby", sortBy.name().toLowerCase());
         }
 
         return httpClient.exchange(request);
     }
 
+    @Override
     public Mono<UserFollowers> get() {
         return exchange().toMono();
     }
 
+    @Override
     public Flux<UserFollow> getIterable() {
         return get().flatMapIterable(OrdinalList::getData);
     }

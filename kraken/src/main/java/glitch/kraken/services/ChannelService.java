@@ -81,7 +81,7 @@ public class ChannelService extends AbstractHttpService {
     }
 
     public ChannelFollowersRequest getChannelFollowers(Long id) {
-        return new ChannelFollowersRequest(http, get(String.format("/channels/%s/follows", id), Followers.class));
+        return new ChannelFollowersRequest(http, get(String.format("/channels/%s/follows", id), UserFollowers.class));
     }
 
     public Flux<Team> getChannelTeams(Long id) {

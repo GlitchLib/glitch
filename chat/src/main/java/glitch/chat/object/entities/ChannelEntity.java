@@ -32,7 +32,7 @@ public class ChannelEntity implements AbstractEntity<Channel> {
 
     public ChannelEntity(GlitchChat client, String channelName) {
         this.client = client;
-        this.data = (client.getApi() != null) ? client.getApi().use(UserService.class).flatMap(service -> service.getUser(channelName).next())
+        this.data = (client.getApi() != null) ? client.getApi().use(UserService.class).flatMap(service -> service.getUsers(channelName).next())
                 .flatMap(u -> client.getApi().use(ChannelService.class).flatMap(service -> service.getChannel(u.getId()))).switchIfEmpty(Mono.empty()) : Mono.empty();
         this.channelName = channelName;
 
