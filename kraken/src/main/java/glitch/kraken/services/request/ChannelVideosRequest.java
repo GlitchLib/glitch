@@ -4,6 +4,7 @@ import glitch.api.AbstractRequest;
 import glitch.api.http.GlitchHttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
+import glitch.api.objects.enums.VideoType;
 import glitch.kraken.object.enums.VideoSort;
 import glitch.kraken.object.json.Video;
 import glitch.kraken.object.json.list.ChannelVideos;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class ChannelVideosRequest extends AbstractRequest<ChannelVideos, Video> {
     private Integer limit;
     private Integer offset;
-    private final Set<Video.Type> videoType = new LinkedHashSet<>();
+    private final Set<VideoType> videoType = new LinkedHashSet<>();
     private final Set<Locale> languages = new LinkedHashSet<>();
     private VideoSort sort;
 
@@ -28,11 +29,11 @@ public class ChannelVideosRequest extends AbstractRequest<ChannelVideos, Video> 
         super(httpClient, request);
     }
 
-    public ChannelVideosRequest videoType(Video.Type... types) {
+    public ChannelVideosRequest videoType(VideoType... types) {
         return videoType(Arrays.asList(types));
     }
 
-    public ChannelVideosRequest videoType(Collection<Video.Type> types) {
+    public ChannelVideosRequest videoType(Collection<VideoType> types) {
         videoType.addAll(types);
         return this;
     }

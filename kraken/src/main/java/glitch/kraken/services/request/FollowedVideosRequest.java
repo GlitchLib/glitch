@@ -4,6 +4,7 @@ import glitch.api.AbstractRequest;
 import glitch.api.http.GlitchHttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
+import glitch.api.objects.enums.VideoType;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.auth.Scope;
 import glitch.auth.objects.json.Credential;
@@ -25,7 +26,7 @@ public class FollowedVideosRequest extends AbstractRequest<Videos, Video> {
 
     private Integer limit;
     private Integer offset;
-    private final Set<Video.Type> videoType = new LinkedHashSet<>();
+    private final Set<VideoType> videoType = new LinkedHashSet<>();
     private final Set<Locale> language = new LinkedHashSet<>();
     private VideoSort sort;
 
@@ -34,11 +35,11 @@ public class FollowedVideosRequest extends AbstractRequest<Videos, Video> {
         this.credential = credential;
     }
 
-    public FollowedVideosRequest videoType(Video.Type... types) {
+    public FollowedVideosRequest videoType(VideoType... types) {
         return videoType(Arrays.asList(types));
     }
 
-    public FollowedVideosRequest videoType(Collection<Video.Type> types) {
+    public FollowedVideosRequest videoType(Collection<VideoType> types) {
         videoType.addAll(types);
         return this;
     }
