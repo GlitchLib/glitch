@@ -1,7 +1,7 @@
 package glitch.kraken.object.json;
 
 import com.google.gson.annotations.SerializedName;
-import glitch.kraken.object.enums.BroadcasterType;
+import glitch.api.objects.enums.BroadcasterType;
 import glitch.kraken.object.json.interfaces.IUser;
 import lombok.Data;
 

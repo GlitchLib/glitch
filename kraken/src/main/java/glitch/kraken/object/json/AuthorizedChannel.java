@@ -1,6 +1,6 @@
 package glitch.kraken.object.json;
 
-import glitch.kraken.object.enums.BroadcasterType;
+import glitch.api.objects.enums.BroadcasterType;
 import glitch.kraken.object.json.interfaces.IAuthorizedUser;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

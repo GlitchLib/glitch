@@ -23,7 +23,6 @@ public class GlitchHelix extends AbstractRestService {
         this.register(new AnalyticsService(this));
         this.register(new BitsService(this));
         this.register(new ClipsService(this));
-        this.register(new EntitlementService(this));
         this.register(new GameService(this));
         this.register(new StreamService(this));
         this.register(new UserService(this));
