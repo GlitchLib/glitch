@@ -52,6 +52,9 @@ subprojects {
     }
 }
 
+rootProject.bintrayUpload.enabled = false
+rootProject.bintrayPublish.enabled = false
+
 wrapper {
     gradleVersion = "5.0"
     distributionType = Wrapper.DistributionType.ALL
