@@ -127,7 +127,10 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
     }
 
     private void doWhisperRateLimit() {
-        configuration.getWhisperLimits().subscribe(limit -> this.whispers = CacheBuilder.newBuilder().maximumSize(limit.getT2()).expireAfterWrite(Duration.ofMillis(limit.getT1())).build());
+        configuration.getWhisperLimits()
+                .subscribe(limit -> this.whispers = CacheBuilder.newBuilder()
+                        .maximumSize(limit.getT2())
+                        .expireAfterWrite(Duration.ofMillis(limit.getT1())).build());
     }
 
     private Mono<ChannelEntity> getChannel(String name, boolean join) {

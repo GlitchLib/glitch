@@ -1,6 +1,7 @@
 package glitch.kraken.services.request;
 
 import com.google.common.net.UrlEscapers;
+import glitch.api.AbstractRequest;
 import glitch.api.http.GlitchHttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;

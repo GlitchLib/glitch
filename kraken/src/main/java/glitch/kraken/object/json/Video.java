@@ -3,12 +3,14 @@ package glitch.kraken.object.json;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import glitch.api.objects.adapters.VideoTypeAdapter;
+import glitch.api.objects.adapters.VideoViewTypeAdapter;
+import glitch.api.objects.enums.VideoType;
+import glitch.api.objects.enums.ViewType;
 import glitch.api.objects.json.interfaces.Creation;
 import glitch.api.objects.json.interfaces.IDObject;
-import glitch.kraken.object.adapters.BroadcastTypeAdapter;
 import glitch.kraken.object.adapters.VideoIdAdapter;
 import glitch.kraken.object.adapters.VideoStatusAdapter;
-import glitch.kraken.object.adapters.VideoViewTypeAdapter;
 import lombok.Data;
 
 import javax.annotation.Nullable;
@@ -20,9 +22,9 @@ public class Video implements IDObject<Long>, Creation {
     @JsonAdapter(VideoIdAdapter.class)
     private final Long id;
     private final Long broadcastId;
-    @JsonAdapter(BroadcastTypeAdapter.class)
+    @JsonAdapter(VideoTypeAdapter.class)
     @SerializedName("broadcast_type")
-    private final Type broadcastType;
+    private final VideoType broadcastType;
     private final Channel channel;
     private final Instant createdAt;
 
@@ -67,18 +69,9 @@ public class Video implements IDObject<Long>, Creation {
         }
     }
 
-    public enum Type {
-        ARCHIVE, HIGHLIGHT, UPLOAD
-    }
-
     public enum Status {
         CREATED,
         RECORDING,
         RECORDED
-    }
-
-    public enum ViewType {
-        PUBLIC,
-        PRIVATE
     }
 }

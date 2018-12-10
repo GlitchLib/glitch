@@ -243,4 +243,14 @@ public class ModerationEntity {
     private ScopeIsMissingException scopeMissing() {
         return new ScopeIsMissingException(Scope.CHANNEL_EDITOR);
     }
+
+    public Mono<Void> delete(String id) {
+        return bot.flatMap(user -> {
+            if (user.isModerator() && hasScope(Scope.CHANNEL_MODERATE)) {
+                return channel.sendMessage(Mono.just(String.format("/delete %s", id)));
+            } else {
+                return Mono.error(noModeratorPermissions());
+            }
+        });
+    }
 }

@@ -1,4 +1,4 @@
-package glitch.kraken.services.request;
+package glitch.api;
 
 import glitch.api.http.GlitchHttpClient;
 import glitch.api.http.HttpRequest;

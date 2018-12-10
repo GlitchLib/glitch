@@ -50,3 +50,8 @@ bintray {
         }
     }
 }
+
+if (project == rootProject) {
+    bintrayUpload.enabled = false
+    bintrayPublish.enabled = false
+}

@@ -3,7 +3,7 @@
 ./gradlew javadoc
 
 JAVADOC_PATH=./build/javadocs
-JAVADOC_REPO=https://github.com/GlitchLib/docs.git
+JAVADOC_REPO=https://${GITHUB_TOKEN}@github.com/GlitchLib/docs.git
 JAVADOC_DESTINATION=${JAVADOC_PATH}/${TRAVIS_TAG}
 
 git clone ${JAVADOC_REPO} ${JAVADOC_PATH}
@@ -12,7 +12,8 @@ mkdir ${JAVADOC_DESTINATION}
 
 for PROJECT in "auth" "chat" "core" "docs" "helix" "kraken" "pubsub"; do
     DIRECTORY=${PROJECT}/build/docs/javadoc
-    if [[ PROJECT == "docs" ]]; then
+
+    if [[ PROJECT -eq "docs" ]]; then
         PROJECT="all"
     fi
 

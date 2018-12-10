@@ -1,4 +1,4 @@
-package glitch.kraken.object.enums;
+package glitch.api.objects.enums;
 
 public enum  BroadcasterType {
     NONE,

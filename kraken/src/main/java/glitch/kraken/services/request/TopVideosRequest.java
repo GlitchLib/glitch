@@ -1,8 +1,10 @@
 package glitch.kraken.services.request;
 
+import glitch.api.AbstractRequest;
 import glitch.api.http.GlitchHttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
+import glitch.api.objects.enums.VideoType;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.kraken.object.enums.VideoPeriod;
 import glitch.kraken.object.enums.VideoSort;
@@ -24,7 +26,7 @@ public class TopVideosRequest extends AbstractRequest<Videos, Video> {
     private Integer offset;
     private Game game;
     private VideoPeriod period;
-    private final Set<Video.Type> videoType = new LinkedHashSet<>();
+    private final Set<VideoType> videoType = new LinkedHashSet<>();
     private final Set<Locale> language = new LinkedHashSet<>();
     private VideoSort sort;
 
@@ -32,11 +34,11 @@ public class TopVideosRequest extends AbstractRequest<Videos, Video> {
         super(httpClient, request);
     }
 
-    public TopVideosRequest videoType(Video.Type... types) {
+    public TopVideosRequest videoType(VideoType... types) {
         return videoType(Arrays.asList(types));
     }
 
-    public TopVideosRequest videoType(Collection<Video.Type> types) {
+    public TopVideosRequest videoType(Collection<VideoType> types) {
         videoType.addAll(types);
         return this;
     }
