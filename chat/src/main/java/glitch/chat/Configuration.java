@@ -31,11 +31,6 @@ public class Configuration {
 //        });
     }
 
-    // TODO: Kraken API
-//    public Mono<GlobalUserState> getBotGlobalUserState() {
-//        return chat.getApi().getGlobalUserState(botCredentials);
-//    }
-
     public Mono<Long> getChatLimits(boolean moderator) {
         return Mono.delay(rateLimits.getChatDuration(moderator));
     }

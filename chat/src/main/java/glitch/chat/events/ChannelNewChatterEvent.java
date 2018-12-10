@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ChannelMessageEvent extends AbstractEvent<GlitchChat> implements IEvent<GlitchChat>, IDObject<String> {
+public class ChannelNewChatterEvent extends AbstractEvent<GlitchChat> implements IEvent<GlitchChat>, IDObject<String> {
     private final Mono<ChannelEntity> channel;
     private final Mono<ChannelUserEntity> user;
     private final String content;
@@ -23,13 +23,13 @@ public class ChannelMessageEvent extends AbstractEvent<GlitchChat> implements IE
     private final boolean actionMessage;
     private final String id;
 
-    public ChannelMessageEvent(GlitchChat client, Message message) {
+    public ChannelNewChatterEvent(GlitchChat client, Message message) {
         super(client, message.getTags().getSentTimestamp());
-        this.content = message.getFormattedTrailing();
+        this.content = message.getTrailing().replace("\001", "").replace("ACTION", "").trim();
         this.channel = client.getChannel(message.getMiddle().get(0).substring(1));
         this.badges = message.getTags().getBadges();
         this.user = this.channel.map(c -> new ChannelUserEntity(c, message.getPrefix().getNick(), badges));
-        this.actionMessage = message.isActionMessage();
+        this.actionMessage = message.getTrailing().matches("\\001ACTION(.*)\\001");
         this.id = message.getTags().get("id");
     }
 

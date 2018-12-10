@@ -1,10 +1,12 @@
 package glitch.chat.object.json;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Locale;
 
 @Data
+@AllArgsConstructor
 public class RoomState {
     private Locale broadcasterLanguage;
     private boolean emoteOnly;

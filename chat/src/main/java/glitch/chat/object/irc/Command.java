@@ -10,6 +10,7 @@ public enum Command {
     PART,
     HOST_TARGET,
     CLEAR_CHAT,
+    CLEAR_MESSAGE,
     USER_STATE,
     GLOBAL_USER_STATE,
     NICK,
@@ -102,6 +103,8 @@ public enum Command {
                 return ROOM_STATE;
             case "USERNOTICE":
                 return USER_NOTICE;
+            case "CLEARMSG":
+                return CLEAR_MESSAGE;
             default:
                 Command com = UNKNOWN;
                 com.value = cmd;

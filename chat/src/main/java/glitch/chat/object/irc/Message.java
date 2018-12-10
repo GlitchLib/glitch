@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Data
@@ -51,6 +52,17 @@ public class Message {
      *
      * @return the leftover middle parameters splitted with double dot colon ({@code :})
      */
+    @Nullable
     private final String trailing;
 
+    public boolean isActionMessage() {
+        return trailing != null && trailing.matches("^\\001ACTION(.*)\\001$");
+    }
+
+    @Nullable
+    public String getFormattedTrailing() {
+        if (trailing != null) {
+            return trailing.replace("\001ACTION", "").replace("\001", "");
+        } else return null;
+    }
 }
