@@ -6,6 +6,7 @@ import lombok.Data;
 public class ChatBadges {
     private final Images admin;
     private final Images broadcaster;
+    @Deprecated
     private final Images globalMod;
     private final Images mod;
     private final Images staff;

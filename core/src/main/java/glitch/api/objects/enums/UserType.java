@@ -3,6 +3,7 @@ package glitch.api.objects.enums;
 public enum UserType {
     USER,
     MOD,
+    @Deprecated
     GLOBAL_MOD,
     ADMIN,
     STAFF;

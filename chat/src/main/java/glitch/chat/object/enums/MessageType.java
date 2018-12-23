@@ -54,6 +54,7 @@ public enum MessageType {
     /**
      * You cannot ban global moderator &lt;user&gt;. Please email support@twitch.tv if a global moderator is being abusive.
      */
+    @Deprecated
     BAD_BAN_GLOBAL_MOD,
     /**
      * You cannot ban moderator &lt;user&gt; unless you are the owner of this channel.
@@ -153,6 +154,7 @@ public enum MessageType {
     /**
      * You cannot timeout global moderator &lt;user&gt;. Please email support@twitch.tv if a global moderator is being abusive.
      */
+    @Deprecated
     BAD_TIMEOUT_GLOBAL_MOD,
 
     /**

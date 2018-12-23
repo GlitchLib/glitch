@@ -6,6 +6,7 @@ import glitch.api.objects.json.Badge;
 import glitch.api.ws.events.AbstractEvent;
 import glitch.api.ws.events.IEvent;
 import glitch.chat.GlitchChat;
+import glitch.chat.events.interfaces.IMessageEvent;
 import glitch.chat.object.entities.UserEntity;
 import glitch.chat.object.irc.Emote;
 import glitch.chat.object.irc.Message;
@@ -55,6 +56,7 @@ public class PrivateMessageEvent extends AbstractEvent<GlitchChat> implements IE
         return getBadges().stream().anyMatch(badge -> badge.getName().equalsIgnoreCase("staff"));
     }
 
+    @Deprecated
     public boolean isGlobalMod() {
         return getBadges().stream().anyMatch(badge -> badge.getName().equalsIgnoreCase("global_mod"));
     }
