@@ -30,6 +30,7 @@ public class ModerationData {
         EMOTEONLY,
         EMOTEONLYOFF,
         R9KBETA,
-        R9KBETAOFF
+        R9KBETAOFF,
+        DELETE
     }
 }

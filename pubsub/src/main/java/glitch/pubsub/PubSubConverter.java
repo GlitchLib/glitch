@@ -171,6 +171,15 @@ public class PubSubConverter implements Converter<GlitchPubSub> {
                         modData.getCreatedById(),
                         false
                 ));
+            case DELETE:
+                return new MessageDeleteEvent(client, topic, new MessageDelete(
+                        modData.getArgs().get(2),
+                        modData.getCreatedBy(),
+                        modData.getCreatedById(),
+                        modData.getArgs().get(1),
+                        modData.getArgs().get(0),
+                        modData.getTargetId()
+                ));
         }
         return new RawMessageEvent(client, topic, data);
     }
