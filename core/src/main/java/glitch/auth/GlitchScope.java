@@ -1,10 +1,6 @@
 package glitch.auth;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
-public enum Scope {
+public enum GlitchScope {
 
     // --- Helix
 
@@ -29,7 +25,7 @@ public enum Scope {
      */
     USER_EDIT("user:edit"),
     /**
-     * Edit your channel’s broadcast configuration, including extension configuration. (This scope implies `[user:read:broadcast][Scope.USER_READ_BROADCAST]` capability.)
+     * Edit your channel’s broadcast configuration, including extension configuration. (This scope implies {@link #USER_READ_BROADCAST {@code user:read:broadcast}} capability.)
      */
     USER_EDIT_BROADCAST("user:edit:broadcast"),
     /**
@@ -109,7 +105,7 @@ public enum Scope {
      */
     OPENID,
     /**
-     * Turn on/off ignoring a user. Ignoring users means you cannot see them type, receive messages from them, etc.
+     * Turn on/off ignoring a user. Ignoring users means you cannot see them type, receive messages of them, etc.
      */
     USER_BLOCKS_EDIT,
     /**
@@ -156,22 +152,27 @@ public enum Scope {
      */
     WHISPERS_EDIT("whispers:edit");
 
+    private final String value;
 
+    GlitchScope(String value) {
+        this.value = value;
+    }
+
+    GlitchScope() {
+        this.value = name().toLowerCase();
+    }
 
     /**
      * Get the identifier that oauth will recognize.
      *
      * @return A `{@link String}` identifier of the scope.
      */
-    @Getter
-    private final String value;
-
-    Scope() {
-        this.value = name().toLowerCase();
+    public String getValue() {
+        return value;
     }
 
-    public static Scope from(String name) {
-        for (Scope scope : values()) {
+    public static GlitchScope of(String name) {
+        for (GlitchScope scope : values()) {
             if (scope.value.equals(name)) {
                 return scope;
             }

@@ -1,11 +1,11 @@
 package glitch.helix.service.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
 import glitch.helix.object.json.Video;
 import glitch.helix.object.json.list.Videos;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -13,8 +13,8 @@ import reactor.core.publisher.Mono;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class VideoRequest extends AbstractRequest<Videos, Video> {
-    public VideoRequest(GlitchHttpClient httpClient, HttpRequest<Videos> request) {
+public class VideoRequest extends AbstractRestService.AbstractRequest<Videos, Video> {
+    public VideoRequest(HttpClient httpClient, HttpRequest<Videos> request) {
         super(httpClient, request);
     }
 

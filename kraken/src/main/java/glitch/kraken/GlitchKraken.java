@@ -1,8 +1,8 @@
 package glitch.kraken;
 
 import glitch.GlitchClient;
-import glitch.api.AbstractRestService;
-import glitch.api.http.GlitchHttpClient;
+import glitch.service.AbstractRestService;
+import glitch.api.http.HttpClient;
 import glitch.kraken.services.*;
 
 import java.lang.reflect.Type;
@@ -12,7 +12,7 @@ import java.util.Map;
 public class GlitchKraken extends AbstractRestService {
     private static final String BASE_URL = "https://api.twitch.tv/kraken";
 
-    private GlitchKraken(GlitchClient client, GlitchHttpClient http) {
+    private GlitchKraken(GlitchClient client, HttpClient http) {
         super(client, http);
 
         registerAllServices();
@@ -36,7 +36,7 @@ public class GlitchKraken extends AbstractRestService {
     }
 
     public static GlitchKraken create(GlitchClient client) {
-        GlitchHttpClient httpClient = GlitchHttpClient.builder()
+        HttpClient httpClient = HttpClient.builder()
                 .withBaseUrl(BASE_URL)
                 .withDefaultTypeAdapters()
                 .addTypeAdapters(krakenAdapters())

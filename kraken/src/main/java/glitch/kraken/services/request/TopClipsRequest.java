@@ -1,7 +1,6 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
@@ -10,6 +9,7 @@ import glitch.kraken.object.json.Channel;
 import glitch.kraken.object.json.Clip;
 import glitch.kraken.object.json.Game;
 import glitch.kraken.object.json.list.Clips;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class TopClipsRequest extends AbstractRequest<Clips, Clip> {
+public class TopClipsRequest extends AbstractRestService.AbstractRequest<Clips, Clip> {
     private Channel channel;
     private Game game;
     private String cursor;
@@ -29,7 +29,7 @@ public class TopClipsRequest extends AbstractRequest<Clips, Clip> {
     private ClipPeriod period;
     private Boolean trending;
 
-    public TopClipsRequest(GlitchHttpClient httpClient, HttpRequest<Clips> request) {
+    public TopClipsRequest(HttpClient httpClient, HttpRequest<Clips> request) {
         super(httpClient, request);
     }
 

@@ -1,7 +1,7 @@
 package glitch.kraken.services;
 
 import com.google.gson.JsonObject;
-import glitch.api.AbstractHttpService;
+import glitch.service.AbstractHttpService;
 import glitch.api.http.HttpRequest;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;

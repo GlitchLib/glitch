@@ -33,7 +33,7 @@ public class Message {
     private final Prefix prefix;
 
     /**
-     * Specific IRC Command. If some commands isn't match from {@link Command commands} will be return {@link Command#UNKNOWN {@code UNKNOWN}}
+     * Specific IRC Command. If some commands isn't match of {@link Command commands} will be return {@link Command#UNKNOWN {@code UNKNOWN}}
      *
      * @return IRC Command
      */
@@ -48,7 +48,7 @@ public class Message {
     private final List<String> middle;
 
     /**
-     * The leftover parameters after {@link #getMiddle() Middle Parameters} splitted with double dot colon ({@code :}). Generally it is a message from the channel, user or server.
+     * The leftover parameters after {@link #getMiddle() Middle Parameters} splitted with double dot colon ({@code :}). Generally it is a message of the channel, user or server.
      *
      * @return the leftover middle parameters splitted with double dot colon ({@code :})
      */

@@ -1,18 +1,18 @@
 package glitch.helix.service.request;
 
 import com.google.common.net.UrlEscapers;
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
 import glitch.helix.object.HelixUtils;
 import glitch.helix.object.enums.Period;
 import glitch.helix.object.json.Bits;
 import glitch.helix.object.json.list.BitsLeaderboard;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -22,7 +22,7 @@ import java.time.Instant;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class BitsLeaderboardRequest extends AbstractRequest<BitsLeaderboard, Bits> {
+public class BitsLeaderboardRequest extends AbstractRestService.AbstractRequest<BitsLeaderboard, Bits> {
     private final Credential credential;
 
     private Integer count;
@@ -30,7 +30,7 @@ public class BitsLeaderboardRequest extends AbstractRequest<BitsLeaderboard, Bit
     private Instant startedAt;
     private Long userId;
 
-    public BitsLeaderboardRequest(GlitchHttpClient http, Credential credential) {
+    public BitsLeaderboardRequest(HttpClient http, Credential credential) {
         super(http, http.create(HttpMethod.GET, "/bits/leaderboard", BitsLeaderboard.class));
         this.credential = credential;
     }
@@ -56,9 +56,9 @@ public class BitsLeaderboardRequest extends AbstractRequest<BitsLeaderboard, Bit
 
     @Override
     public Mono<BitsLeaderboard> get() {
-        if (checkRequiredScope(credential.getScopes(), Scope.BITS_READ)) {
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.BITS_READ)) {
             return exchange().toMono();
-        } else return Mono.error(new ScopeIsMissingException(Scope.ANALYTICS_READ_EXTENSION));
+        } else return Mono.error(new ScopeIsMissingException(GlitchScope.ANALYTICS_READ_EXTENSION));
     }
 
     @Override

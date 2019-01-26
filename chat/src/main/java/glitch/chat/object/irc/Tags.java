@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 /**
  * Tags are be part Immutable {@link java.util.Map Map} of {@link java.lang.String Strings}.
- * Data receives from the IRC are be parsed into this object.
+ * Data receives of the IRC are be parsed into this object.
  *
  * @author Damian Staszewski
  * @see java.util.Map

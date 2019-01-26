@@ -1,6 +1,6 @@
 package glitch.auth.objects.json;
 
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 
 import java.util.Set;
 
@@ -9,7 +9,7 @@ public interface Validate {
 
     String getLogin();
 
-    Set<Scope> getScopes();
+    Set<GlitchScope> getScopes();
 
     Long getUserId();
 }

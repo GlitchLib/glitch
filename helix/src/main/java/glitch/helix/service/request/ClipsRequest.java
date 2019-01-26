@@ -1,8 +1,7 @@
 package glitch.helix.service.request;
 
 import com.google.common.net.UrlEscapers;
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.IDObject;
@@ -13,6 +12,7 @@ import glitch.helix.object.json.Clip;
 import glitch.helix.object.json.Game;
 import glitch.helix.object.json.User;
 import glitch.helix.object.json.list.Clips;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class ClipsRequest extends AbstractRequest<Clips, Clip> {
+public class ClipsRequest extends AbstractRestService.AbstractRequest<Clips, Clip> {
     private final Collection<String> id = new LinkedHashSet<>();
     private final Collection<Long> gameId = new LinkedHashSet<>();
     private final Collection<Long> broadcasterId = new LinkedHashSet<>();
@@ -38,22 +38,22 @@ public class ClipsRequest extends AbstractRequest<Clips, Clip> {
     private Instant startedAt;
     private Instant endedAt;
 
-    public ClipsRequest(GlitchHttpClient httpClient, Game[] game) {
+    public ClipsRequest(HttpClient httpClient, Game[] game) {
         this(httpClient);
         this.gameId.addAll(Arrays.stream(Arrays.copyOf(game, 20)).map(IDObject::getId).collect(Collectors.toSet()));
     }
 
-    public ClipsRequest(GlitchHttpClient httpClient, User[] user) {
+    public ClipsRequest(HttpClient httpClient, User[] user) {
         this(httpClient);
         this.broadcasterId.addAll(Arrays.stream(Arrays.copyOf(user, 20)).map(IDObject::getId).collect(Collectors.toSet()));
     }
 
-    public ClipsRequest(GlitchHttpClient httpClient, String[] ids) {
+    public ClipsRequest(HttpClient httpClient, String[] ids) {
         this(httpClient);
         this.id.addAll(Arrays.asList(Arrays.copyOf(ids, 100)));
     }
 
-    ClipsRequest(GlitchHttpClient httpClient) {
+    ClipsRequest(HttpClient httpClient) {
         super(httpClient, httpClient.create(HttpMethod.GET, "/clips", Clips.class));
     }
 

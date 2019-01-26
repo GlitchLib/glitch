@@ -1,8 +1,8 @@
 package glitch.helix;
 
 import glitch.GlitchClient;
-import glitch.api.AbstractRestService;
-import glitch.api.http.GlitchHttpClient;
+import glitch.service.AbstractRestService;
+import glitch.api.http.HttpClient;
 import glitch.helix.service.*;
 
 import java.lang.reflect.Type;
@@ -12,7 +12,7 @@ import java.util.Map;
 public class GlitchHelix extends AbstractRestService {
     private static final String BASE_URL = "https://api.twitch.tv/helix";
 
-    private GlitchHelix(GlitchClient client, GlitchHttpClient http) {
+    private GlitchHelix(GlitchClient client, HttpClient http) {
         super(client, http);
 
         registerAllServices();
@@ -31,7 +31,7 @@ public class GlitchHelix extends AbstractRestService {
     }
 
     public static GlitchHelix create(GlitchClient client) {
-        GlitchHttpClient http = GlitchHttpClient.builder()
+        HttpClient http = HttpClient.builder()
                 .withBaseUrl(BASE_URL)
                 .withDefaultTypeAdapters()
                 .addTypeAdapters(helixAdapters())

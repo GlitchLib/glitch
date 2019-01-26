@@ -1,13 +1,13 @@
 package glitch.helix.service.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.exceptions.GlitchException;
 import glitch.helix.object.json.Follow;
 import glitch.helix.object.json.list.Follows;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -15,13 +15,13 @@ import reactor.core.publisher.Mono;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class UserFollowRequest extends AbstractRequest<Follows, Follow> {
+public class UserFollowRequest extends AbstractRestService.AbstractRequest<Follows, Follow> {
     private String after;
     private Integer first;
     private final Long fromId;
     private final Long toId;
 
-    public UserFollowRequest(GlitchHttpClient httpClient, Long fromId, Long toId) {
+    public UserFollowRequest(HttpClient httpClient, Long fromId, Long toId) {
         super(httpClient, httpClient.create(HttpMethod.GET, "/users/follows", Follows.class));
         this.fromId = fromId;
         this.toId = toId;
@@ -51,7 +51,7 @@ public class UserFollowRequest extends AbstractRequest<Follows, Follow> {
     @Override
     public Mono<Follows> get() {
         if (fromId != null && toId != null) {
-            return Mono.error(new GlitchException("Cannot obtain from booth side user follow"));
+            return Mono.error(new GlitchException("Cannot obtain of booth side user follow"));
         } else {
             return exchange().toMono();
         }

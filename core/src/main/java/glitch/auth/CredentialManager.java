@@ -1,8 +1,9 @@
 package glitch.auth;
 
 import glitch.GlitchClient;
-import glitch.api.AbstractHttpService;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.Routes;
+import glitch.service.AbstractHttpService;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.auth.objects.adapters.AccessTokenAdapter;
 import glitch.auth.objects.adapters.ExpireInstantAdapter;
@@ -12,7 +13,7 @@ import glitch.auth.objects.json.Credential;
 import glitch.auth.objects.json.Validate;
 import glitch.auth.objects.json.impl.CredentialImpl;
 import glitch.auth.store.Storage;
-import lombok.Getter;
+import java.util.concurrent.CompletableFuture;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Type;
@@ -24,13 +25,12 @@ import java.util.Objects;
 public class CredentialManager extends AbstractHttpService {
     private static final String BASE_URL = "https://id.twitch.tv/oauth2";
 
-    @Getter
     private final Storage credentialStorage;
 
     public CredentialManager(GlitchClient client, Storage credentialStorage) {
         super(
                 client,
-                GlitchHttpClient.builder()
+                HttpClient.builder()
                         .withBaseUrl(BASE_URL)
                         .withDefaultTypeAdapters()
                         .addTypeAdapters(authAdapters())
@@ -39,70 +39,68 @@ public class CredentialManager extends AbstractHttpService {
         this.credentialStorage = credentialStorage;
     }
 
-    public Mono<Validate> valid(Credential credential) {
+    public CompletableFuture<Validate> valid(Credential credential) {
         return valid(credential.getAccessToken());
     }
 
-    public Mono<Validate> valid(UserCredential credential) {
+    public CompletableFuture<Validate> valid(UserCredential credential) {
         return valid(credential.getAccessToken());
     }
 
-    private Mono<Validate> valid(AccessToken at) {
+    private CompletableFuture<Validate> valid(AccessToken at) {
         return valid(at.getAccessToken());
     }
 
-    private Mono<Validate> valid(String accessToken) {
-        return exchange(get("/validate", Validate.class)
-                .header("Authorization", "OAuth " + accessToken))
-                .toMono();
+    private CompletableFuture<Validate> valid(String accessToken) {
+        return complete(Routes.get("/validate", Validate.class).newRequest()
+                .header("Authorization", "OAuth " + accessToken));
     }
 
-    public Mono<Credential> create(String code, String redirectUri) {
-        HttpRequest<AccessToken> accessTokenRequest = post("/token", AccessToken.class)
-                .queryParam("grant_type", "authorization_code")
-                .queryParam("client_id", getClient().getConfiguration().getClientId())
-                .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
-                .queryParam("code", code)
-                .queryParam("redirect_uri", Objects.requireNonNull((redirectUri != null) ? redirectUri : getClient().getConfiguration().getRedirectUri(), "redirect_uri == null"));
-
-        return exchange(accessTokenRequest).toMono()
-                .zipWhen(this::valid)
-                .map(CredentialImpl::new)
-                .cast(Credential.class)
-                .flatMap(credentialStorage::register);
+    public CompletableFuture<Credential> create(String code, String redirectUri) {
+        return complete(
+                Routes.post("/token", AccessToken.class)
+                        .newRequest()
+                        .queryParam("grant_type", "authorization_code")
+                        .queryParam("client_id", getClient().getConfiguration().getClientId())
+                        .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
+                        .queryParam("code", code)
+                        .queryParam("redirect_uri", Objects.requireNonNull((redirectUri != null) ? redirectUri : getClient().getConfiguration().getRedirectUri(), "redirect_uri == null"))
+        ).thenComposeAsync(token -> this.valid(token).thenApply(validate -> (Credential) new CredentialImpl(token, validate)))
+                .whenComplete((c, ex) -> credentialStorage.register(c));
     }
 
-    public Mono<Credential> refresh(Credential credential) {
-        HttpRequest<AccessToken> accessTokenRequest = post("/token", AccessToken.class)
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("client_id", getClient().getConfiguration().getClientId())
-                .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
-                .queryParam("refresh", credential.getRefreshToken());
-
-        return exchange(accessTokenRequest).toMono()
-                .zipWhen(this::valid)
-                .map(CredentialImpl::new)
-                .cast(Credential.class)
-                .flatMap(credentialStorage::register);
+    public CompletableFuture<Credential> refresh(Credential credential) {
+        return complete(
+                Routes.post("/token", AccessToken.class)
+                        .newRequest()
+                        .queryParam("grant_type", "refresh_token")
+                        .queryParam("client_id", getClient().getConfiguration().getClientId())
+                        .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
+                        .queryParam("refresh", credential.getRefreshToken())
+        ).thenComposeAsync(token -> this.valid(token).thenApply(validate -> (Credential) new CredentialImpl(token, validate)))
+                .whenComplete((c, ex) -> credentialStorage.register(c));
     }
 
-    public Mono<Void> revoke(Credential credential) {
-        HttpRequest<Void> revoke = post("/revoke", Void.class)
-                .queryParam("client_id", getClient().getConfiguration().getClientId())
-                .queryParam("token", credential.getAccessToken());
-
-        return exchange(revoke).toMono().then(credentialStorage.drop(credential));
+    public CompletableFuture<Void> revoke(Credential credential) {
+        return complete(
+                Routes.post("/revoke", Void.class).newRequest()
+                        .queryParam("client_id", getClient().getConfiguration().getClientId())
+                        .queryParam("token", credential.getAccessToken())
+        ).whenComplete(($, ex) -> credentialStorage.drop(credential));
     }
 
-    public Mono<Credential> buildFromCredentials(UserCredential userCredential) {
+    public CompletableFuture<Credential> buildFromCredentials(UserCredential userCredential) {
         return valid(userCredential)
-                .zipWith(Mono.just(userCredential), CredentialImpl::new)
-                .cast(Credential.class)
-                .flatMap(credentialStorage::register);
+                .thenApply(validate -> (Credential) new CredentialImpl(validate, userCredential))
+                .whenComplete((c, ex) -> credentialStorage.register(c));
     }
 
     public AuthorizationUriBuilder buildAuthorizationUrl() {
         return new AuthorizationUriBuilder(BASE_URL, getClient().getConfiguration());
+    }
+
+    public Storage getCredentialStorage() {
+        return credentialStorage;
     }
 
     private static Map<Type, Object> authAdapters() {

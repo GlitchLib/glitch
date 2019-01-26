@@ -1,6 +1,6 @@
 package glitch.api.ws.events;
 
-import glitch.api.AbstractWebSocketService;
+import glitch.service.AbstractWebSocketService;
 
 import java.time.Instant;
 import java.util.UUID;

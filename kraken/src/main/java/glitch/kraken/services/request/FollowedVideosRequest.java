@@ -1,16 +1,16 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.enums.VideoType;
 import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.object.enums.VideoSort;
 import glitch.kraken.object.json.Video;
 import glitch.kraken.object.json.list.Videos;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class FollowedVideosRequest extends AbstractRequest<Videos, Video> {
+public class FollowedVideosRequest extends AbstractRestService.AbstractRequest<Videos, Video> {
     private final Credential credential;
 
     private Integer limit;
@@ -30,7 +30,7 @@ public class FollowedVideosRequest extends AbstractRequest<Videos, Video> {
     private final Set<Locale> language = new LinkedHashSet<>();
     private VideoSort sort;
 
-    public FollowedVideosRequest(GlitchHttpClient httpClient, HttpRequest<Videos> request, Credential credential) {
+    public FollowedVideosRequest(HttpClient httpClient, HttpRequest<Videos> request, Credential credential) {
         super(httpClient, request);
         this.credential = credential;
     }
@@ -84,12 +84,12 @@ public class FollowedVideosRequest extends AbstractRequest<Videos, Video> {
     }
 
     public Mono<Videos> get() {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_READ))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ))
                 .flatMap(b -> {
                     if (b) {
                         return exchange().toMono();
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.USER_READ));
+                        return Mono.error(handleScopeMissing(GlitchScope.USER_READ));
                     }
                 });
     }

@@ -1,7 +1,7 @@
 package glitch.api.objects.json.interfaces;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 public interface OrdinalList<E> {
     @SerializedName(value = "data", alternate = {
@@ -23,7 +23,7 @@ public interface OrdinalList<E> {
             "vods",
             "featured"
     })
-    ImmutableList<E> getData();
+    List<E> getData();
 
     @SerializedName("_total")
     default int size() {

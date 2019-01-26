@@ -1,7 +1,7 @@
 package glitch.helix.service;
 
-import glitch.api.AbstractHttpService;
-import glitch.auth.Scope;
+import glitch.service.AbstractHttpService;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
 import glitch.helix.GlitchHelix;
@@ -18,13 +18,13 @@ public class ClipsService extends AbstractHttpService {
     }
 
     public Mono<ClipCreator> createClip(Credential credential, Long channelId, boolean hasDelay) {
-        if (checkRequiredScope(credential.getScopes(), Scope.CLIPS_EDIT)) {
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.CLIPS_EDIT)) {
             return exchange(post("/clips", SingletonClipCreator.class)
                     .queryParam("broadcaster_id", channelId)
                     .queryParam("has_delay", hasDelay)
                     .header("Authorization", "Bearer " + credential.getAccessToken()))
                     .toMono(clips -> clips.getData().get(0));
-        } else return Mono.error(new ScopeIsMissingException(Scope.CLIPS_EDIT));
+        } else return Mono.error(new ScopeIsMissingException(GlitchScope.CLIPS_EDIT));
     }
 
     public ClipsRequest getClips(String... id) {

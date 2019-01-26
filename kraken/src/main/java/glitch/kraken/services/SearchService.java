@@ -1,6 +1,6 @@
 package glitch.kraken.services;
 
-import glitch.api.AbstractHttpService;
+import glitch.service.AbstractHttpService;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.services.request.ChannelSearchRequest;
 import glitch.kraken.services.request.GamesSearchRequest;

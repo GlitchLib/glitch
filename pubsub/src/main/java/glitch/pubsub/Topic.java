@@ -1,7 +1,7 @@
 package glitch.pubsub;
 
 import glitch.api.http.Unofficial;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
 import lombok.AccessLevel;
@@ -55,9 +55,9 @@ public class Topic {
      * Subgift subscription messages contain recipient information.
      */
     public static Topic subscription(Long channelId, Credential credential) throws ScopeIsMissingException {
-        if (credential.getScopes().contains(Scope.CHANNEL_SUBSCRIPTIONS)) {
+        if (credential.getScopes().contains(GlitchScope.CHANNEL_SUBSCRIPTIONS)) {
             return new Topic(Type.CHANNEL_SUBSCRIPTION, toArray(channelId), credential);
-        } else throw new ScopeIsMissingException(Scope.CHANNEL_SUBSCRIPTIONS);
+        } else throw new ScopeIsMissingException(GlitchScope.CHANNEL_SUBSCRIPTIONS);
     }
 
     /**
@@ -73,9 +73,9 @@ public class Topic {
      * Anyone whispers the specified user.
      */
     public static Topic whispers(Credential credential) throws ScopeIsMissingException {
-        if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.WHISPERS_READ)) {
+        if (credential.getScopes().contains(GlitchScope.CHAT_LOGIN) || credential.getScopes().contains(GlitchScope.WHISPERS_READ)) {
             return new Topic(Type.WHISPERS, toArray(credential.getUserId()), credential);
-        } else throw new ScopeIsMissingException(Scope.WHISPERS_READ);
+        } else throw new ScopeIsMissingException(GlitchScope.WHISPERS_READ);
     }
 
     /**
@@ -90,9 +90,9 @@ public class Topic {
      * Owner ID must be a moderator in specific channel.
      */
     public static Topic moderationActions(Long channelId, Credential credential) throws ScopeIsMissingException {
-        if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.CHANNEL_MODERATE)) {
+        if (credential.getScopes().contains(GlitchScope.CHAT_LOGIN) || credential.getScopes().contains(GlitchScope.CHANNEL_MODERATE)) {
             return new Topic(Type.CHAT_MODERATION_ACTIONS, toArray(channelId, credential.getUserId()), credential);
-        } else throw new ScopeIsMissingException(Scope.CHANNEL_MODERATE);
+        } else throw new ScopeIsMissingException(GlitchScope.CHANNEL_MODERATE);
     }
 
     /**

@@ -1,7 +1,7 @@
 package glitch.auth.objects.json;
 
 import com.google.gson.annotations.SerializedName;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 
 import javax.annotation.Nullable;
 import java.time.Instant;
@@ -14,8 +14,8 @@ public interface AccessToken {
 
     @Nullable
     @SerializedName("expires_in")
-    Instant expiredAt();
+    Instant getExpiredAt();
 
     @SerializedName("scope")
-    Set<Scope> getScopes();
+    Set<GlitchScope> getScopes();
 }

@@ -1,5 +1,6 @@
 package glitch.exceptions.http;
 
+import glitch.api.http.HttpResponse;
 import glitch.exceptions.GlitchException;
 
 public class ResponseException extends GlitchException {
@@ -8,9 +9,14 @@ public class ResponseException extends GlitchException {
     private final String message;
 
     public ResponseException(int status, String error, String message) {
+        super(String.format("[%s] %s", status, (message != null && !message.equals("")) ? message : error));
         this.status = status;
         this.error = error;
         this.message = message;
+    }
+
+    public ResponseException(HttpResponse.Status status) {
+        this(status.getCode(), status.getMessage(), null);
     }
 
     public int getStatus() {
@@ -23,10 +29,5 @@ public class ResponseException extends GlitchException {
 
     public String getStatusMessage() {
         return message;
-    }
-
-    @Override
-    public String getMessage() {
-        return String.format("[%s] %s", status, (message != null && !message.equals("")) ? message : error);
     }
 }

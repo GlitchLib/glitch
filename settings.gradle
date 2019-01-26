@@ -1,10 +1,18 @@
-rootProject.name = "glitch"
+rootProject.name = "Glitch"
 
-include("auth")
-include("core")
-include("chat")
-include("kraken")
-include("helix")
-include("pubsub")
-include("BOM")
-include("docs")
+include "auth:ktor",
+        "auth:spring",
+        "auth:play",
+        "auth:vertx",
+        "auth:akka",
+        "auth:http4k"
+
+include "core" ,
+        "chat",
+        "kraken",
+        "helix",
+        "pubsub",
+        "webhook"
+
+include "all",
+        "bom"

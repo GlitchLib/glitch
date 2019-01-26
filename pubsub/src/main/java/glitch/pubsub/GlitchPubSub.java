@@ -2,14 +2,14 @@ package glitch.pubsub;
 
 import com.google.gson.*;
 import glitch.GlitchClient;
-import glitch.api.AbstractWebSocketService;
+import glitch.service.AbstractWebSocketService;
 import glitch.api.objects.adapters.ColorAdapter;
 import glitch.api.objects.adapters.SubscriptionTypeAdapter;
 import glitch.api.objects.adapters.UserTypeAdapter;
 import glitch.api.objects.enums.SubscriptionType;
 import glitch.api.objects.enums.UserType;
 import glitch.api.ws.events.IEvent;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.adapters.ScopeAdapter;
 import glitch.pubsub.object.adapters.TopicHandler;
 import glitch.pubsub.object.enums.MessageType;
@@ -72,7 +72,7 @@ public final class GlitchPubSub extends AbstractWebSocketService<GlitchPubSub> {
     private Gson gsonInit() {
         GsonBuilder gsonBuilder = new GsonBuilder();
 
-        gsonBuilder.registerTypeAdapter(Scope.class, new ScopeAdapter());
+        gsonBuilder.registerTypeAdapter(GlitchScope.class, new ScopeAdapter());
         gsonBuilder.registerTypeAdapter(Color.class, new ColorAdapter());
         gsonBuilder.registerTypeAdapter(UserType.class, new UserTypeAdapter());
         gsonBuilder.registerTypeAdapter(SubscriptionType.class, new SubscriptionTypeAdapter());

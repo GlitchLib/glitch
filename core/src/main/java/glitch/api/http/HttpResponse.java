@@ -1,81 +1,73 @@
 package glitch.api.http;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nullable;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 
 /**
- * HTTP Response {@link GlitchHttpClient#exchange(HttpRequest) Exchanged} via {@link HttpRequest}
- * Response Body can be composed using {@link #toMono()} or {@link #toFlux(Function)}.
+ * HTTP Response {@link HttpClient#exchange(HttpRequest) Exchanged} via {@link HttpRequest}
  * The last one must be composed into implemented {@link Iterable} interface.
- * @param <R> Response Type
+ * @author Damian Staszewski [damian@stachuofficial.tv]
+ * @version %I%, %G%
+ * @since 1.0
  */
-@Data
-public class HttpResponse<R> {
+public class HttpResponse {
     private final Status status;
-    private final ImmutableListMultimap<String, String> headers;
-    @Getter(AccessLevel.NONE)
-    private final Callable<R> body;
-    private final HttpRequest<R> request;
+    private final MultiValuedMap<String, String> headers;
+    @Nullable
+    private final byte[] body;
+    private final HttpRequest request;
+    private final Gson gson;
 
-    /**
-     * Call to non-blocking {@link Mono} Response
-     * @return a {@link Mono} Response
-     */
-    public Mono<R> toMono() {
-        return Mono.fromCallable(body);
+    public HttpResponse(Status status, MultiValuedMap<String, String> headers, @Nullable byte[] body, HttpRequest request, Gson gson) {
+        this.status = status;
+        this.headers = headers;
+        this.body = body;
+        this.request = request;
+        this.gson = gson;
     }
 
-    /**
-     * Call to non-blocking {@link Mono} Response with mapping your own body
-     * @return a {@link Mono} Response
-     */
-    public <T> Mono<T> toMono(Function<R, T> bodyMapper) {
-        return toMono().map(bodyMapper);
+    public Status getStatus() {
+        return status;
     }
 
-
-    /**
-     * Call to non-blocking {@link Flux} Response with mapping {@link Iterable} interface body
-     * @return a {@link Flux} Response
-     */
-    public <T> Flux<T> toFlux(Function<R, Iterable<T>> bodyMapper) {
-        return toMono().flatMapIterable(bodyMapper);
+    public MultiValuedMap<String, String> getHeaders() {
+        return headers;
     }
 
-    /**
-     * Consume Response Body
-     * @param body Response Body
-     * @param exception Exception if exist
-     */
-    public void getBody(Consumer<R> body, Consumer<Throwable> exception) {
-        toMono().subscribe(body, exception);
+    @Nullable
+    public byte[] getBody() {
+        return body;
     }
 
-    /**
-     * Getting Body with throwing exception
-     * @throws java.io.IOException Response can't be converted into propertly type
-     */
-    public R getBodyBlocking() throws Exception {
-        return body.call();
+    @Nullable
+    public String getBodyString() { return (body != null) ? new String(body, Charset.forName("UTF-8")) : null; }
+
+    @Nullable
+    public <T> T getBodyAs(Class<T> type) throws JsonSyntaxException {
+        if (body == null || type.isAssignableFrom(void.class) || type.isAssignableFrom(Void.class)) {
+            return null;
+        } else {
+            return gson.fromJson(getBodyString(), type);
+        }
     }
+
+    public HttpRequest getRequest() { return request; }
 
     /**
      * Getting values of Key Header
      * @param key Header Key
      * @return {@link java.util.List} of values
      */
-    public ImmutableList<String> getHeader(String key) {
-        return getHeaders().get(key);
-    }
+    public List<String> getHeader(String key) { return new ArrayList<>(headers.get(key)); }
 
     /**
      * Getting value of Key Header and value index
@@ -106,9 +98,43 @@ public class HttpResponse<R> {
     /**
      * Response Status POJO
      */
-    @Data
     public static class Status {
         private final int code;
         private final String message;
+
+        public Status(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Status)) return false;
+            Status status = (Status) o;
+            return getCode() == status.getCode() &&
+                    getMessage().equals(status.getMessage());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getCode(), getMessage());
+        }
+
+        @Override
+        public String toString() {
+            return "Status{" +
+                    "code=" + code +
+                    ", message='" + message + '\'' +
+                    '}';
+        }
     }
 }

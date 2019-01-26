@@ -1,13 +1,13 @@
 package glitch.kraken.services.request;
 
 import com.google.common.net.UrlEscapers;
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.kraken.object.json.Stream;
 import glitch.kraken.object.json.list.Streams;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -15,12 +15,12 @@ import reactor.core.publisher.Mono;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class StreamSearchRequest extends AbstractRequest<Streams, Stream> {
+public class StreamSearchRequest extends AbstractRestService.AbstractRequest<Streams, Stream> {
     private Integer limit;
     private Integer offset;
     private Boolean hls;
 
-    public StreamSearchRequest(GlitchHttpClient http, String query) {
+    public StreamSearchRequest(HttpClient http, String query) {
         super(http, http.create(HttpMethod.GET, "/search/channels", Streams.class).queryParam("query", UrlEscapers.urlFormParameterEscaper().escape(query)));
     }
 

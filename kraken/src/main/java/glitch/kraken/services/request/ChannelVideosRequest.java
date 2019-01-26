@@ -1,13 +1,13 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.enums.VideoType;
 import glitch.kraken.object.enums.VideoSort;
 import glitch.kraken.object.json.Video;
 import glitch.kraken.object.json.list.ChannelVideos;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class ChannelVideosRequest extends AbstractRequest<ChannelVideos, Video> {
+public class ChannelVideosRequest extends AbstractRestService.AbstractRequest<ChannelVideos, Video> {
     private Integer limit;
     private Integer offset;
     private final Set<VideoType> videoType = new LinkedHashSet<>();
     private final Set<Locale> languages = new LinkedHashSet<>();
     private VideoSort sort;
 
-    public ChannelVideosRequest(GlitchHttpClient httpClient, HttpRequest<ChannelVideos> request) {
+    public ChannelVideosRequest(HttpClient httpClient, HttpRequest<ChannelVideos> request) {
         super(httpClient, request);
     }
 

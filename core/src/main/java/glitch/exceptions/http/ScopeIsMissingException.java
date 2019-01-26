@@ -1,19 +1,17 @@
 package glitch.exceptions.http;
 
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.exceptions.GlitchException;
-import lombok.Getter;
 
-@Getter
 public class ScopeIsMissingException extends GlitchException {
-    private final Scope requiredScope;
+    private final GlitchScope requiredScope;
 
-    public ScopeIsMissingException(Scope requiredScope) {
+    public ScopeIsMissingException(GlitchScope requiredScope) {
+        super("Scope is required: " + requiredScope.getValue());
         this.requiredScope = requiredScope;
     }
 
-    @Override
-    public String getMessage() {
-        return "Scope is required: " + requiredScope.getValue();
+    public GlitchScope getRequiredScope() {
+        return requiredScope;
     }
 }

@@ -1,6 +1,6 @@
 package glitch.helix.service;
 
-import glitch.api.AbstractHttpService;
+import glitch.service.AbstractHttpService;
 import glitch.api.http.HttpRequest;
 import glitch.helix.GlitchHelix;
 import glitch.helix.object.json.Game;

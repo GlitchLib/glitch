@@ -1,6 +1,6 @@
 package glitch.helix.service;
 
-import glitch.api.AbstractHttpService;
+import glitch.service.AbstractHttpService;
 import glitch.auth.objects.json.Credential;
 import glitch.helix.GlitchHelix;
 import glitch.helix.service.request.BitsLeaderboardRequest;

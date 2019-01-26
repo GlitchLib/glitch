@@ -1,6 +1,9 @@
 package glitch.auth.store;
 
 import glitch.auth.objects.json.Credential;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +24,7 @@ public interface Storage {
     Mono<Credential> register(Credential credential);
 
     /**
-     * Removing credentials from your storage
+     * Removing credentials of your storage
      * @param credential User Credential
      * @return A removed or not removed (if not exist) will forwarding to success executing this method.
      */

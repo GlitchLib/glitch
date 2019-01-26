@@ -1,6 +1,6 @@
 package glitch.kraken.services;
 
-import glitch.api.AbstractHttpService;
+import glitch.service.AbstractHttpService;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.Clip;

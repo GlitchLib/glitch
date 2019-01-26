@@ -1,12 +1,12 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.kraken.object.json.Team;
 import glitch.kraken.object.json.list.Teams;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -14,11 +14,11 @@ import reactor.core.publisher.Mono;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class TeamsRequest extends AbstractRequest<Teams, Team> {
+public class TeamsRequest extends AbstractRestService.AbstractRequest<Teams, Team> {
     private Integer limit;
     private Integer offset;
 
-    public TeamsRequest(GlitchHttpClient httpClient, HttpRequest<Teams> request) {
+    public TeamsRequest(HttpClient httpClient, HttpRequest<Teams> request) {
         super(httpClient, request);
     }
 

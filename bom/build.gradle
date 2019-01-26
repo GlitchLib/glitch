@@ -9,7 +9,6 @@ javadoc.enabled = false
 tasks.withType(Jar) {
     enabled false
 }
-delombok.enabled = false
 test.enabled = false
 
 dependencyManagement {

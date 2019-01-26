@@ -1,22 +1,15 @@
 package glitch.chat;
 
-
 import glitch.auth.objects.json.Credential;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 public class Configuration {
-    @Getter
     private final Credential botCredentials;
 
     private final boolean forcingQuery;
 
-    @Setter(AccessLevel.PACKAGE)
     private RateLimiter rateLimits = RateLimiter.global();
-
 
     Configuration(Credential botCredentials, boolean forcingQuery) {
         this.botCredentials = botCredentials;
@@ -29,6 +22,15 @@ public class Configuration {
 //                setRateLimits(RateLimiter.knownBot());
 //            }
 //        });
+    }
+
+    public Credential getBotCredentials() {
+        return botCredentials;
+    }
+
+    Configuration setRateLimits(RateLimiter rateLimits) {
+        this.rateLimits = rateLimits;
+        return this;
     }
 
     public Mono<Long> getChatLimits(boolean moderator) {

@@ -1,15 +1,15 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.object.enums.StreamType;
 import glitch.kraken.object.json.Stream;
 import glitch.kraken.object.json.list.Streams;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -17,14 +17,14 @@ import reactor.core.publisher.Mono;
 
 @Setter
 @Accessors(chain = true, fluent = true)
-public class FollowedStreamRequest extends AbstractRequest<Streams, Stream> {
+public class FollowedStreamRequest extends AbstractRestService.AbstractRequest<Streams, Stream> {
     private final Credential credential;
 
     private StreamType streamType;
     private Integer limit;
     private Integer offset;
 
-    public FollowedStreamRequest(GlitchHttpClient http, Credential credential) {
+    public FollowedStreamRequest(HttpClient http, Credential credential) {
         super(http, http.create(HttpMethod.GET, "/streams/followed", Streams.class));
         this.credential = credential;
     }
@@ -51,11 +51,11 @@ public class FollowedStreamRequest extends AbstractRequest<Streams, Stream> {
 
     @Override
     public Mono<Streams> get() {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_READ)).flatMap(b -> {
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ)).flatMap(b -> {
             if (b) {
                 return exchange().toMono();
             } else {
-                return Mono.error(handleScopeMissing(Scope.USER_READ));
+                return Mono.error(handleScopeMissing(GlitchScope.USER_READ));
             }
         });
     }

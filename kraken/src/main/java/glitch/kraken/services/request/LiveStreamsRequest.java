@@ -1,7 +1,6 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
@@ -10,6 +9,7 @@ import glitch.kraken.object.json.Channel;
 import glitch.kraken.object.json.Game;
 import glitch.kraken.object.json.Stream;
 import glitch.kraken.object.json.list.Streams;
+import glitch.service.AbstractRestService;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import reactor.core.publisher.Flux;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Setter
 @Accessors(fluent = true, chain = true)
-public class LiveStreamsRequest extends AbstractRequest<Streams, Stream> {
+public class LiveStreamsRequest extends AbstractRestService.AbstractRequest<Streams, Stream> {
     private final Set<Channel> channel = new LinkedHashSet<>();
     private Game game;
     private Locale langauge;
@@ -28,7 +28,7 @@ public class LiveStreamsRequest extends AbstractRequest<Streams, Stream> {
     private Integer limit;
     private Integer offset;
 
-    public LiveStreamsRequest(GlitchHttpClient http) {
+    public LiveStreamsRequest(HttpClient http) {
         super(http, http.create(HttpMethod.GET, "/streams", Streams.class));
     }
 

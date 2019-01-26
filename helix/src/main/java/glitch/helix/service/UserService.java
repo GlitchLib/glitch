@@ -1,10 +1,10 @@
 package glitch.helix.service;
 
 import com.google.common.collect.ImmutableList;
-import glitch.api.AbstractHttpService;
+import glitch.service.AbstractHttpService;
 import glitch.api.http.HttpRequest;
 import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
 import glitch.helix.GlitchHelix;
@@ -31,7 +31,7 @@ public class UserService extends AbstractHttpService {
         HttpRequest<UserList> users = get("/users", UserList.class);
 
         if (credential != null) {
-            if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_EMAIL)) {
+            if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_EMAIL)) {
                 users.header("Authorization", "Bearer " + credential.getAccessToken());
             }
         }
@@ -48,7 +48,7 @@ public class UserService extends AbstractHttpService {
         HttpRequest<UserList> users = get("/users", UserList.class);
 
         if (credential != null) {
-            if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_EMAIL)) {
+            if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_EMAIL)) {
                 users.header("Authorization", "Bearer " + credential.getAccessToken());
             }
         }
@@ -68,28 +68,28 @@ public class UserService extends AbstractHttpService {
     }
 
     public Mono<User> updateUser(Credential credential, String description) {
-        if (checkRequiredScope(credential.getScopes(), Scope.USER_EDIT)) {
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_EDIT)) {
             return exchange(put("/users", UserList.class)
                     .header("Authorization", "Bearer " + credential.getAccessToken())
                     .queryParam("description", description))
                     .toFlux(OrdinalList::getData).next();
         } else {
-            return Mono.error(new ScopeIsMissingException(Scope.USER_EDIT));
+            return Mono.error(new ScopeIsMissingException(GlitchScope.USER_EDIT));
         }
     }
 
     public Flux<Extension> getUserExtensions(Credential credential) {
-        if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_BROADCAST)) {
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_BROADCAST)) {
             return exchange(get("/users/extensions/list", Extensions.class)
                     .header("Authorization", "Bearer " + credential.getAccessToken()))
                     .toFlux(OrdinalList::getData);
         } else {
-            return Flux.error(new ScopeIsMissingException(Scope.USER_READ_BROADCAST));
+            return Flux.error(new ScopeIsMissingException(GlitchScope.USER_READ_BROADCAST));
         }
     }
 
     public Flux<InstalledExtension> getUserInstalledExtensions(Credential credential) {
-        if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_BROADCAST) || checkRequiredScope(credential.getScopes(), Scope.USER_EDIT_BROADCAST)) {
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_BROADCAST) || checkRequiredScope(credential.getScopes(), GlitchScope.USER_EDIT_BROADCAST)) {
             return exchange(get("/users/extensions", InstalledExtensions.class)
                     .header("Authorization", "Bearer " + credential.getAccessToken()))
                     .toFlux(OrdinalList::getData);

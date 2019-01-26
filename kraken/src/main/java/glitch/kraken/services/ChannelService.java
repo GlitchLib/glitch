@@ -1,9 +1,9 @@
 package glitch.kraken.services;
 
-import glitch.api.AbstractHttpService;
+import glitch.service.AbstractHttpService;
 import glitch.api.http.HttpRequest;
 import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ResponseException;
 import glitch.kraken.GlitchKraken;
@@ -28,12 +28,12 @@ public class ChannelService extends AbstractHttpService {
     }
 
     public Mono<AuthorizedChannel> getChannel(Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_READ)).flatMap(b -> {
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_READ)).flatMap(b -> {
             if (b) {
                 return exchange(get("/channel", AuthorizedChannel.class)
                         .header("Authorization", "OAuth " + credential.getAccessToken())).toMono();
             } else {
-                return Mono.error(handleScopeMissing(Scope.CHANNEL_READ));
+                return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_READ));
             }
         });
     }
@@ -48,7 +48,7 @@ public class ChannelService extends AbstractHttpService {
 
     public Mono<Channel> updateChannel(Long id, Credential credential, ChannelBody body) {
 
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_EDITOR)).flatMap(b -> {
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_EDITOR)).flatMap(b -> {
             if (b) {
                 ChannelBody channelBody = (!id.equals(credential.getUserId())) ?
                         // preventing updates if credential is not channel owner
@@ -62,20 +62,20 @@ public class ChannelService extends AbstractHttpService {
                         .header("Authorization", "OAuth " + credential.getAccessToken())
                         .body(Collections.singletonMap("channel", channelBody))).toMono();
             } else {
-                return Mono.error(handleScopeMissing(Scope.CHANNEL_EDITOR));
+                return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_EDITOR));
             }
         });
     }
 
     public Flux<User> getChannelEditors(Long id, Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_READ))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_READ))
                 .flatMapMany(b -> {
                     if (b) {
                         return exchange(get(String.format("/channels/%s", id), Editors.class)
                                 .header("Authorization", "OAuth " + credential.getAccessToken()))
                                 .toFlux(OrdinalList::getData);
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_READ));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_READ));
                     }
                 });
     }
@@ -100,7 +100,7 @@ public class ChannelService extends AbstractHttpService {
 
         HttpRequest<Subscriber> request = get(String.format("/channels/%s/subscriptions/%s", channelId, userId), Subscriber.class);
 
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_CHECK_SUBSCRIPTION))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_CHECK_SUBSCRIPTION))
                 .flatMap(b -> {
                     if (b) {
                         return exchange(request).toMono().onErrorResume(ResponseException.class, (e) -> {
@@ -111,7 +111,7 @@ public class ChannelService extends AbstractHttpService {
                             }
                         });
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_CHECK_SUBSCRIPTION));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_CHECK_SUBSCRIPTION));
                     }
                 });
     }
@@ -123,25 +123,25 @@ public class ChannelService extends AbstractHttpService {
     public Mono<CommercialData> startChannelCommercial(Long id, Credential credential, int duration) {
         Map<String, Object> dur = Collections.singletonMap("length", commercialDuration.stream().min(Comparator.comparingInt(i -> Math.abs(i - duration))).orElse(30));
 
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_COMMERCIAL))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_COMMERCIAL))
                 .flatMap(b -> {
                     if (b) {
                         return exchange(post(String.format("/channels/%s/commercial", id), CommercialData.class).body(dur)
                                 .header("Authorization", "OAuth " + credential.getAccessToken())).toMono();
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_COMMERCIAL));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_COMMERCIAL));
                     }
                 });
     }
 
     public Mono<Channel> resetStreamKey(Long id, Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_STREAM))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_STREAM))
                 .flatMap(b -> {
                     if (b) {
                         return exchange(delete(String.format("/channels/%s/stream_key", id), Channel.class)
                                 .header("Authorization", "OAuth " + credential.getAccessToken())).toMono();
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_STREAM));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_STREAM));
                     }
                 });
     }
@@ -152,26 +152,26 @@ public class ChannelService extends AbstractHttpService {
     }
 
     public Mono<Boolean> setChannelCommunities(Long id, Credential credential, Collection<UUID> communityIds) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_EDITOR))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_EDITOR))
                 .flatMap(b -> {
                     if (b) {
                         return Mono.just(exchange(put(String.format("/channels/%s/communities", id), Void.class)
                                 .body(Collections.singletonMap("community_ids", communityIds.stream().map(UUID::toString).collect(Collectors.toList())))
                                 .header("Authorization", "OAuth " + credential.getAccessToken())).isSuccessful());
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_EDITOR));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_EDITOR));
                     }
                 });
     }
 
     public Mono<Boolean> clearChannelCommunities(Long id, Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_EDITOR))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_EDITOR))
                 .flatMap(b -> {
                     if (b) {
                         return Mono.just(exchange(delete(String.format("/channels/%s/community", id), Void.class)
                                 .header("Authorization", "OAuth " + credential.getAccessToken())).isSuccessful());
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_EDITOR));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_EDITOR));
                     }
                 });
     }

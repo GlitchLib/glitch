@@ -3,7 +3,7 @@ package glitch.chat;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import glitch.GlitchClient;
-import glitch.api.AbstractWebSocketService;
+import glitch.service.AbstractWebSocketService;
 import glitch.api.ws.events.IEvent;
 import glitch.api.ws.events.OpenEvent;
 import glitch.auth.UserCredential;
@@ -15,6 +15,7 @@ import glitch.chat.object.entities.ChannelEntity;
 import glitch.chat.object.entities.UserEntity;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.services.UserService;
+import java.util.concurrent.CompletableFuture;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -194,14 +195,16 @@ public class GlitchChat extends AbstractWebSocketService<GlitchChat> {
             return this;
         }
 
-        private Mono<Credential> createBotConfig() {
+        private CompletableFuture<Credential> createBotConfig() {
             Objects.requireNonNull(botCredential, "Credentials for bot must be not nullable.");
 
             return client.getCredentialManager().buildFromCredentials(botCredential);
         }
 
-        public Mono<GlitchChat> buildAsync() {
-            return createBotConfig().map(credential -> new GlitchChat(client, new Configuration(credential, forceQuery.get()), eventProcessor, secure.get(), getApi()))
+        public CompletableFuture<GlitchChat> buildAsync() {
+            return createBotConfig()
+                    .thenApply(credential -> new GlitchChat(client, new Configuration(credential, forceQuery.get()), eventProcessor))
+                    .map(credential -> new GlitchChat(client, new Configuration(credential, forceQuery.get()), eventProcessor, secure.get(), getApi()))
                     .doOnSuccess(client -> {
                         channels.forEach(client::joinChannel);
                         if (shutdownHook.get()) {

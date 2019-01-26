@@ -1,24 +1,24 @@
 package glitch.helix.service.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
+import glitch.api.http.HttpClient;
 import glitch.api.http.HttpMethod;
 import glitch.api.http.HttpResponse;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.exceptions.GlitchException;
 import glitch.helix.object.json.Stream;
 import glitch.helix.object.json.list.Streams;
+import glitch.service.AbstractRestService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public class StreamsRequest extends AbstractRequest<Streams, Stream> {
+public class StreamsRequest extends AbstractRestService.AbstractRequest<Streams, Stream> {
     private Long first;
     private String before;
     private String after;
 
     private String[] communityId;
 
-    public StreamsRequest(GlitchHttpClient http) {
+    public StreamsRequest(HttpClient http) {
         super(http, http.create(HttpMethod.GET, "/streams", Streams.class));
     }
 

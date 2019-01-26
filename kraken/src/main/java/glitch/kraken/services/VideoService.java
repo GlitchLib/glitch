@@ -1,8 +1,8 @@
 package glitch.kraken.services;
 
 import com.google.gson.JsonObject;
-import glitch.api.AbstractHttpService;
-import glitch.auth.Scope;
+import glitch.service.AbstractHttpService;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.Video;
@@ -35,7 +35,7 @@ public class VideoService extends AbstractHttpService {
 
     public Mono<Video> updateVideo(Long id, Credential credential, VideoBody body) {
 
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_EDITOR))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_EDITOR))
                 .flatMap(b -> {
                     if (b) {
                         return exchange(put(String.format("/videos/%s", id), Video.class)
@@ -43,20 +43,20 @@ public class VideoService extends AbstractHttpService {
                                 .queryParam("Authorization", "OAuth " + credential.getAccessToken()))
                                 .toMono();
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_EDITOR));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_EDITOR));
                     }
                 });
     }
 
     public Mono<Boolean> delete(Video video, Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.CHANNEL_EDITOR))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_EDITOR))
                 .flatMap(b -> {
                     if (b) {
                         return exchange(delete(String.format("/videos/%s", video.getId()), JsonObject.class)
                                 .queryParam("Authorization", "OAuth " + credential.getAccessToken()))
                                 .toMono(o -> o.get("ok").getAsBoolean());
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.CHANNEL_EDITOR));
+                        return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_EDITOR));
                     }
                 });
     }
