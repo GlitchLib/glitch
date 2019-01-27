@@ -21,7 +21,7 @@ public class CachedStorage implements Storage {
      */
     @Override
     public Mono<Credential> register(Credential credential) {
-        credentials.stream().filter(c -> c.getUserId().equals(credential.getUserId()))
+        credentials.stream().filter(c -> c.getUserId() == credential.getUserId())
                 .findFirst().ifPresent(this::drop);
         credentials.add(credential);
 
@@ -33,7 +33,7 @@ public class CachedStorage implements Storage {
      */
     @Override
     public Mono<Void> drop(Credential credential) {
-        return Mono.just(credentials.removeIf(c -> c.getUserId().equals(credential.getUserId())))
+        return Mono.just(credentials.removeIf(c -> c.getUserId() == credential.getUserId()))
                 .then();
     }
 

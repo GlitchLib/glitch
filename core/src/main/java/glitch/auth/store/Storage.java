@@ -49,7 +49,7 @@ public interface Storage {
      * @return finded credential
      */
     default Mono<Credential> getById(Long id) {
-        return get(credential -> credential.getUserId().equals(id)).next();
+        return get(credential -> credential.getUserId() == id).next();
     }
 
     /**

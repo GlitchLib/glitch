@@ -10,9 +10,7 @@ import glitch.auth.objects.adapters.ValidateAdapter;
 import glitch.auth.objects.json.AccessToken;
 import glitch.auth.objects.json.Credential;
 import glitch.auth.objects.json.Validate;
-import glitch.auth.objects.json.impl.CredentialImpl;
 import glitch.auth.store.Storage;
-import java.util.concurrent.CompletableFuture;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Type;
@@ -64,7 +62,7 @@ public class CredentialManager extends AbstractHttpService {
                         .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
                         .queryParam("code", code)
                         .queryParam("redirect_uri", Objects.requireNonNull((redirectUri != null) ? redirectUri : getClient().getConfiguration().getRedirectUri(), "redirect_uri == null")),
-                AccessToken.class).zipWhen(this::valid, CredentialImpl::new)
+                AccessToken.class).zipWhen(this::valid, Credential::new)
                 .cast(Credential.class)
                 .doOnSuccess(credentialStorage::register);
     }
@@ -77,7 +75,7 @@ public class CredentialManager extends AbstractHttpService {
                         .queryParam("client_id", getClient().getConfiguration().getClientId())
                         .queryParam("client_secret", getClient().getConfiguration().getClientSecret())
                         .queryParam("refresh", credential.getRefreshToken()),
-                AccessToken.class).zipWhen(this::valid, CredentialImpl::new)
+                AccessToken.class).zipWhen(this::valid, Credential::new)
                 .cast(Credential.class)
                 .doOnSuccess(credentialStorage::register);
     }
@@ -93,7 +91,7 @@ public class CredentialManager extends AbstractHttpService {
 
     public Mono<Credential> buildFromCredentials(UserCredential userCredential) {
         return valid(userCredential)
-                .map(valid -> new CredentialImpl(valid, userCredential))
+                .map(valid -> new Credential(userCredential, valid))
                 .cast(Credential.class)
                 .doOnSuccess(credentialStorage::register);
     }
