@@ -2,15 +2,12 @@ package glitch.api.http;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 
 /**
  * HTTP Response {@link HttpClient#exchange(HttpRequest) Exchanged} via {@link HttpRequest}
@@ -67,7 +64,7 @@ public class HttpResponse {
      * @param key Header Key
      * @return {@link java.util.List} of values
      */
-    public List<String> getHeader(String key) { return new ArrayList<>(headers.get(key)); }
+    public List<String> getHeader(String key) { return new ArrayList<>(headers.get(key.toLowerCase())); }
 
     /**
      * Getting value of Key Header and value index

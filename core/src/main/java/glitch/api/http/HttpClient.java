@@ -51,7 +51,7 @@ public class HttpClient {
      * @param baseUrl Base URL
      */
     private HttpClient(OkHttpClient httpClient, Gson gson, String baseUrl) {
-        if (!baseUrl.matches("^http(s)://(.+)")) {
+        if (!baseUrl.matches("^http(s)?://(.+)")) {
             throw new IllegalArgumentException("Base URL must contain a \"http\" prefix.");
         }
         this.httpClient = httpClient;
@@ -114,7 +114,7 @@ public class HttpClient {
 
     private Request doRequest(HttpRequest request) {
         Request.Builder builder = new Request.Builder()
-                .method(request.method.name(), request.bodyType.formatContent(request.body, gson))
+                .method(request.method.name(), (request.bodyType != null) ? request.bodyType.formatContent(request.body, gson) : null)
                 .url(doFormatUrl(request.endpoint, request.queryParams));
 
         if (!request.headers.isEmpty()) {

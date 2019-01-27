@@ -133,9 +133,9 @@ public class HttpRequest {
             this.format = format;
         }
 
-        protected RequestBody formatContent(Object data, Gson gson) {
+        protected RequestBody formatContent(@Nullable Object data, Gson gson) {
             if (data != null) {
-                return RequestBody.create(MediaType.get(contentType), format.apply(data, gson));
+                return RequestBody.create(MediaType.parse(contentType), format.apply(data, gson));
             } else return null;
         }
     }

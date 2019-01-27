@@ -8,11 +8,13 @@ import glitch.exceptions.ServiceNotFoundException;
 import glitch.exceptions.http.ResponseException;
 import glitch.exceptions.http.ScopeIsMissingException;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import reactor.core.publisher.Mono;
 
 /**
  * The Abstract REST Service for Kraken and Helix endpoints
@@ -71,20 +73,29 @@ public abstract class AbstractRestService implements IService {
     public static abstract class AbstractRequest<R> {
 
         protected final HttpClient httpClient;
-        protected final HttpRequest<R> request;
+        protected final HttpRequest request;
 
         /**
          * Creates instance of Abstract Request
          * @param httpClient HTTP Client
          * @param request Request
          */
-        protected AbstractRequest(HttpClient httpClient, HttpRequest<R> request) {
+        protected AbstractRequest(HttpClient httpClient, HttpRequest request) {
             this.httpClient = httpClient;
             this.request = request;
         }
 
         public R block() throws ResponseException, IOException {
-            return httpClient.exchange(request).getBody();
+            return get().block();
+        }
+
+        public Mono<R> get() {
+            return httpClient.exchange(request).map(r -> r.getBodyAs(getParameterizedType()));
+        }
+
+        @SuppressWarnings("unchecked")
+        private Class<R> getParameterizedType() {
+            return (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         }
 
         public void async(Consumer<R> response, Consumer<Throwable> exceptions) {

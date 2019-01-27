@@ -3,6 +3,7 @@ package glitch.service;
 import glitch.GlitchClient;
 import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
+import glitch.api.http.HttpResponse;
 import glitch.auth.GlitchScope;
 import glitch.exceptions.http.ResponseException;
 import glitch.exceptions.http.ScopeIsMissingException;
@@ -44,65 +45,8 @@ public abstract class AbstractHttpService implements IService {
         return client;
     }
 
-    /**
-     * Exchange Request to Response
-     * @param request HTTP Request
-     * @param <T> Response Type
-     * @return HTTP Response Handled into custom reactive response
-     *
-     * @see glitch.api.http.Routes#get(String, Class)
-     * @see glitch.api.http.Routes#post(String, Class)
-     * @see glitch.api.http.Routes#put(String, Class)
-     * @see glitch.api.http.Routes#patch(String, Class)
-     * @see glitch.api.http.Routes#delete(String, Class)
-     * @see glitch.api.http.Routes#options(String, Class)
-     */
-    protected final <T> T block(HttpRequest<T> request) throws IOException, ResponseException {
-        return http.exchange(request).getBody();
-    }
-
-    protected final <T> CompletableFuture<T> complete(HttpRequest<T> request) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-
-        try {
-            future.complete(block(request));
-        } catch (IOException | ResponseException e) {
-            future.completeExceptionally(e);
-        }
-
-        return future;
-    }
-
-    /**
-     * Exchange Request to Response
-     * @param request HTTP Request
-     * @param <T> Response Type
-     *
-     * @see glitch.api.http.Routes#get(String, Class)
-     * @see glitch.api.http.Routes#post(String, Class)
-     * @see glitch.api.http.Routes#put(String, Class)
-     * @see glitch.api.http.Routes#patch(String, Class)
-     * @see glitch.api.http.Routes#delete(String, Class)
-     * @see glitch.api.http.Routes#options(String, Class)
-     */
-    protected final <T> void async(HttpRequest<T> request, Consumer<T> response) {
-        http.exchangeAsync(request, r -> response.accept(r.getBody()));
-    }
-
-    /**
-     * Exchange Request to Response
-     * @param request HTTP Request
-     * @param <T> Response Type
-     *
-     * @see glitch.api.http.Routes#get(String, Class)
-     * @see glitch.api.http.Routes#post(String, Class)
-     * @see glitch.api.http.Routes#put(String, Class)
-     * @see glitch.api.http.Routes#patch(String, Class)
-     * @see glitch.api.http.Routes#delete(String, Class)
-     * @see glitch.api.http.Routes#options(String, Class)
-     */
-    protected final <T> void async(HttpRequest<T> request, Consumer<T> response, Consumer<Throwable> exception) {
-        http.exchangeAsync(request, r -> response.accept(r.getBody()), exception);
+    protected final ResponseException handleErrorResponse(HttpResponse response) {
+        return response.getBodyAs(ResponseException.class);
     }
 
     /**
@@ -125,4 +69,6 @@ public abstract class AbstractHttpService implements IService {
     protected ScopeIsMissingException handleScopeMissing(GlitchScope requiredScope) {
         return new ScopeIsMissingException(requiredScope);
     }
+
+
 }

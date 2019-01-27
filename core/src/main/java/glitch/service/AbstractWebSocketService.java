@@ -12,8 +12,10 @@ import okhttp3.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxProcessor;
+import reactor.core.publisher.Mono;
 
 /**
  * Abstract WebSocket Client using {@link WebSocket} to handling connections into services like:
@@ -83,16 +85,29 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
         return client;
     }
 
-    public void disconnect() {
-        this.ws.close();
+    public Mono<Void> disconnect() {
+        return Mono.create(sink -> {
+            this.ws.close();
+            sink.success();
+        });
     }
 
-    public void retry() {
-        this.ws.reconnect();
+    public Mono<Void> retry() {
+        return Mono.create(sink -> {
+            this.ws.reconnect();
+            sink.success();
+        });
     }
 
-    public void connect() {
-        this.ws.connect();
+    public Mono<Void> connect() {
+        return Mono.create(sink -> {
+            this.ws.connect();
+            sink.success();
+        });
+    }
+
+    public void sendRaw(Publisher<byte[]> raw) {
+        Flux.from(raw).subscribe(ws::send);
     }
 
     public <E extends IEvent<S>> Flux<E> onEvent(Class<E> type) {
