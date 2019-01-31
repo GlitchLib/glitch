@@ -1,9 +1,8 @@
 package glitch.kraken.services;
 
-import glitch.service.AbstractHttpService;
 import glitch.kraken.GlitchKraken;
-import glitch.kraken.object.json.list.Games;
 import glitch.kraken.services.request.GamesRequest;
+import glitch.service.AbstractHttpService;
 
 public class GameService extends AbstractHttpService {
     public GameService(GlitchKraken rest) {
@@ -11,6 +10,6 @@ public class GameService extends AbstractHttpService {
     }
 
     public GamesRequest getTopGames() {
-        return new GamesRequest(http, get("/games/top", Games.class));
+        return new GamesRequest(http);
     }
 }

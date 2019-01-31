@@ -1,15 +1,15 @@
 package glitch.kraken.services;
 
 import com.google.gson.JsonObject;
-import glitch.service.AbstractHttpService;
 import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.Video;
-import glitch.kraken.object.json.list.Videos;
-import glitch.kraken.object.json.requests.VideoBody;
+import glitch.kraken.object.json.VideoBody;
+import glitch.kraken.object.json.collections.Videos;
 import glitch.kraken.services.request.FollowedVideosRequest;
 import glitch.kraken.services.request.TopVideosRequest;
+import glitch.service.AbstractHttpService;
 import reactor.core.publisher.Mono;
 
 public class VideoService extends AbstractHttpService {

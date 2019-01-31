@@ -1,29 +1,33 @@
 package glitch.kraken.services.request;
 
 import glitch.api.http.HttpClient;
-import glitch.api.http.HttpRequest;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.Routes;
 import glitch.kraken.object.json.Team;
-import glitch.kraken.object.json.list.Teams;
-import glitch.service.AbstractRestService;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.kraken.object.json.collections.Teams;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class TeamsRequest extends AbstractRestService.AbstractRequest<Teams, Team> {
+public class TeamsRequest extends AbstractRequest<Team, Teams> {
     private Integer limit;
     private Integer offset;
 
-    public TeamsRequest(HttpClient httpClient, HttpRequest<Teams> request) {
-        super(httpClient, request);
+    public TeamsRequest(HttpClient httpClient) {
+        super(httpClient, Routes.get("/teams").newRequest());
+    }
+
+    public TeamsRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public TeamsRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
     }
 
     @Override
-    protected HttpResponse<Teams> exchange() {
+    public Mono<Teams> get() {
+
         if (limit != null && limit > 0 && limit <= 100) {
             request.queryParam("limit", limit);
         }
@@ -32,16 +36,6 @@ public class TeamsRequest extends AbstractRestService.AbstractRequest<Teams, Tea
             request.queryParam("offset", offset);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<Teams> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<Team> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Teams.class);
     }
 }

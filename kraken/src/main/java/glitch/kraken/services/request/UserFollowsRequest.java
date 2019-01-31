@@ -1,33 +1,46 @@
 package glitch.kraken.services.request;
 
 import glitch.api.http.HttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.Routes;
 import glitch.kraken.object.enums.Direction;
 import glitch.kraken.object.enums.Sorting;
-import glitch.kraken.object.json.UserFollow;
-import glitch.kraken.object.json.list.UserFollowers;
-import glitch.service.AbstractRestService;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.kraken.object.json.UserChannelFollow;
+import glitch.kraken.object.json.collections.UserChannelFollows;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class UserFollowsRequest extends AbstractRestService.AbstractRequest<UserFollowers, UserFollow> {
+public class UserFollowsRequest extends AbstractRequest<UserChannelFollow, UserChannelFollows> {
     private Integer limit;
     private Integer offset;
     private Direction direction;
     private Sorting sortBy;
 
     public UserFollowsRequest(HttpClient http, Long id) {
-        super(http, http.create(HttpMethod.GET, String.format("/users/%s/follows/channels", id), UserFollowers.class));
+        super(http, Routes.get("/users/%s/follows/channels").newRequest(id));
+    }
+
+    public UserFollowsRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public UserFollowsRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    public UserFollowsRequest setDirection(Direction direction) {
+        this.direction = direction;
+        return this;
+    }
+
+    public UserFollowsRequest setSortBy(Sorting sortBy) {
+        this.sortBy = sortBy;
+        return this;
     }
 
     @Override
-    protected HttpResponse<UserFollowers> exchange() {
+    public Mono<UserChannelFollows> get() {
         if (limit != null && limit > 0 && limit <= 100) {
             request.queryParam("limit", limit);
         }
@@ -44,16 +57,6 @@ public class UserFollowsRequest extends AbstractRestService.AbstractRequest<User
             request.queryParam("sortby", sortBy.name().toLowerCase());
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<UserFollowers> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<UserFollow> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, UserChannelFollows.class);
     }
 }

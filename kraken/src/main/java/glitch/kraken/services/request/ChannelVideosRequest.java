@@ -1,58 +1,67 @@
 package glitch.kraken.services.request;
 
 import glitch.api.http.HttpClient;
-import glitch.api.http.HttpRequest;
-import glitch.api.http.HttpResponse;
+import glitch.api.http.Routes;
 import glitch.api.objects.enums.VideoType;
 import glitch.kraken.object.enums.VideoSort;
 import glitch.kraken.object.json.Video;
-import glitch.kraken.object.json.list.ChannelVideos;
-import glitch.service.AbstractRestService;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
+import glitch.kraken.object.json.collections.Videos;
+import glitch.service.AbstractRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class ChannelVideosRequest extends AbstractRestService.AbstractRequest<ChannelVideos, Video> {
-    private Integer limit;
-    private Integer offset;
+public class ChannelVideosRequest extends AbstractRequest<Video, Videos> {
     private final Set<VideoType> videoType = new LinkedHashSet<>();
     private final Set<Locale> languages = new LinkedHashSet<>();
+    private Integer limit;
+    private Integer offset;
     private VideoSort sort;
 
-    public ChannelVideosRequest(HttpClient httpClient, HttpRequest<ChannelVideos> request) {
-        super(httpClient, request);
+    public ChannelVideosRequest(HttpClient httpClient, Long id) {
+        super(httpClient, Routes.get("/channels/%s/videos").newRequest(id));
     }
 
-    public ChannelVideosRequest videoType(VideoType... types) {
-        return videoType(Arrays.asList(types));
+    public ChannelVideosRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
     }
 
-    public ChannelVideosRequest videoType(Collection<VideoType> types) {
+    public ChannelVideosRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    public ChannelVideosRequest setSort(VideoSort sort) {
+        this.sort = sort;
+        return this;
+    }
+
+    public ChannelVideosRequest addVideoType(VideoType... types) {
+        return addVideoType(Arrays.asList(types));
+    }
+
+    public ChannelVideosRequest addVideoType(Collection<VideoType> types) {
         videoType.addAll(types);
         return this;
     }
 
-    public ChannelVideosRequest language(String... languages) {
-        return language(Arrays.stream(languages).map(Locale::forLanguageTag).collect(Collectors.toSet()));
+    public ChannelVideosRequest addLanguage(String... languages) {
+        return addLanguage(Arrays.stream(languages).map(Locale::forLanguageTag).collect(Collectors.toSet()));
     }
 
-    public ChannelVideosRequest language(Locale... languages) {
-        return language(Arrays.asList(languages));
+    public ChannelVideosRequest addLanguage(Locale... languages) {
+        return addLanguage(Arrays.asList(languages));
     }
 
-    public ChannelVideosRequest language(Collection<Locale> languages) {
+    public ChannelVideosRequest addLanguage(Collection<Locale> languages) {
         this.languages.addAll(languages);
         return this;
     }
 
     @Override
-    protected HttpResponse<ChannelVideos> exchange() {
+    public Mono<Videos> get() {
+
         if (limit != null && limit > 0 && limit <= 100) {
             request.queryParam("limit", limit);
         }
@@ -73,16 +82,6 @@ public class ChannelVideosRequest extends AbstractRestService.AbstractRequest<Ch
             request.queryParam("language", languages.stream().map(Locale::getLanguage).collect(Collectors.joining(",")));
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<ChannelVideos> get() {
-        return null;
-    }
-
-    @Override
-    public Flux<Video> getIterable() {
-        return null;
+        return httpClient.exchangeAs(request, Videos.class);
     }
 }

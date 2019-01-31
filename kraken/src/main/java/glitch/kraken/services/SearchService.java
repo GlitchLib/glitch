@@ -1,10 +1,10 @@
 package glitch.kraken.services;
 
-import glitch.service.AbstractHttpService;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.services.request.ChannelSearchRequest;
 import glitch.kraken.services.request.GamesSearchRequest;
 import glitch.kraken.services.request.StreamSearchRequest;
+import glitch.service.AbstractHttpService;
 
 public class SearchService extends AbstractHttpService {
     public SearchService(GlitchKraken rest) {

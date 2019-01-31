@@ -18,7 +18,6 @@ public class GlitchKraken extends AbstractRestService {
         registerAllServices();
     }
 
-    @SuppressWarnings("unchecked")
     private void registerAllServices() {
         this.register(new BitsService(this));
         this.register(new ChannelService(this));
@@ -41,7 +40,7 @@ public class GlitchKraken extends AbstractRestService {
                 .withDefaultTypeAdapters()
                 .addTypeAdapters(krakenAdapters())
                 .addHeader("Client-ID", client.getConfiguration().getClientId())
-                .addHeader("Accept", "application/vnd.twitchtv.v5+json")
+                .addHeader("Accept", "application/vnd.twitchtv.v5+json") // TODO: Removing after v3 will be removed
                 .addHeader("User-Agent", client.getConfiguration().getUserAgent())
                 .build();
 

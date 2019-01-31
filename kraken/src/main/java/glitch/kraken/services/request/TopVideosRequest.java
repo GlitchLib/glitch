@@ -2,62 +2,79 @@ package glitch.kraken.services.request;
 
 import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
-import glitch.api.http.HttpResponse;
 import glitch.api.objects.enums.VideoType;
-import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.kraken.object.enums.VideoPeriod;
 import glitch.kraken.object.enums.VideoSort;
 import glitch.kraken.object.json.Game;
 import glitch.kraken.object.json.Video;
-import glitch.kraken.object.json.list.Videos;
-import glitch.service.AbstractRestService;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
+import glitch.kraken.object.json.collections.Videos;
+import glitch.service.AbstractRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class TopVideosRequest extends AbstractRestService.AbstractRequest<Videos, Video> {
+public class TopVideosRequest extends AbstractRequest<Video, Videos> {
+    private final Set<VideoType> videoType = new LinkedHashSet<>();
+    private final Set<Locale> language = new LinkedHashSet<>();
     private Integer limit;
     private Integer offset;
     private Game game;
     private VideoPeriod period;
-    private final Set<VideoType> videoType = new LinkedHashSet<>();
-    private final Set<Locale> language = new LinkedHashSet<>();
     private VideoSort sort;
 
-    public TopVideosRequest(HttpClient httpClient, HttpRequest<Videos> request) {
+    public TopVideosRequest(HttpClient httpClient, HttpRequest request) {
         super(httpClient, request);
     }
 
-    public TopVideosRequest videoType(VideoType... types) {
-        return videoType(Arrays.asList(types));
+    public TopVideosRequest addVideoType(VideoType... types) {
+        return addVideoType(Arrays.asList(types));
     }
 
-    public TopVideosRequest videoType(Collection<VideoType> types) {
+    public TopVideosRequest addVideoType(Collection<VideoType> types) {
         videoType.addAll(types);
         return this;
     }
 
-    public TopVideosRequest language(String... languages) {
-        return language(Arrays.stream(languages).map(Locale::forLanguageTag).collect(Collectors.toSet()));
+    public TopVideosRequest addLanguage(String... languages) {
+        return addLanguage(Arrays.stream(languages).map(Locale::forLanguageTag).collect(Collectors.toSet()));
     }
 
-    public TopVideosRequest language(Locale... languages) {
-        return language(Arrays.asList(languages));
+    public TopVideosRequest addLanguage(Locale... languages) {
+        return addLanguage(Arrays.asList(languages));
     }
 
-    public TopVideosRequest language(Collection<Locale> languages) {
+    public TopVideosRequest addLanguage(Collection<Locale> languages) {
         language.addAll(languages);
         return this;
     }
 
-    @Override
-    protected HttpResponse<Videos> exchange() {
+    public TopVideosRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public TopVideosRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    public TopVideosRequest setGame(Game game) {
+        this.game = game;
+        return this;
+    }
+
+    public TopVideosRequest setPeriod(VideoPeriod period) {
+        this.period = period;
+        return this;
+    }
+
+    public TopVideosRequest setSort(VideoSort sort) {
+        this.sort = sort;
+        return this;
+    }
+
+    public Mono<Videos> get() {
+
         if (limit != null && limit > 0 && limit <= 100) {
             request.queryParam("limit", limit);
         }
@@ -86,14 +103,6 @@ public class TopVideosRequest extends AbstractRestService.AbstractRequest<Videos
             request.queryParam("sort", sort.name().toLowerCase());
         }
 
-        return httpClient.exchange(request);
-    }
-
-    public Mono<Videos> get() {
-        return exchange().toMono();
-    }
-
-    public Flux<Video> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Videos.class);
     }
 }

@@ -1,29 +1,32 @@
 package glitch.kraken.services.request;
 
 import glitch.api.http.HttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.Routes;
 import glitch.kraken.object.json.FeatureStream;
-import glitch.kraken.object.json.list.FeatureStreams;
-import glitch.service.AbstractRestService;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.kraken.object.json.collections.FeatureStreams;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class FeatureStreamsRequest extends AbstractRestService.AbstractRequest<FeatureStreams, FeatureStream> {
+public class FeatureStreamsRequest extends AbstractRequest<FeatureStream, FeatureStreams> {
     private Integer limit;
     private Integer offset;
 
     public FeatureStreamsRequest(HttpClient http) {
-        super(http, http.create(HttpMethod.GET, "/streams/featured", FeatureStreams.class));
+        super(http, Routes.get("/streams/featured").newRequest());
+    }
+
+    public FeatureStreamsRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public FeatureStreamsRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
     }
 
     @Override
-    protected HttpResponse<FeatureStreams> exchange() {
+    public Mono<FeatureStreams> get() {
         if (limit != null && limit > 0 && limit <= 100) {
             request.queryParam("limit", limit);
         }
@@ -32,16 +35,6 @@ public class FeatureStreamsRequest extends AbstractRestService.AbstractRequest<F
             request.queryParam("offset", offset);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<FeatureStreams> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<FeatureStream> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, FeatureStreams.class);
     }
 }
