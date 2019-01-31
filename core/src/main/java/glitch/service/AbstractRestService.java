@@ -40,6 +40,10 @@ public abstract class AbstractRestService implements IService {
         return client;
     }
 
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
     protected final <T extends AbstractHttpService> boolean register(T service) {
         return this.services.add(service);
     }
@@ -65,70 +69,4 @@ public abstract class AbstractRestService implements IService {
         this.services.clear();
     }
 
-    /**
-     * @author Damian Staszewski [damian@stachuofficial.tv]
-     * @version %I%, %G%
-     * @since 1.0
-     */
-    public static abstract class AbstractRequest<R> {
-
-        protected final HttpClient httpClient;
-        protected final HttpRequest request;
-
-        /**
-         * Creates instance of Abstract Request
-         * @param httpClient HTTP Client
-         * @param request Request
-         */
-        protected AbstractRequest(HttpClient httpClient, HttpRequest request) {
-            this.httpClient = httpClient;
-            this.request = request;
-        }
-
-        public R block() throws ResponseException, IOException {
-            return get().block();
-        }
-
-        public Mono<R> get() {
-            return httpClient.exchange(request).map(r -> r.getBodyAs(getParameterizedType()));
-        }
-
-        @SuppressWarnings("unchecked")
-        private Class<R> getParameterizedType() {
-            return (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        }
-
-        public void async(Consumer<R> response, Consumer<Throwable> exceptions) {
-            try {
-                response.accept(block());
-            } catch (Exception e) {
-                exceptions.accept(e);
-            }
-        }
-
-        public void async(Consumer<R> response) {
-            async(response, ex -> {});
-        }
-
-        /**
-         * Checks Required scopes
-         *
-         * @param scopes        list of {@link glitch.auth.GlitchScope}
-         * @param requiredScope required {@link glitch.auth.GlitchScope}
-         * @return scope is exist
-         */
-        protected final boolean checkRequiredScope(Collection<GlitchScope> scopes, GlitchScope requiredScope) {
-            return scopes.contains(requiredScope);
-        }
-
-        /**
-         * Handling {@link glitch.exceptions.http.ScopeIsMissingException}
-         *
-         * @param requiredScope required {@link glitch.auth.GlitchScope}
-         * @return throwable exception called {@link glitch.exceptions.http.ScopeIsMissingException}
-         */
-        protected ScopeIsMissingException handleScopeMissing(GlitchScope requiredScope) {
-            return new ScopeIsMissingException(requiredScope);
-        }
-    }
 }

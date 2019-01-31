@@ -19,7 +19,9 @@ public class Routes {
     }
 
     private String formatEndpoint(String endpoint, Object... parameters) {
-        return String.format(endpoint, parameters);
+        if (parameters.length > 0) {
+            return String.format(endpoint, parameters);
+        } else return endpoint;
     }
 
     public static <T> Routes create(HttpMethod method, String endpoint) {

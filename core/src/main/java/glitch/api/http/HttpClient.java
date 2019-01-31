@@ -59,13 +59,19 @@ public class HttpClient {
         this.baseUrl = baseUrl;
     }
 
+    public Gson getGson() {
+        return gson;
+    }
+
     /**
      * Creating HTTP Request
      * @param method HTTP Method
      * @param endpoint API Endpoint
      * @return HTTP Request which handled into {@link #exchange(HttpRequest)} method
      * @see #exchange(HttpRequest)
+     * @deprecated use {@link glitch.api.http.Routes#create(HttpMethod, String)}
      */
+    @Deprecated
     public final HttpRequest create(HttpMethod method, String endpoint) {
         return new HttpRequest(method, endpoint);
     }

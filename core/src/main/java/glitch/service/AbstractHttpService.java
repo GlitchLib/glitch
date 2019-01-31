@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 /**
  * Abstract HTTP Service provides {@link glitch.api.http.HttpClient HTTP Client} for the RESTful operations for:
@@ -35,6 +36,14 @@ public abstract class AbstractHttpService implements IService {
     protected AbstractHttpService(GlitchClient client, HttpClient http) {
         this.client = client;
         this.http = http;
+    }
+
+    protected  <T> Mono<T> exchangeTo(HttpRequest request, Class<T> type) {
+        return http.exchangeAs(request, type);
+    }
+
+    protected Mono<HttpResponse> exchange(HttpRequest request) {
+        return http.exchange(request);
     }
 
     /**
