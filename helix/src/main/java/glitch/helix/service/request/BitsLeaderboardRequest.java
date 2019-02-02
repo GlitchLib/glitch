@@ -1,68 +1,73 @@
 package glitch.helix.service.request;
 
-import com.google.common.net.UrlEscapers;
 import glitch.api.http.HttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.Routes;
 import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
 import glitch.helix.object.HelixUtils;
 import glitch.helix.object.enums.Period;
 import glitch.helix.object.json.Bits;
-import glitch.helix.object.json.list.BitsLeaderboard;
-import glitch.service.AbstractRestService;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.helix.object.json.BitsLeaderboard;
+import glitch.helix.object.json.User;
+import glitch.service.AbstractRequest;
+import java.time.Instant;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
-
-@Setter
-@Accessors(chain = true, fluent = true)
-public class BitsLeaderboardRequest extends AbstractRestService.AbstractRequest<BitsLeaderboard, Bits> {
+public class BitsLeaderboardRequest extends AbstractRequest<Bits, BitsLeaderboard> {
     private final Credential credential;
 
     private Integer count;
     private Period period;
     private Instant startedAt;
-    private Long userId;
+    private User user;
 
     public BitsLeaderboardRequest(HttpClient http, Credential credential) {
-        super(http, http.create(HttpMethod.GET, "/bits/leaderboard", BitsLeaderboard.class));
+        super(http, Routes.get("/bits/leaderboard").newRequest());
         this.credential = credential;
     }
 
-    @Override
-    protected HttpResponse<BitsLeaderboard> exchange() {
-        if (userId != null) {
-            request.queryParam("user_id", userId.toString());
-        } else if (count > 0 && count <= 100) {
-            request.queryParam("count", count);
-        }
+    public BitsLeaderboardRequest setCount(Integer count) {
+        this.count = count;
+        return this;
+    }
 
-        if (period != null) {
-            request.queryParam("period", period.name().toLowerCase());
+    public BitsLeaderboardRequest setPeriod(Period period) {
+        this.period = period;
+        return this;
+    }
 
-            if (period != Period.ALL && startedAt != null) {
-                request.queryParam("started_at", UrlEscapers.urlPathSegmentEscaper().escape(HelixUtils.toRfc3339(startedAt)));
-            }
-        }
+    public BitsLeaderboardRequest setStartedAt(Instant startedAt) {
+        this.startedAt = startedAt;
+        return this;
+    }
 
-        return httpClient.exchange(request.header("Authorization", "Bearer " + credential.getAccessToken()));
+    public BitsLeaderboardRequest setUser(User user) {
+        this.user = user;
+        return this;
     }
 
     @Override
     public Mono<BitsLeaderboard> get() {
-        if (checkRequiredScope(credential.getScopes(), GlitchScope.BITS_READ)) {
-            return exchange().toMono();
-        } else return Mono.error(new ScopeIsMissingException(GlitchScope.ANALYTICS_READ_EXTENSION));
-    }
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.BITS_READ))
+                .flatMap(scope -> {
+                    if (scope) {
+                        if (user != null) {
+                            request.queryParam("user_id", user.getId().toString());
+                        } else if (count != null && (count > 0 && count <= 100)) {
+                            request.queryParam("count", count);
+                        }
 
-    @Override
-    public Flux<Bits> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+                        if (period != null) {
+                            request.queryParam("period", period.name().toLowerCase());
+
+                            if (period != Period.ALL && startedAt != null) {
+                                request.queryParam("started_at", encodeQuery(HelixUtils.toRfc3339(startedAt)));
+                            }
+                        }
+
+                        return httpClient.exchangeAs(request.header("Authorization", "Bearer " + credential.getAccessToken()), BitsLeaderboard.class);
+                    } else return Mono.error(new ScopeIsMissingException(GlitchScope.BITS_READ));
+                });
     }
 }
