@@ -13,10 +13,6 @@ public enum SubscriptionType {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static SubscriptionType from(String type) {
         for (SubscriptionType subscriptionType : values()) {
             if (subscriptionType.value.equalsIgnoreCase(type)) {
@@ -25,5 +21,9 @@ public enum SubscriptionType {
         }
 
         return UNKNOWN;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

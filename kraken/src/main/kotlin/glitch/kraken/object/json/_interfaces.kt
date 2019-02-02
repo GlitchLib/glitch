@@ -11,7 +11,7 @@ import glitch.api.objects.json.interfaces.Creation
  */
 interface Follow<T> : Creation {
     @get:SerializedName("user", alternate = ["channel"])
-    val `data` : T
+    val `data`: T
     @get:SerializedName("notifications")
     val hasNotifications: Boolean
 }

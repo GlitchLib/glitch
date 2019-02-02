@@ -11,7 +11,7 @@ import glitch.api.objects.json.interfaces.IDObject
 import glitch.kraken.`object`.adapters.VideoIdAdapter
 import glitch.kraken.`object`.adapters.VideoStatusAdapter
 import java.time.Instant
-import java.util.Locale
+import java.util.*
 
 /**
  *
@@ -63,8 +63,8 @@ data class Video(
         }
 
         data class Thumbnail(
-            val type: String,
-            val url: String
+                val type: String,
+                val url: String
         )
     }
 

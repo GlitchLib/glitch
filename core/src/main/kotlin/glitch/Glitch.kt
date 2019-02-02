@@ -18,4 +18,4 @@ fun createClient(builder: GlitchClient.Builder.() -> Unit): GlitchClient = Glitc
  * @version %I%, %G%
  * @since 1.0
  */
-fun <T : AbstractRequest<*, out OrdinalList<*>>> T.get(request:T.() -> Unit) = apply(request).get()
+fun <T : AbstractRequest<*, out OrdinalList<*>>> T.get(request: T.() -> Unit) = apply(request).get()

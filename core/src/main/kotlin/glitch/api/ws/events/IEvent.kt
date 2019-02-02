@@ -2,7 +2,7 @@ package glitch.api.ws.events
 
 import glitch.service.AbstractWebSocketService
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 /**
  * Event Interface
@@ -20,11 +20,11 @@ interface IEvent<S : AbstractWebSocketService<S>> {
      * Event creation time
      */
     val createdAt: Instant
-            get() = Instant.now()
+        get() = Instant.now()
 
     /**
      * unique Event ID
      */
     val eventId: UUID
-            get() = UUID.randomUUID()
+        get() = UUID.randomUUID()
 }

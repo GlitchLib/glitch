@@ -79,12 +79,13 @@ public enum GlitchScope {
     CHANNEL_SUBSCRIPTIONS,
     /**
      * Log into chat and send messages.
-     * @deprecated cannot be requested by new clients.
+     *
      * @see #CHAT_EDIT
      * @see #CHAT_READ
      * @see #CHANNEL_MODERATE
      * @see #WHISPERS_EDIT
      * @see #WHISPERS_READ
+     * @deprecated cannot be requested by new clients.
      */
     @Deprecated
     CHAT_LOGIN,
@@ -162,15 +163,6 @@ public enum GlitchScope {
         this.value = name().toLowerCase();
     }
 
-    /**
-     * Get the identifier that oauth will recognize.
-     *
-     * @return A `{@link String}` identifier of the scope.
-     */
-    public String getValue() {
-        return value;
-    }
-
     public static GlitchScope of(String name) {
         for (GlitchScope scope : values()) {
             if (scope.value.equals(name)) {
@@ -178,6 +170,15 @@ public enum GlitchScope {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the identifier that oauth will recognize.
+     *
+     * @return A `{@link String}` identifier of the scope.
+     */
+    public String getValue() {
+        return value;
     }
 
     @Override

@@ -36,8 +36,9 @@ public abstract class AbstractWebSocketService<S extends AbstractWebSocketServic
 
     /**
      * Constructor of {@link AbstractWebSocketService}
-     * @param client the {@link GlitchClient}
-     * @param uri WebSocket URI
+     *
+     * @param client    the {@link GlitchClient}
+     * @param uri       WebSocket URI
      * @param converter Event {@link glitch.api.ws.IConverter Converter} wile responding
      */
     protected AbstractWebSocketService(

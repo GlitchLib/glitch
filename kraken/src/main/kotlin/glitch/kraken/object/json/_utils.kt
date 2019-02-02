@@ -7,10 +7,10 @@ package glitch.kraken.`object`.json
  * @since 1.0
  */
 data class Image(
-    val large: String,
-    val medium: String,
-    val small: String,
-    val template: String
+        val large: String,
+        val medium: String,
+        val small: String,
+        val template: String
 ) {
     fun getCustomSize(width: Int, height: Int): String {
         return template.replace("{width}", Integer.toString(width))

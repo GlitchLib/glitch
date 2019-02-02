@@ -105,14 +105,14 @@ data class EmoteImage(
  * @since 1.0
  */
 data class ChatBadges(
-    val admin: ChatBadgesImage,
-    val broadcaster: ChatBadgesImage,
-    @Deprecated("https://blog.twitch.tv/thank-you-global-moderators-4d44cfccf22")
-    val globalMod: ChatBadgesImage,
-    val mod: ChatBadgesImage,
-    val staff: ChatBadgesImage,
-    val subscriber: ChatBadgesImage,
-    val turbo: ChatBadgesImage
+        val admin: ChatBadgesImage,
+        val broadcaster: ChatBadgesImage,
+        @Deprecated("https://blog.twitch.tv/thank-you-global-moderators-4d44cfccf22")
+        val globalMod: ChatBadgesImage,
+        val mod: ChatBadgesImage,
+        val staff: ChatBadgesImage,
+        val subscriber: ChatBadgesImage,
+        val turbo: ChatBadgesImage
 )
 
 /**

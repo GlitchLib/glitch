@@ -10,8 +10,8 @@ class EmoteSets(
 ) {
 
     fun toEmoteSets() = emoticonSets.asMap()
-                .map { e -> EmoteSet(e.key, ArrayList(e.value)) }
-                .toSet()
+            .map { e -> EmoteSet(e.key, ArrayList(e.value)) }
+            .toSet()
 
     operator fun get(id: Int) =
             toEmoteSets().firstOrNull { (id1) -> id1 == id }

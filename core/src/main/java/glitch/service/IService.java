@@ -11,6 +11,7 @@ public interface IService {
 
     /**
      * Getting {@link GlitchClient}
+     *
      * @return the {@link GlitchClient Glitch Client}
      */
     GlitchClient getClient();

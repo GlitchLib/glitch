@@ -7,10 +7,7 @@ import glitch.api.http.HttpResponse;
 import glitch.auth.GlitchScope;
 import glitch.exceptions.http.ResponseException;
 import glitch.exceptions.http.ScopeIsMissingException;
-import java.io.IOException;
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -18,27 +15,28 @@ import reactor.core.publisher.Mono;
 /**
  * Abstract HTTP Service provides {@link glitch.api.http.HttpClient HTTP Client} for the RESTful operations for:
  * <b>Twitch API v5</b> {@code glitch-kraken} and <b>New Twitch API</b> {@code glitch-helix}.
+ *
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
  */
 public abstract class AbstractHttpService implements IService {
     protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
-
-    private final GlitchClient client;
     protected final HttpClient http;
+    private final GlitchClient client;
 
     /**
      * Constructor of Abstract HTTP Service
+     *
      * @param client the {@link glitch.GlitchClient}
-     * @param http initialized {@link glitch.api.http.HttpClient}
+     * @param http   initialized {@link glitch.api.http.HttpClient}
      */
     protected AbstractHttpService(GlitchClient client, HttpClient http) {
         this.client = client;
         this.http = http;
     }
 
-    protected  <T> Mono<T> exchangeTo(HttpRequest request, Class<T> type) {
+    protected <T> Mono<T> exchangeTo(HttpRequest request, Class<T> type) {
         return http.exchangeAs(request, type);
     }
 

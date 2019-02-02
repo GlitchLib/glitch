@@ -1,8 +1,7 @@
 package glitch.kraken.`object`.json
 
 import glitch.api.objects.json.interfaces.IDObject
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 
 /**
  *

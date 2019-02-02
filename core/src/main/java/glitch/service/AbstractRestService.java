@@ -2,19 +2,10 @@ package glitch.service;
 
 import glitch.GlitchClient;
 import glitch.api.http.HttpClient;
-import glitch.api.http.HttpRequest;
-import glitch.auth.GlitchScope;
 import glitch.exceptions.ServiceNotFoundException;
-import glitch.exceptions.http.ResponseException;
-import glitch.exceptions.http.ScopeIsMissingException;
-import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import reactor.core.publisher.Mono;
 
 /**
  * The Abstract REST Service for Kraken and Helix endpoints
@@ -32,6 +23,7 @@ public abstract class AbstractRestService implements IService {
         this.client = client;
         this.httpClient = httpClient;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -53,7 +45,7 @@ public abstract class AbstractRestService implements IService {
         CompletableFuture<T> future = new CompletableFuture<>();
 
         try {
-            future.complete((T) this.services.stream().filter(s -> s.getClass().isAssignableFrom(service)).findFirst().orElseThrow(() ->new ServiceNotFoundException(service)));
+            future.complete((T) this.services.stream().filter(s -> s.getClass().isAssignableFrom(service)).findFirst().orElseThrow(() -> new ServiceNotFoundException(service)));
         } catch (ServiceNotFoundException e) {
             future.completeExceptionally(e);
         }

@@ -27,13 +27,11 @@ import static org.junit.Assert.assertNull;
 public class HttpClientTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpClientTest.class);
-
+    private static final MockWebServer webserver = new MockWebServer();
     private HttpClient httpClient = HttpClient.builder()
             .withBaseUrl("http://localhost:8080/endpoint")
             .addHeader("Client-ID", "0123456789")
             .build();
-
-    private static final MockWebServer webserver = new MockWebServer();
 
     @BeforeClass
     public static void setUp() {
@@ -65,6 +63,15 @@ public class HttpClientTest {
         }
     }
 
+    @AfterClass
+    public static void tearDown() {
+        try {
+            webserver.close();
+        } catch (IOException e) {
+            LOG.error("Cannot stopping web server!", e);
+        }
+    }
+
     @Test
     public void stringResponse() {
         HttpRequest request = Routes.get("/test1").newRequest();
@@ -73,8 +80,8 @@ public class HttpClientTest {
                 .expectSubscription()
                 .expectNextMatches(response ->
                         (response != null && response.isSuccessful()) && response.getStatus().getCode() == 200 &&
-                        response.getHeader("Client-ID", 0).equals("0123456789") &&
-                        response.getBodyString().equals("{\"primary\": \"Tested Primary Endpoint\"}"))
+                                response.getHeader("Client-ID", 0).equals("0123456789") &&
+                                response.getBodyString().equals("{\"primary\": \"Tested Primary Endpoint\"}"))
                 .expectComplete()
                 .verify();
     }
@@ -105,15 +112,5 @@ public class HttpClientTest {
                 .expectNextMatches(response -> response != null && response.isError() && response.getStatus().getCode() == 404)
                 .expectComplete()
                 .verify();
-    }
-
-
-    @AfterClass
-    public static void tearDown() {
-        try {
-            webserver.close();
-        } catch (IOException e) {
-            LOG.error("Cannot stopping web server!", e);
-        }
     }
 }

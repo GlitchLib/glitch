@@ -67,10 +67,10 @@ data class ChannelUserFollow(
 ) : Follow<User>
 
 data class CommercialData(
-    @SerializedName("Length")
-    val length: Int,
-    @SerializedName("Message")
-    val message: String,
-    @SerializedName("RetryAfter")
-    val retryAfter: Int
+        @SerializedName("Length")
+        val length: Int,
+        @SerializedName("Message")
+        val message: String,
+        @SerializedName("RetryAfter")
+        val retryAfter: Int
 )

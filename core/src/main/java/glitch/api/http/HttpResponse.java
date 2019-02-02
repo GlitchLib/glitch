@@ -12,6 +12,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 /**
  * HTTP Response {@link HttpClient#exchange(HttpRequest) Exchanged} via {@link HttpRequest}
  * The last one must be composed into implemented {@link Iterable} interface.
+ *
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
@@ -46,7 +47,9 @@ public class HttpResponse {
     }
 
     @Nullable
-    public String getBodyString() { return (body != null) ? new String(body, Charset.forName("UTF-8")) : null; }
+    public String getBodyString() {
+        return (body != null) ? new String(body, Charset.forName("UTF-8")) : null;
+    }
 
     @Nullable
     public <T> T getBodyAs(Class<T> type) throws JsonSyntaxException {
@@ -57,18 +60,24 @@ public class HttpResponse {
         }
     }
 
-    public HttpRequest getRequest() { return request; }
+    public HttpRequest getRequest() {
+        return request;
+    }
 
     /**
      * Getting values of Key Header
+     *
      * @param key Header Key
      * @return {@link java.util.List} of values
      */
-    public List<String> getHeader(String key) { return new ArrayList<>(headers.get(key.toLowerCase())); }
+    public List<String> getHeader(String key) {
+        return new ArrayList<>(headers.get(key.toLowerCase()));
+    }
 
     /**
      * Getting value of Key Header and value index
-     * @param key Header Key
+     *
+     * @param key   Header Key
      * @param index Header Value index
      * @return Header Value
      */
@@ -78,6 +87,7 @@ public class HttpResponse {
 
     /**
      * Status codes are in the HTTP Error Code range
+     *
      * @return error status
      */
     public boolean isError() {
@@ -86,6 +96,7 @@ public class HttpResponse {
 
     /**
      * Status codes are in the HTTP Code range
+     *
      * @return successful executed response
      */
     public boolean isSuccessful() {

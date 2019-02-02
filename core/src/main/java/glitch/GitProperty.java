@@ -17,14 +17,8 @@ public enum GitProperty {
     APPLICATION_URL("application.url"),
     GIT_BRANCH("git.branch"),
     GIT_COMMIT_ID("git.commit.id"),
-    GIT_COMMIT_ID_ABBREV ("git.commit.id.abbrev"),
+    GIT_COMMIT_ID_ABBREV("git.commit.id.abbrev"),
     GIT_COMMIT_ID_DESCRIBE("git.commit.id.describe");
-
-    private final String value;
-
-    GitProperty(String value) {
-        this.value = value;
-    }
 
     private static final Properties properties = new Properties();
 
@@ -33,7 +27,14 @@ public enum GitProperty {
             if (inputStream != null) {
                 properties.load(inputStream);
             }
-        } catch (IOException ignore) {}
+        } catch (IOException ignore) {
+        }
+    }
+
+    private final String value;
+
+    GitProperty(String value) {
+        this.value = value;
     }
 
     public static String get(GitProperty key) {

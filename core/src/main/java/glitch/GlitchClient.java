@@ -1,4 +1,3 @@
-
 package glitch;
 
 import glitch.auth.CredentialManager;

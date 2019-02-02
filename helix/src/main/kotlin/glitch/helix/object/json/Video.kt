@@ -8,7 +8,7 @@ import glitch.api.objects.enums.ViewType
 import glitch.api.objects.json.interfaces.Creation
 import glitch.api.objects.json.interfaces.IDObject
 import java.time.Instant
-import java.util.Locale
+import java.util.*
 
 data class Video(
         override val id: Long,

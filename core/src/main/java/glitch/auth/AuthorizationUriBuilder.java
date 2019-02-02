@@ -1,7 +1,6 @@
 package glitch.auth;
 
 import glitch.Config;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;

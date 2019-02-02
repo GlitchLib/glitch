@@ -64,8 +64,8 @@ data class Clip(
      * @since 1.0
      */
     data class Thumbnalis(
-        val medium: String,
-        val small: String,
-        val tiny: String
+            val medium: String,
+            val small: String,
+            val tiny: String
     )
 }

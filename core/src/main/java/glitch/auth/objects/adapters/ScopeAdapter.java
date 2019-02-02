@@ -4,7 +4,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import glitch.auth.GlitchScope;
-
 import java.io.IOException;
 
 public final class ScopeAdapter extends TypeAdapter<GlitchScope> {

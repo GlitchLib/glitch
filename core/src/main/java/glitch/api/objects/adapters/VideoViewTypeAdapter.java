@@ -4,7 +4,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import glitch.api.objects.enums.ViewType;
-
 import java.io.IOException;
 
 public class VideoViewTypeAdapter extends TypeAdapter<ViewType> {

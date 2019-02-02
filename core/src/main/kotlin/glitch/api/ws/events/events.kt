@@ -43,7 +43,7 @@ data class CloseEvent<S : AbstractWebSocketService<S>>(
         val code: Int,
         val reason: String? = null
 ) : AbstractEvent<S>(client), IEvent<S> {
-    constructor(client: S, status: CloseStatus): this(client, status.code, status.reason)
+    constructor(client: S, status: CloseStatus) : this(client, status.code, status.reason)
 }
 
 /**

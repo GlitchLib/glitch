@@ -5,7 +5,6 @@ import glitch.auth.GlitchScope
 import glitch.auth.objects.json.AccessToken
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.Objects
 
 data class AccessTokenImpl(
         override val accessToken: String,

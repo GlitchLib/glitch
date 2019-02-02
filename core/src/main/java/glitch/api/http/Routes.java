@@ -14,16 +14,6 @@ public class Routes {
         this.endpoint = endpoint;
     }
 
-    public HttpRequest newRequest(Object... parameters) {
-        return new HttpRequest(method, formatEndpoint(endpoint, parameters));
-    }
-
-    private String formatEndpoint(String endpoint, Object... parameters) {
-        if (parameters.length > 0) {
-            return String.format(endpoint, parameters);
-        } else return endpoint;
-    }
-
     public static <T> Routes create(HttpMethod method, String endpoint) {
         return new Routes(method, endpoint);
     }
@@ -50,5 +40,15 @@ public class Routes {
 
     public static <T> Routes options(String endpoint) {
         return create(HttpMethod.OPTIONS, endpoint);
+    }
+
+    public HttpRequest newRequest(Object... parameters) {
+        return new HttpRequest(method, formatEndpoint(endpoint, parameters));
+    }
+
+    private String formatEndpoint(String endpoint, Object... parameters) {
+        if (parameters.length > 0) {
+            return String.format(endpoint, parameters);
+        } else return endpoint;
     }
 }

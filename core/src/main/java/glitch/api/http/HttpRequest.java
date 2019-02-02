@@ -2,7 +2,6 @@ package glitch.api.http;
 
 import com.google.gson.Gson;
 import java.io.File;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +18,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 /**
  * HTTP Request created by {@code {@link HttpClient#create(HttpMethod, String, Class)}}.
  * This is a ordinal Request Builder.
+ *
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
@@ -26,14 +26,12 @@ import org.apache.commons.collections4.MultiValuedMap;
 public class HttpRequest extends Object {
     final HttpMethod method;
     final String endpoint;
-
+    final MultiValuedMap<String, String> headers = MultiMapUtils.newSetValuedHashMap();
+    final MultiValuedMap<String, Object> queryParams = MultiMapUtils.newSetValuedHashMap();
     @Nullable
     Object body;
     BodyType bodyType;
     boolean serializeNullsBody = false;
-
-    final MultiValuedMap<String, String> headers = MultiMapUtils.newSetValuedHashMap();
-    final MultiValuedMap<String, Object> queryParams = MultiMapUtils.newSetValuedHashMap();
 
     HttpRequest(HttpMethod method, String endpoint) {
         this.method = method;
@@ -42,7 +40,8 @@ public class HttpRequest extends Object {
 
     /**
      * Set Request Body
-     * @param body body Object
+     *
+     * @param body           body Object
      * @param serializeNulls serialize nulls
      * @return this
      */
@@ -65,7 +64,8 @@ public class HttpRequest extends Object {
 
     /**
      * Add Header to the Request
-     * @param key Header Key
+     *
+     * @param key   Header Key
      * @param value Header Value
      * @return this
      */
@@ -76,6 +76,7 @@ public class HttpRequest extends Object {
 
     /**
      * Add Headers to the Request
+     *
      * @param headers {@link Map} of Headers
      * @return this
      */
@@ -84,11 +85,12 @@ public class HttpRequest extends Object {
         return this;
     }
 
-    /**     *
+    /**
      * Add Query Param to the Request
-     * @param key param key
+     *
+     * @param key   param key
      * @param value param value
-     * @param <S> Serializable value
+     * @param <S>   Serializable value
      * @return this
      */
     public HttpRequest queryParam(String key, Object value) {
@@ -98,6 +100,7 @@ public class HttpRequest extends Object {
 
     /**
      * Add Query Params to the Request
+     *
      * @param queryParams {@link Map} of Query Params
      * @return this
      */
@@ -108,6 +111,7 @@ public class HttpRequest extends Object {
 
     /**
      * Add Query Params to the Request
+     *
      * @param queryParams {@link Map} of Query Params
      * @return this
      */

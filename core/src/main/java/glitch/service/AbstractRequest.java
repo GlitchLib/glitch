@@ -5,9 +5,7 @@ import glitch.api.http.HttpRequest;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.auth.GlitchScope;
 import glitch.exceptions.GlitchEncodeException;
-import glitch.exceptions.http.ResponseException;
 import glitch.exceptions.http.ScopeIsMissingException;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.net.URLEncoder;
@@ -16,7 +14,6 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.annotation.NonNullApi;
 
 /**
  * @author Damian Staszewski [damian@stachuofficial.tv]
@@ -30,12 +27,21 @@ public abstract class AbstractRequest<SINGLE, MULTI extends OrdinalList<SINGLE>>
 
     /**
      * Creates instance of Abstract Request
+     *
      * @param httpClient HTTP Client
-     * @param request Request
+     * @param request    Request
      */
     protected AbstractRequest(HttpClient httpClient, HttpRequest request) {
         this.httpClient = httpClient;
         this.request = request;
+    }
+
+    protected static String encodeQuery(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new GlitchEncodeException(e);
+        }
     }
 
     @Nonnull
@@ -77,13 +83,5 @@ public abstract class AbstractRequest<SINGLE, MULTI extends OrdinalList<SINGLE>>
      */
     protected ScopeIsMissingException handleScopeMissing(GlitchScope requiredScope) {
         return new ScopeIsMissingException(requiredScope);
-    }
-
-    protected static String encodeQuery(String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new GlitchEncodeException(e);
-        }
     }
 }

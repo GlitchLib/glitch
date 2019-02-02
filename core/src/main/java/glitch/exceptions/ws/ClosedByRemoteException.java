@@ -2,6 +2,7 @@ package glitch.exceptions.ws;
 
 import glitch.api.ws.CloseStatus;
 import glitch.exceptions.GlitchException;
+
 public class ClosedByRemoteException extends GlitchException {
     private final CloseStatus status;
 

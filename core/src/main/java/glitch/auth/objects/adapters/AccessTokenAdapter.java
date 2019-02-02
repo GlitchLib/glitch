@@ -3,7 +3,6 @@ package glitch.auth.objects.adapters;
 import com.google.gson.*;
 import glitch.auth.objects.json.AccessToken;
 import glitch.auth.objects.json.impl.AccessTokenImpl;
-
 import java.lang.reflect.Type;
 
 public final class AccessTokenAdapter implements JsonDeserializer<AccessToken>, JsonSerializer<AccessToken> {

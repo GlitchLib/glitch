@@ -1,10 +1,9 @@
 package glitch.kraken;
 
 import glitch.GlitchClient;
-import glitch.service.AbstractRestService;
 import glitch.api.http.HttpClient;
 import glitch.kraken.services.*;
-
+import glitch.service.AbstractRestService;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,22 +15,6 @@ public class GlitchKraken extends AbstractRestService {
         super(client, http);
 
         registerAllServices();
-    }
-
-    private void registerAllServices() {
-        this.register(new BitsService(this));
-        this.register(new ChannelService(this));
-        this.register(new ChatService(this));
-        this.register(new ClipService(this));
-        this.register(new CollectionService(this));
-        this.register(new CommunityService(this));
-        this.register(new GameService(this));
-        this.register(new IngestService(this));
-        this.register(new SearchService(this));
-        this.register(new StreamService(this));
-        this.register(new TeamService(this));
-        this.register(new UserService(this));
-        this.register(new VideoService(this));
     }
 
     public static GlitchKraken create(GlitchClient client) {
@@ -51,5 +34,21 @@ public class GlitchKraken extends AbstractRestService {
         Map<Type, Object> adapters = new LinkedHashMap<>();
 
         return adapters;
+    }
+
+    private void registerAllServices() {
+        this.register(new BitsService(this));
+        this.register(new ChannelService(this));
+        this.register(new ChatService(this));
+        this.register(new ClipService(this));
+        this.register(new CollectionService(this));
+        this.register(new CommunityService(this));
+        this.register(new GameService(this));
+        this.register(new IngestService(this));
+        this.register(new SearchService(this));
+        this.register(new StreamService(this));
+        this.register(new TeamService(this));
+        this.register(new UserService(this));
+        this.register(new VideoService(this));
     }
 }

@@ -1,7 +1,7 @@
 package glitch.api.ws;
 
-import glitch.service.AbstractWebSocketService;
 import glitch.api.ws.events.IEvent;
+import glitch.service.AbstractWebSocketService;
 
 /**
  * @author Damian Staszewski [damian@stachuofficial.tv]

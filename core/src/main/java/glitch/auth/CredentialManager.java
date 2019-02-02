@@ -1,9 +1,8 @@
 package glitch.auth;
 
 import glitch.GlitchClient;
-import glitch.api.http.Routes;
-import glitch.service.AbstractHttpService;
 import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.auth.objects.adapters.AccessTokenAdapter;
 import glitch.auth.objects.adapters.ExpireInstantAdapter;
 import glitch.auth.objects.adapters.ValidateAdapter;
@@ -11,13 +10,13 @@ import glitch.auth.objects.json.AccessToken;
 import glitch.auth.objects.json.Credential;
 import glitch.auth.objects.json.Validate;
 import glitch.auth.store.Storage;
-import reactor.core.publisher.Mono;
-
+import glitch.service.AbstractHttpService;
 import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import reactor.core.publisher.Mono;
 
 public class CredentialManager extends AbstractHttpService {
     private static final String BASE_URL = "https://id.twitch.tv/oauth2";
@@ -34,6 +33,16 @@ public class CredentialManager extends AbstractHttpService {
                         .build()
         );
         this.credentialStorage = credentialStorage;
+    }
+
+    private static Map<Type, Object> authAdapters() {
+        Map<Type, Object> adapters = new LinkedHashMap<>();
+
+        adapters.put(Instant.class, new ExpireInstantAdapter());
+        adapters.put(AccessToken.class, new AccessTokenAdapter());
+        adapters.put(Validate.class, new ValidateAdapter());
+
+        return adapters;
     }
 
     public Mono<Validate> valid(Credential credential) {
@@ -85,7 +94,7 @@ public class CredentialManager extends AbstractHttpService {
                 Routes.post("/revoke").newRequest()
                         .queryParam("client_id", getClient().getConfiguration().getClientId())
                         .queryParam("token", credential.getAccessToken())
-        ).flatMap(r -> (r.isSuccessful()) ? Mono.<Void>empty() : Mono.error(handleErrorResponse(r)) )
+        ).flatMap(r -> (r.isSuccessful()) ? Mono.<Void>empty() : Mono.error(handleErrorResponse(r)))
                 .doOnSuccess(v -> credentialStorage.drop(credential));
     }
 
@@ -102,15 +111,5 @@ public class CredentialManager extends AbstractHttpService {
 
     public Storage getCredentialStorage() {
         return credentialStorage;
-    }
-
-    private static Map<Type, Object> authAdapters() {
-        Map<Type, Object> adapters = new LinkedHashMap<>();
-
-        adapters.put(Instant.class, new ExpireInstantAdapter());
-        adapters.put(AccessToken.class, new AccessTokenAdapter());
-        adapters.put(Validate.class, new ValidateAdapter());
-
-        return adapters;
     }
 }

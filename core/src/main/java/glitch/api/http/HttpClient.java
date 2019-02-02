@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -32,6 +31,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * The HTTP Client provided for {@link glitch.service.AbstractHttpService}
+ *
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
@@ -46,9 +46,10 @@ public class HttpClient {
 
     /**
      * Glitch HTTP Client
+     *
      * @param httpClient HTTP Client
-     * @param gson JSON IConverter
-     * @param baseUrl Base URL
+     * @param gson       JSON IConverter
+     * @param baseUrl    Base URL
      */
     private HttpClient(OkHttpClient httpClient, Gson gson, String baseUrl) {
         if (!baseUrl.matches("^http(s)?://(.+)")) {
@@ -59,13 +60,23 @@ public class HttpClient {
         this.baseUrl = baseUrl;
     }
 
+    /**
+     * Build HTTP Client
+     *
+     * @return the Builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public Gson getGson() {
         return gson;
     }
 
     /**
      * Creating HTTP Request
-     * @param method HTTP Method
+     *
+     * @param method   HTTP Method
      * @param endpoint API Endpoint
      * @return HTTP Request which handled into {@link #exchange(HttpRequest)} method
      * @see #exchange(HttpRequest)
@@ -78,6 +89,7 @@ public class HttpClient {
 
     /**
      * Starting exchange data of Http Client
+     *
      * @param request the {@link HttpRequest {@code HttpRequest}} filled to requesting subject
      * @return Non throwing response if any subjects are be fulfilled. If it throws exceptions will be return {@code null}
      */
@@ -93,8 +105,9 @@ public class HttpClient {
 
     /**
      * Starting exchange data of Http Client
+     *
      * @param request the {@link HttpRequest {@code HttpRequest}} filled to requesting subject
-     * @param type format to the Response Type
+     * @param type    format to the Response Type
      * @return Non throwing response if any subjects are be fulfilled. If it throws exceptions will be return {@code null}
      */
     @SuppressWarnings("unchecked")
@@ -133,11 +146,11 @@ public class HttpClient {
     private String doFormatUrl(String endpoint, MultiValuedMap<String, Object> queryParams) {
         if (endpoint.matches("^http(s)://(.+)")) {
             return endpoint + queryParams.entries().stream()
-                    .map(e -> e.getKey() + "=" + e.getValue().toString() )
+                    .map(e -> e.getKey() + "=" + e.getValue().toString())
                     .collect(Collectors.joining("&", "?", ""));
         } else if (endpoint.startsWith("/")) {
             return baseUrl + endpoint + queryParams.entries().stream()
-                    .map(e -> e.getKey() + "=" + e.getValue().toString() )
+                    .map(e -> e.getKey() + "=" + e.getValue().toString())
                     .collect(Collectors.joining("&", "?", ""));
         } else {
             throw new IllegalArgumentException("Endpoint is not matched format");
@@ -150,18 +163,10 @@ public class HttpClient {
 
         response.headers().toMultimap().forEach(headers::putAll);
         return new HttpResponse(
-                    new HttpResponse.Status(response.code(), response.message()),
-                    MultiMapUtils.unmodifiableMultiValuedMap(headers),
-                    body, request, gson);
+                new HttpResponse.Status(response.code(), response.message()),
+                MultiMapUtils.unmodifiableMultiValuedMap(headers),
+                body, request, gson);
 
-    }
-
-    /**
-     * Build HTTP Client
-     * @return the Builder
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {
@@ -172,7 +177,8 @@ public class HttpClient {
 
         /**
          * Add Header
-         * @param key header key
+         *
+         * @param key   header key
          * @param value header Value
          * @return the Builder
          */
@@ -183,6 +189,7 @@ public class HttpClient {
 
         /**
          * Add Header
+         *
          * @param headers {@link Map} of Headers
          * @return the Builder
          */
@@ -193,7 +200,8 @@ public class HttpClient {
 
         /**
          * Add Type Adapter
-         * @param type {@link Class} type
+         *
+         * @param type    {@link Class} type
          * @param adapter Adapter
          * @return the Builder
          */
@@ -204,6 +212,7 @@ public class HttpClient {
 
         /**
          * Add Type Adapter
+         *
          * @param adapters {@link Map} of Adapters
          * @return the Builder
          */
@@ -214,6 +223,7 @@ public class HttpClient {
 
         /**
          * Adds Base URL
+         *
          * @param baseUrl Base URL
          * @return the Builder
          */
@@ -224,6 +234,7 @@ public class HttpClient {
 
         /**
          * Injecting Default Adapters and providing it into other API's
+         *
          * @return the Builder
          */
         public Builder withDefaultTypeAdapters() {
@@ -236,6 +247,7 @@ public class HttpClient {
 
         /**
          * Initialize HTTP Client
+         *
          * @return HTTP Client
          */
         public HttpClient build() {

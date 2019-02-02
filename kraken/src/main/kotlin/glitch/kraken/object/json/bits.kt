@@ -2,7 +2,7 @@ package glitch.kraken.`object`.json
 
 import glitch.api.objects.json.interfaces.IDObject
 import java.awt.Color
-import java.util.Arrays
+import java.util.*
 
 /**
  *
