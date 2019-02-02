@@ -13,8 +13,10 @@ import java.lang.reflect.ParameterizedType;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.annotation.NonNullApi;
 
 /**
  * @author Damian Staszewski [damian@stachuofficial.tv]
@@ -36,6 +38,7 @@ public abstract class AbstractRequest<SINGLE, MULTI extends OrdinalList<SINGLE>>
         this.request = request;
     }
 
+    @Nonnull
     public abstract Mono<MULTI> get();
 
     @SuppressWarnings("unchecked")

@@ -3,7 +3,7 @@ package glitch.api.objects.json.interfaces
 import com.google.gson.annotations.SerializedName
 
 interface OrdinalList<E> : Collection<E> {
-    @get:SerializedName(value = "data", alternate = ["rooms", "users", "follows", "teams", "subscriptions", "videos", "communities", "emoticons", "clips", "top", "ingests", "channels", "games", "streams", "teams", "vods", "featured"])
+    @get:SerializedName(value = "data", alternate = ["rooms", "users", "follows", "teams", "subscriptions", "videos", "communities", "emoticons", "clips", "top", "ingests", "channels", "games", "streams", "teams", "vods", "featured", "results"])
     val data: List<E>
 
     override val size: Int

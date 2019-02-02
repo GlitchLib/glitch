@@ -23,7 +23,7 @@ import org.apache.commons.collections4.MultiValuedMap;
  * @version %I%, %G%
  * @since 1.0
  */
-public class HttpRequest {
+public class HttpRequest extends Object {
     final HttpMethod method;
     final String endpoint;
 
@@ -91,7 +91,8 @@ public class HttpRequest {
      * @param <S> Serializable value
      * @return this
      */
-    public <S extends Serializable> HttpRequest queryParam(String key, S value) {
+    public HttpRequest queryParam(String key, Object value) {
+        this.queryParams.put(key, value);
         return this;
     }
 
@@ -100,8 +101,18 @@ public class HttpRequest {
      * @param queryParams {@link Map} of Query Params
      * @return this
      */
-    public <S extends Serializable> HttpRequest queryParams(Map<String, S> queryParams) {
-        queryParams.forEach(this::queryParam);
+    public HttpRequest queryParams(MultiValuedMap<String, Object> queryParams) {
+        this.queryParams.putAll(queryParams);
+        return this;
+    }
+
+    /**
+     * Add Query Params to the Request
+     * @param queryParams {@link Map} of Query Params
+     * @return this
+     */
+    public HttpRequest queryParams(Map<String, Object> queryParams) {
+        this.queryParams.putAll(queryParams);
         return this;
     }
 

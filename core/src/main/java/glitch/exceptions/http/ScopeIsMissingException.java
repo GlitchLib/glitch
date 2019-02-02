@@ -3,7 +3,7 @@ package glitch.exceptions.http;
 import glitch.auth.GlitchScope;
 import glitch.exceptions.GlitchException;
 
-public class ScopeIsMissingException extends GlitchException {
+public class ScopeIsMissingException extends RequestException {
     private final GlitchScope requiredScope;
 
     public ScopeIsMissingException(GlitchScope requiredScope) {
