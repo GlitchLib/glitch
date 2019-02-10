@@ -25,6 +25,10 @@ public class GlitchClient {
         this.credentialManager = new CredentialManager(this, storage);
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public Config getConfiguration() {
         return configuration;
     }
@@ -35,10 +39,6 @@ public class GlitchClient {
 
     public OkHttpClient getHttpClient() {
         return httpClient;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**

@@ -9,7 +9,7 @@ import java.io.Closeable;
  */
 public class RateLimiter implements Runnable, Closeable {
 
-//    private final Queue<Whisper> whispers = new SynchronousQueue<>();
+    //    private final Queue<Whisper> whispers = new SynchronousQueue<>();
 //    private final Queue<String> chat = new SynchronousQueue<>();
 //
 //    private final int whisperDailyCount;

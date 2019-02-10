@@ -36,14 +36,10 @@ public class GlitchChat implements ISocketService<GlitchChat> {
 
     private static final String URI_SECURE = "wss://irc-ws.chat.twitch.tv:443";
     private static final String URI = "ws://irc-ws.chat.twitch.tv:80";
-
-    private final Configuration configuration;
-
-    private final Set<String> channels = new LinkedHashSet<>();
-
-    private final GlitchClient client;
-
     protected final WebSocket<GlitchChat> ws;
+    private final Configuration configuration;
+    private final Set<String> channels = new LinkedHashSet<>();
+    private final GlitchClient client;
 
     /**
      * @param client         the {@link glitch.GlitchClient}
@@ -76,6 +72,10 @@ public class GlitchChat implements ISocketService<GlitchChat> {
                         this.ws.send(Mono.just("PONG :tmi.twitch.tv"));
                     }
                 });
+    }
+
+    public static Builder builder(GlitchClient client) {
+        return new Builder(client);
     }
 
     public Configuration getConfiguration() {
@@ -173,18 +173,14 @@ public class GlitchChat implements ISocketService<GlitchChat> {
         }
     }
 
-    public static Builder builder(GlitchClient client) {
-        return new Builder(client);
-    }
-
     public static class Builder {
         private final GlitchClient client;
-        private UserCredential botCredential;
         private final Set<String> channels = new LinkedHashSet<>();
         private final AtomicBoolean secure = new AtomicBoolean(true);
         private final AtomicBoolean forceQuery = new AtomicBoolean(false);
         private final AtomicBoolean shutdownHook = new AtomicBoolean(false);
         private final AtomicBoolean autoPingDisabled = new AtomicBoolean(false);
+        private UserCredential botCredential;
         private Scheduler scheduler = Schedulers.fromExecutor(Executors.newWorkStealingPool(), true);
         private FluxProcessor<IEvent<GlitchChat>, IEvent<GlitchChat>> eventProcessor = EmitterProcessor.create(true);
 

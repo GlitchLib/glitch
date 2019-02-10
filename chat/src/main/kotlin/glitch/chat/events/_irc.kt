@@ -61,15 +61,15 @@ data class Prefix(val raw: String, val nick: String?, val user: String?, val hos
  * @version %I%, %G%
  * @since 0.1.0
  */
-class Tags(tags : Map<String, String?>) : Map<String, String?> by tags {
+class Tags(tags: Map<String, String?>) : Map<String, String?> by tags {
 
     fun getOrDefault(key: String, defaultValue: String) = get(key) ?: defaultValue
 
     fun getBoolean(key: String) = booleanKeys.any { it.equals(key, true) }
             && getOrDefault(key, "0") == "1"
 
-    fun getInteger(key: String):Int = getOrDefault(key, "0").toInt()
-    fun getLong(key: String):Long = getOrDefault(key, "0").toLong()
+    fun getInteger(key: String): Int = getOrDefault(key, "0").toInt()
+    fun getLong(key: String): Long = getOrDefault(key, "0").toLong()
 
     val badges = get("badges")?.split(',')
             ?.map { Badge(it.split('/')[0], it.split('/')[1].toInt()) }
@@ -325,7 +325,7 @@ data class RoomState(
         var isR9k: Boolean,
         var slow: Long,
         var isSubsOnly: Boolean
-): IDObject<Long> {
+) : IDObject<Long> {
     val isFollowersOnly: Boolean
         get() = follow != -1L
 

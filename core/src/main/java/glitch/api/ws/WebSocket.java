@@ -3,7 +3,6 @@ package glitch.api.ws;
 import glitch.api.ws.events.CloseEvent;
 import glitch.api.ws.events.IEvent;
 import glitch.api.ws.events.OpenEvent;
-import glitch.exceptions.GlitchException;
 import glitch.exceptions.http.RequestException;
 import glitch.exceptions.ws.AlreadyConnectedException;
 import glitch.service.ISocketService;
@@ -32,13 +31,10 @@ public class WebSocket<S extends ISocketService<S>> {
 
     private final OkHttpClient okHttp;
     private final Request request;
-
-    private okhttp3.WebSocket realWS;
-
     private final FluxProcessor<IEvent<S>, IEvent<S>> eventProcessor;
     private final Scheduler eventScheduler;
-
     private final IEventConverter<S> eventConverter;
+    private okhttp3.WebSocket realWS;
 
     public WebSocket(S client, OkHttpClient okHttp, Request request,
                      FluxProcessor<IEvent<S>, IEvent<S>> eventProcessor,
@@ -50,6 +46,10 @@ public class WebSocket<S extends ISocketService<S>> {
         this.eventScheduler = eventScheduler;
         this.eventConverter = eventConverter;
 
+    }
+
+    public static <S extends ISocketService<S>> Builder<S> builder(S service) {
+        return new Builder<>(service);
     }
 
     public boolean isConnected() {
@@ -124,10 +124,6 @@ public class WebSocket<S extends ISocketService<S>> {
 
     public void dispatch(IEvent<S> event) {
         eventProcessor.onNext(event);
-    }
-
-    public static <S extends ISocketService<S>> Builder<S> builder(S service) {
-        return new Builder<>(service);
     }
 
     public Mono<Void> send(Publisher<String> message) {

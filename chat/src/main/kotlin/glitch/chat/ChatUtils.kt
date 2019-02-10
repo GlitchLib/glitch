@@ -40,6 +40,7 @@ internal object ChatUtils {
     private fun doNotice(event: IRCEvent) {
 
     }
+
     private fun doChannelMessage(event: IRCEvent) {
         val username = event.prefix.nick!!
         val channelId = event.tags.getLong("room-id")
@@ -76,6 +77,7 @@ internal object ChatUtils {
             )
         }
     }
+
     private fun doWhisper(event: IRCEvent) {
         val username = event.prefix.nick!!
         val displayName = event.tags["display-name"]!!
@@ -96,6 +98,7 @@ internal object ChatUtils {
                 timestamp
         ))
     }
+
     private fun doUserNotice(event: IRCEvent) {
         when (event.tags["msg-id"]) {
             "sub" -> doSub(event)
@@ -106,6 +109,7 @@ internal object ChatUtils {
             "ritual" -> doRitual(event)
         }
     }
+
     private fun doChannelState(event: IRCEvent) {
         val channelId = event.tags.getLong("room-id")
 
@@ -128,6 +132,7 @@ internal object ChatUtils {
             ))
         }
     }
+
     private fun doGlobalUserState(event: IRCEvent) {}
     private fun doChannelUserState(event: IRCEvent) {}
     private fun doClearChat(event: IRCEvent) {}
@@ -146,6 +151,7 @@ internal object ChatUtils {
 
     // USERNOTICE
     private fun doSub(event: IRCEvent) {}
+
     private fun doResub(event: IRCEvent) {}
     private fun doSubGift(event: IRCEvent) {}
     private fun doAnonSubGift(event: IRCEvent) {}

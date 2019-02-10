@@ -8,7 +8,6 @@ import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.Video;
 import glitch.kraken.object.json.VideoBody;
-import glitch.kraken.object.json.collections.Videos;
 import glitch.kraken.services.request.FollowedVideosRequest;
 import glitch.kraken.services.request.TopVideosRequest;
 import glitch.service.AbstractHttpService;

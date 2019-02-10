@@ -11,7 +11,8 @@ import glitch.chat.events.IRCEvent;
  */
 public class TmiConverter implements IEventConverter<GlitchChat> {
 
-    private TmiConverter() {}
+    private TmiConverter() {
+    }
 
     static TmiConverter create() {
         return new TmiConverter();

@@ -175,7 +175,7 @@ data class ChannelStateEvent(
         val isR9k: Boolean,
         val slow: Int,
         val isSubOnly: Boolean
-): IEvent<GlitchChat>, IChannel, IDChannel {
+) : IEvent<GlitchChat>, IChannel, IDChannel {
     val isFollows = follows > -1
     val isSlow = slow > 0
 }
