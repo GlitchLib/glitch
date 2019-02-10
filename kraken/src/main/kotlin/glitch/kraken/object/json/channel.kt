@@ -6,8 +6,8 @@ import glitch.api.objects.enums.BroadcasterType
 import glitch.api.objects.json.interfaces.Creation
 import glitch.api.objects.json.interfaces.IDObject
 import glitch.api.objects.json.interfaces.Updated
+import glitch.kraken.`object`.json.impl.AuthChannelImpl
 import glitch.kraken.`object`.json.impl.ChannelImpl
-import sun.net.www.protocol.http.AuthCacheImpl
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -45,7 +45,7 @@ interface Channel : IDObject<Long>, Creation, Updated {
  * @version %I%, %G%
  * @since 1.0
  */
-@SerializeTo(AuthCacheImpl::class)
+@SerializeTo(AuthChannelImpl::class)
 interface AuthChannel : Channel {
     val broadcasterType: BroadcasterType
     val email: String
