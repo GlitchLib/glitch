@@ -6,6 +6,7 @@ import glitch.auth.store.EmptyStorage;
 import glitch.auth.store.Storage;
 import java.util.*;
 import javax.annotation.Nullable;
+import okhttp3.OkHttpClient;
 import reactor.core.publisher.Mono;
 
 /**
@@ -16,14 +17,12 @@ import reactor.core.publisher.Mono;
 public class GlitchClient {
     private final Config configuration;
     private final CredentialManager credentialManager;
+    private final OkHttpClient httpClient;
 
-    private GlitchClient(Config config, Storage storage) {
+    private GlitchClient(OkHttpClient httpClient, Config config, Storage storage) {
+        this.httpClient = httpClient;
         this.configuration = config;
         this.credentialManager = new CredentialManager(this, storage);
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public Config getConfiguration() {
@@ -32,6 +31,14 @@ public class GlitchClient {
 
     public CredentialManager getCredentialManager() {
         return credentialManager;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -49,6 +56,8 @@ public class GlitchClient {
         private String userAgent;
 
         private Storage storage = new EmptyStorage();
+
+        private OkHttpClient httpClient = new OkHttpClient();
 
         public Builder setClientId(String clientId) {
             this.clientId = clientId;
@@ -72,6 +81,11 @@ public class GlitchClient {
 
         public Builder setStorage(Storage storage) {
             this.storage = storage;
+            return this;
+        }
+
+        public Builder setHttpClient(OkHttpClient httpClient) {
+            this.httpClient = httpClient;
             return this;
         }
 
@@ -100,7 +114,7 @@ public class GlitchClient {
                     this.defaultScopes, this.redirectUri
             );
 
-            return new GlitchClient(config, storage);
+            return new GlitchClient(httpClient, config, storage);
         }
     }
 }

@@ -5,7 +5,7 @@ import glitch.api.http.HttpClient;
 import glitch.exceptions.ServiceNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import reactor.core.publisher.Mono;
 
 /**
  * The Abstract REST Service for Kraken and Helix endpoints
@@ -41,16 +41,16 @@ public abstract class AbstractRestService implements IService {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends AbstractHttpService> CompletableFuture<T> use(Class<T> service) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-
-        try {
-            future.complete((T) this.services.stream().filter(s -> s.getClass().isAssignableFrom(service)).findFirst().orElseThrow(() -> new ServiceNotFoundException(service)));
-        } catch (ServiceNotFoundException e) {
-            future.completeExceptionally(e);
-        }
-
-        return future;
+    public <T extends AbstractHttpService> Mono<T> use(Class<T> service) {
+        return Mono.create(sink -> {
+            for (AbstractHttpService s : this.services) {
+                if (s.getClass() == service) {
+                    sink.success((T) s);
+                    return;
+                }
+            }
+            sink.error(new ServiceNotFoundException(service));
+        });
     }
 
     protected final <T extends AbstractHttpService> boolean unregister(T service) {

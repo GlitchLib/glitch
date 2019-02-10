@@ -1,19 +1,13 @@
 package glitch.api.ws.events
 
 import glitch.api.ws.CloseStatus
-import glitch.service.AbstractWebSocketService
+import glitch.service.ISocketService
 import java.time.Instant
 import java.util.*
 
 /**
- *
- * @author Damian Staszewski [damian@stachuofficial.tv]
- * @version %I%, %G%
- * @since 1.0
- */
-/**
  * All events must be extends this class if they want to be emitted via [reactor.core.publisher.FluxProcessor]
- * @param S client extended [glitch.service.AbstractWebSocketService]
+ * @param S client extended [glitch.service.ISocketService]
  * @param client the [glitch.GlitchClient]
  * @param createdAt Event creation time
  * @param eventId unique Event ID
@@ -21,7 +15,7 @@ import java.util.*
  * @version %I%, %G%
  * @since 1.0
  */
-abstract class AbstractEvent<S : AbstractWebSocketService<S>> protected constructor(
+abstract class AbstractEvent<S : ISocketService<S>> protected constructor(
         override val client: S,
         override val createdAt: Instant = Instant.now(),
         override val eventId: UUID = UUID.randomUUID()
@@ -30,7 +24,7 @@ abstract class AbstractEvent<S : AbstractWebSocketService<S>> protected construc
 
 /**
  * Emitting Close Event with [glitch.api.ws.CloseStatus]
- * @param S client extended [glitch.service.AbstractWebSocketService]
+ * @param S client extended [glitch.service.ISocketService]
  * @param client the [glitch.GlitchClient]
  * @param code WebSocket close status code
  * @param reason WebSocket close status reason
@@ -38,7 +32,7 @@ abstract class AbstractEvent<S : AbstractWebSocketService<S>> protected construc
  * @version %I%, %G%
  * @since 1.0
  */
-data class CloseEvent<S : AbstractWebSocketService<S>>(
+data class CloseEvent<S : ISocketService<S>>(
         override val client: S,
         val code: Int,
         val reason: String? = null
@@ -47,29 +41,29 @@ data class CloseEvent<S : AbstractWebSocketService<S>>(
 }
 
 /**
- * Open Event emitting while connection in [glitch.service.AbstractWebSocketService] has started
- * @param S client extended [glitch.service.AbstractWebSocketService]
+ * Open Event emitting while connection in [glitch.service.ISocketService] has started
+ * @param S client extended [glitch.service.ISocketService]
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
  */
-data class OpenEvent<S : AbstractWebSocketService<S>>(override val client: S) : AbstractEvent<S>(client), IEvent<S>
+data class OpenEvent<S : ISocketService<S>>(override val client: S) : AbstractEvent<S>(client), IEvent<S>
 
 
 /**
  * Ping received
- * @param S client extended [glitch.service.AbstractWebSocketService]
+ * @param S client extended [glitch.service.ISocketService]
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
  */
-data class PingEvent<S : AbstractWebSocketService<S>>(override val client: S) : AbstractEvent<S>(client)
+data class PingEvent<S : ISocketService<S>>(override val client: S) : AbstractEvent<S>(client), IEvent<S>
 
 /**
  * Pong received
- * @param S client extended [glitch.service.AbstractWebSocketService]
+ * @param S client extended [glitch.service.ISocketService]
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
  */
-data class PongEvent<S : AbstractWebSocketService<S>>(override val client: S) : AbstractEvent<S>(client)
+data class PongEvent<S : ISocketService<S>>(override val client: S) : AbstractEvent<S>(client), IEvent<S>

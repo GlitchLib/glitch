@@ -48,7 +48,7 @@ public class HttpClient {
      * Glitch HTTP Client
      *
      * @param httpClient HTTP Client
-     * @param gson       JSON IConverter
+     * @param gson       JSON Converter
      * @param baseUrl    Base URL
      */
     private HttpClient(OkHttpClient httpClient, Gson gson, String baseUrl) {

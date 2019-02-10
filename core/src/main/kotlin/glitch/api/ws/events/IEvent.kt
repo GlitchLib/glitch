@@ -1,6 +1,6 @@
 package glitch.api.ws.events
 
-import glitch.service.AbstractWebSocketService
+import glitch.service.ISocketService
 import java.time.Instant
 import java.util.*
 
@@ -11,7 +11,7 @@ import java.util.*
  * @version %I%, %G%
  * @since 1.0
  */
-interface IEvent<S : AbstractWebSocketService<S>> {
+interface IEvent<S : ISocketService<S>> {
     /**
      * the [glitch.GlitchClient]
      */
