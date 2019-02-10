@@ -1,6 +1,8 @@
 import java.util.stream.Collectors
 
-def projectList = rootProject.subprojects.stream().filter { !["bom", "auth", name].contains(it.name) }.collect(Collectors.toSet())
+def projectList = rootProject.subprojects.stream().filter {
+    !["bom", "auth", name].contains(it.name)
+}.collect(Collectors.toSet())
 
 dependencies {
     projectList.each {
@@ -29,6 +31,6 @@ javadoc {
 
 dokka {
     moduleName = rootProject.name
-    sourceDirs = projectList.stream().flatMap { it.dokka.sourceDirs.stream() } .collect(Collectors.toList())
-    sourceRoots = projectList.stream().flatMap { it.dokka.sourceRoots.stream() } .collect(Collectors.toList())
+    sourceDirs = projectList.stream().flatMap { it.dokka.sourceDirs.stream() }.collect(Collectors.toList())
+    sourceRoots = projectList.stream().flatMap { it.dokka.sourceRoots.stream() }.collect(Collectors.toList())
 }

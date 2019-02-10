@@ -7,7 +7,7 @@ include "auth:ktor",
         "auth:akka",
         "auth:http4k"
 
-include "core" ,
+include "core",
         "chat",
         "kraken",
         "helix",
