@@ -4,35 +4,22 @@ import glitch.api.http.Unofficial;
 import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
-@Data
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Topic {
     private final Topic.Type type;
     private final String[] suffix;
     @Nullable
     private final Credential credential;
 
-    public UUID getCode() {
-        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
-    }
-
-    public String getRawType() {
-        return getType().toRaw(suffix);
-    }
-
-    public String toString() {
-        return String.format("Topic(\"%s\")", getRawType());
+    public Topic(Type type, String[] suffix, Credential credential) {
+        this.type = type;
+        this.suffix = suffix;
+        this.credential = credential;
     }
 
     /**
@@ -148,7 +135,31 @@ public class Topic {
         }
     }
 
-    @RequiredArgsConstructor
+    public UUID getCode() {
+        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
+    }
+
+    public String getRawType() {
+        return getType().toRaw(suffix);
+    }
+
+    public String toString() {
+        return String.format("Topic(\"%s\")", getRawType());
+    }
+
+    public Type getType() {
+        return this.type;
+    }
+
+    public String[] getSuffix() {
+        return this.suffix;
+    }
+
+    @Nullable
+    public Credential getCredential() {
+        return this.credential;
+    }
+
     enum Type {
         /**
          * Anyone cheers on a specified channel.
@@ -160,7 +171,6 @@ public class Topic {
          * <p>
          * Subgift subscription messages contain recipient information.
          * Formatting:
-         *
          */
         CHANNEL_SUBSCRIPTION("channel-subscribe-events-v1"),
 
@@ -174,7 +184,7 @@ public class Topic {
          * Formatting: {@code {&quot;display_name&quot;:&quot;&lt;display name&gt;&quot;, &quot;username&quot;:&quot;&lt;username&gt;&quot;, &quot;user_id&quot;:&quot;&lt;id&gt;&quot;}}
          */
         @Unofficial("[Unknown Source]") // TODO: Required Source
-        FOLLOW("following"),
+                FOLLOW("following"),
 
         /**
          * Listening moderation actions in specific channel.
@@ -206,8 +216,12 @@ public class Topic {
         VIDEO_PLAYBACK("video-playback");
 
 
-        @Getter
         private final String value;
+
+        @java.beans.ConstructorProperties({"value"})
+        private Type(String value) {
+            this.value = value;
+        }
 
         private static Type readType(String raw) {
             for (Type t : values()) {
@@ -218,6 +232,10 @@ public class Topic {
 
         String toRaw(String... subject) {
             return String.format("%s.%s", value, String.join(".", subject));
+        }
+
+        public String getValue() {
+            return this.value;
         }
     }
 }

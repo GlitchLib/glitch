@@ -3,12 +3,11 @@ package glitch.pubsub;
 import glitch.exceptions.GlitchException;
 import glitch.pubsub.exceptions.TopicException;
 import glitch.pubsub.object.enums.MessageType;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.nio.channels.NotYetConnectedException;
 import java.util.*;
 import java.util.stream.Collectors;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public class TopicsCache {
     private final GlitchPubSub client;
@@ -96,12 +95,13 @@ public class TopicsCache {
                             topics.replace(topic, false);
                         }
                     });
-        } else return Mono.error(new TopicException("Topic is not registered or it is not exist: " + topic.getRawType()));
+        } else
+            return Mono.error(new TopicException("Topic is not registered or it is not exist: " + topic.getRawType()));
     }
 
 
     Mono<Void> exchange(MessageType type, Topic topic) {
-        if (client.isOpen()) {
+        if (client.ws.isConnected()) {
             return client.buildMessage(type, topic);
         } else return Mono.error(new GlitchException("Cannot send message!", new NotYetConnectedException()));
     }

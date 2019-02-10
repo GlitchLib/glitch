@@ -4,7 +4,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import glitch.pubsub.object.json.ModerationData;
-
 import java.io.IOException;
 
 public class ModerationActionAdapter extends TypeAdapter<ModerationData.Action> {

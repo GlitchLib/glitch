@@ -4,7 +4,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import glitch.pubsub.object.json.VideoPlayback;
-
 import java.io.IOException;
 
 public class VideoPlaybackTypeAdapter extends TypeAdapter<VideoPlayback.Type> {
