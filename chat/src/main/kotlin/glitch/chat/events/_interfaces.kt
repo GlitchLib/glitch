@@ -2,9 +2,6 @@ package glitch.chat.events
 
 import glitch.api.objects.enums.UserType
 import glitch.api.objects.json.Badge
-import glitch.chat.entities.ChannelEntity
-import glitch.chat.entities.ChannelUserEntity
-import glitch.chat.entities.UserEntity
 import java.awt.Color
 
 /**

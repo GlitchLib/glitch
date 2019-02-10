@@ -9,7 +9,6 @@ import glitch.auth.objects.json.Credential;
 import glitch.chat.events.IRCEvent;
 import glitch.chat.exceptions.AlreadyJoinedChannelException;
 import glitch.chat.exceptions.NotJoinedChannelException;
-import glitch.chat.v2.ChatUtils;
 import glitch.service.ISocketService;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;

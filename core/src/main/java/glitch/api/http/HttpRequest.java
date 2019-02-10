@@ -90,7 +90,6 @@ public class HttpRequest extends Object {
      *
      * @param key   param key
      * @param value param value
-     * @param <S>   Serializable value
      * @return this
      */
     public HttpRequest queryParam(String key, Object value) {

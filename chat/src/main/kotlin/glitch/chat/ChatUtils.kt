@@ -1,9 +1,8 @@
-package glitch.chat.v2
+package glitch.chat
 
 import glitch.api.ws.events.IEvent
 import glitch.api.ws.events.PingEvent
 import glitch.api.ws.events.PongEvent
-import glitch.chat.GlitchChat
 import glitch.chat.events.*
 import java.util.*
 

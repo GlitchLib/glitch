@@ -2,6 +2,7 @@ package glitch.kraken.services.request;
 
 import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
+import glitch.api.http.Routes;
 import glitch.api.objects.enums.VideoType;
 import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
@@ -21,8 +22,8 @@ public class FollowedVideosRequest extends AbstractRequest<Video, Videos> {
     private Integer offset;
     private VideoSort sort;
 
-    public FollowedVideosRequest(HttpClient httpClient, HttpRequest request, Credential credential) {
-        super(httpClient, request);
+    public FollowedVideosRequest(HttpClient httpClient, Credential credential) {
+        super(httpClient, Routes.get("/videos/followed").newRequest());
         this.credential = credential;
     }
 

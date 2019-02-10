@@ -97,7 +97,7 @@ data class Codes(
 data class Games(
         override val data: List<Game>,
         @SerializedName("pagination.cursor")
-        override val cursor: String?
+        override val cursor: String
 ) : CursorList<Game>
 
 
@@ -122,12 +122,6 @@ data class Follows(
         @field:SerializedName("pagination.cursor")
         override val cursor: String
 ) : CursorList<Follow>
-
-data class Games(
-        override val data: List<Game>,
-        @SerializedName("pagination.cursor")
-        override val cursor: String
-) : CursorList<Game>
 
 data class InstalledExtensions(
         override val data: List<InstalledExtension>

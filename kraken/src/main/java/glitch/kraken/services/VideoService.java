@@ -1,6 +1,8 @@
 package glitch.kraken.services;
 
 import com.google.gson.JsonObject;
+import glitch.api.http.HttpRequest;
+import glitch.api.http.Routes;
 import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;
@@ -10,6 +12,7 @@ import glitch.kraken.object.json.collections.Videos;
 import glitch.kraken.services.request.FollowedVideosRequest;
 import glitch.kraken.services.request.TopVideosRequest;
 import glitch.service.AbstractHttpService;
+import java.util.Objects;
 import reactor.core.publisher.Mono;
 
 public class VideoService extends AbstractHttpService {
@@ -18,15 +21,15 @@ public class VideoService extends AbstractHttpService {
     }
 
     public Mono<Video> getVideo(Long id) {
-        return exchange(get(String.format("/videos/%s", id), Video.class)).toMono();
+        return exchange(Routes.get("/videos/%s").newRequest(id)).map(response -> response.getBodyAs(Video.class));
     }
 
     public TopVideosRequest getTopVideos() {
-        return new TopVideosRequest(http, get("/videos/top", Videos.class));
+        return new TopVideosRequest(http);
     }
 
     public FollowedVideosRequest getTopVideos(Credential credential) {
-        return new FollowedVideosRequest(http, get("/videos/followed", Videos.class), credential);
+        return new FollowedVideosRequest(http, credential);
     }
 
     public void createUpload(Credential credential) {
@@ -38,10 +41,10 @@ public class VideoService extends AbstractHttpService {
         return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_EDITOR))
                 .flatMap(b -> {
                     if (b) {
-                        return exchange(put(String.format("/videos/%s", id), Video.class)
-                                .body(body)
+                        return exchange(Routes.put("/videos/%s").newRequest(id)
+                                .body(HttpRequest.BodyType.JSON, body)
                                 .queryParam("Authorization", "OAuth " + credential.getAccessToken()))
-                                .toMono();
+                                .map(response -> response.getBodyAs(Video.class));
                     } else {
                         return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_EDITOR));
                     }
@@ -52,9 +55,9 @@ public class VideoService extends AbstractHttpService {
         return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_EDITOR))
                 .flatMap(b -> {
                     if (b) {
-                        return exchange(delete(String.format("/videos/%s", video.getId()), JsonObject.class)
+                        return exchange(Routes.delete("/videos/%s").newRequest(video.getId())
                                 .queryParam("Authorization", "OAuth " + credential.getAccessToken()))
-                                .toMono(o -> o.get("ok").getAsBoolean());
+                                .map(response -> Objects.requireNonNull(response.getBodyAs(JsonObject.class)).getAsJsonPrimitive("ok").getAsBoolean());
                     } else {
                         return Mono.error(handleScopeMissing(GlitchScope.CHANNEL_EDITOR));
                     }

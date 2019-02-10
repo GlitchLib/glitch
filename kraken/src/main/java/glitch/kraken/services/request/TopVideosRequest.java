@@ -2,6 +2,7 @@ package glitch.kraken.services.request;
 
 import glitch.api.http.HttpClient;
 import glitch.api.http.HttpRequest;
+import glitch.api.http.Routes;
 import glitch.api.objects.enums.VideoType;
 import glitch.kraken.object.enums.VideoPeriod;
 import glitch.kraken.object.enums.VideoSort;
@@ -22,8 +23,8 @@ public class TopVideosRequest extends AbstractRequest<Video, Videos> {
     private VideoPeriod period;
     private VideoSort sort;
 
-    public TopVideosRequest(HttpClient httpClient, HttpRequest request) {
-        super(httpClient, request);
+    public TopVideosRequest(HttpClient httpClient) {
+        super(httpClient, Routes.get("/videos/top").newRequest());
     }
 
     public TopVideosRequest addVideoType(VideoType... types) {
