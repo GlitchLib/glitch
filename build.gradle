@@ -211,7 +211,7 @@ subprojects {
             version {
                 name = rootProject.version.toString()
                 vcsTag = "v${rootProject.version}"
-                released = Calendar.getInstance(TimeZone.getTimeZone("GMT")).time.toInstant().toString()
+                released = new Date()
             }
         }
     }
