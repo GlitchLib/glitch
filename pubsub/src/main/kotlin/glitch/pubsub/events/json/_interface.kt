@@ -2,6 +2,7 @@ package glitch.pubsub.events.json
 
 import com.google.gson.annotations.SerializedName
 import glitch.api.objects.enums.SubscriptionType
+import glitch.pubsub.`object`.enums.MessageType
 import glitch.pubsub.`object`.enums.SubscriptionContext
 import java.time.Instant
 
@@ -37,4 +38,8 @@ interface IModerator {
 interface ITarget {
     val targetName: String
     val targetId: Long
+}
+
+interface DataType {
+    val type: MessageType
 }
