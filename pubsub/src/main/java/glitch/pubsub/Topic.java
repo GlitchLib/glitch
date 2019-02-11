@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class Topic {
@@ -34,6 +35,22 @@ public class Topic {
      */
     public static Topic bits(Credential credential) {
         return bits(credential.getUserId(), credential);
+    }
+
+    /**
+     * Anyone cheers on a specified channel.
+     */
+    public static Topic bitsV2(Long channelId, Credential credential) {
+        if (credential.getScopes().contains(GlitchScope.BITS_READ)) {
+            return new Topic(Type.CHANNEL_BITS_V2, toArray(channelId), credential);
+        } else throw new ScopeIsMissingException(GlitchScope.BITS_READ);
+    }
+
+    /**
+     * Anyone cheers on a authorized channel.
+     */
+    public static Topic bitsV2(Credential credential) {
+        return bitsV2(credential.getUserId(), credential);
     }
 
     /**
@@ -147,6 +164,7 @@ public class Topic {
         return String.format("Topic(\"%s\")", getRawType());
     }
 
+    @Nonnull
     public Type getType() {
         return this.type;
     }
@@ -165,6 +183,11 @@ public class Topic {
          * Anyone cheers on a specified channel.
          */
         CHANNEL_BITS("channel-bits-events-v1"),
+
+        /**
+         * Anyone cheers on a specified channel.
+         */
+        CHANNEL_BITS_V2("channel-bits-events-v2"),
 
         /**
          * Anyone subscribes (first month), resubscribes (subsequent months), or gifts a subscription to a channel.
@@ -218,8 +241,7 @@ public class Topic {
 
         private final String value;
 
-        @java.beans.ConstructorProperties({"value"})
-        private Type(String value) {
+        Type(String value) {
             this.value = value;
         }
 
@@ -227,7 +249,7 @@ public class Topic {
             for (Type t : values()) {
                 if (t.value.equals(raw)) return t;
             }
-            return null;
+            throw new IllegalArgumentException("Cannot handle unknown raw type: " + raw);
         }
 
         String toRaw(String... subject) {

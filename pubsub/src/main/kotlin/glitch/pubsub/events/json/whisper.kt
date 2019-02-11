@@ -1,21 +1,39 @@
-package glitch.pubsub.`object`.json
+package glitch.pubsub.events.json
 
 import com.google.gson.annotations.SerializedName
 import glitch.api.objects.enums.UserType
 import glitch.api.objects.json.Badge
 import glitch.api.objects.json.interfaces.IDObject
-import glitch.pubsub.`object`.json.message.Emote
 import java.awt.Color
 import java.time.Instant
 
-class WhisperMessage(
+/**
+ *
+ * @author Damian Staszewski [damian@stachuofficial.tv]
+ * @version %I%, %G%
+ * @since 1.0
+ */
+data class WhisperThread(
+        val isArchived: Boolean,
+        val isMuted: Boolean,
+        val whitelistedUntil: Instant
+)
+
+/**
+ *
+ * @author Damian Staszewski [damian@stachuofficial.tv]
+ * @version %I%, %G%
+ * @since 1.0
+ */
+data class WhisperMessage(
         override val id: Long,
         @SerializedName("body")
         val message: String,
         @SerializedName("sent_ts")
         val createdAt: Instant,
         @SerializedName("from_id")
-        val senderId: Long, val tags: Tags,
+        val senderId: Long,
+        val tags: Tags,
         val recipient: Recipient
 ) : IDObject<Long> {
 
