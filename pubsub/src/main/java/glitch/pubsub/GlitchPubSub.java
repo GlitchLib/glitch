@@ -1,16 +1,16 @@
 package glitch.pubsub;
 
+import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.*;
 import glitch.GlitchClient;
 import glitch.api.ws.WebSocket;
 import glitch.api.ws.events.IEvent;
 import glitch.api.ws.events.PingEvent;
 import glitch.pubsub.events.PubSubEvent;
+import glitch.pubsub.events.json.SingleRequest;
+import glitch.pubsub.events.json.TopicRequest;
 import glitch.pubsub.object.enums.MessageType;
-import glitch.pubsub.events.v1.json.SingleRequestType;
-import glitch.pubsub.events.v1.json.TopicRequest;
 import glitch.service.ISocketService;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -40,7 +40,7 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
     private GlitchPubSub(
             GlitchClient client, GsonBuilder gson, boolean secure, Map<Topic, Boolean> topics,
             FluxProcessor<IEvent<GlitchPubSub>, IEvent<GlitchPubSub>> eventProcessor,
-            boolean disableAutoPing,
+            boolean disableAutoPing
     ) {
         this.client = client;
         this.gson = gson.registerTypeAdapter(GlitchPubSub.class, (JsonDeserializer<GlitchPubSub>) (json, type, context) -> GlitchPubSub.this).create();
@@ -77,7 +77,7 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
 
             return this.ws.send(Mono.just(gson.toJson(new TopicRequest(type, topic.getCode().toString(), dataType))));
         } else {
-            return this.ws.send(Mono.just(gson.toJson(new SingleRequestType(type))));
+            return this.ws.send(Mono.just(gson.toJson(new SingleRequest(type))));
         }
     }
 
@@ -120,7 +120,8 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
 
     public static class Builder {
         private final GlitchClient client;
-        private final GsonBuilder gsonBuilder = new GsonBuilder();
+        private final GsonBuilder gsonBuilder = Converters.registerAll(new GsonBuilder())
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
         private final AtomicBoolean secure = new AtomicBoolean(true);
         private final Map<Topic, Boolean> topics = new LinkedHashMap<>(50);
         private final AtomicBoolean disableAutoPing = new AtomicBoolean(false);

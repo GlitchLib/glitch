@@ -1,5 +1,6 @@
 package glitch.api.http;
 
+import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -171,7 +172,7 @@ public class HttpClient {
 
     public static class Builder {
         private final MultiValuedMap<String, String> headers = new HashSetValuedHashMap<>();
-        private final GsonBuilder gsonBuilder = new GsonBuilder()
+        private final GsonBuilder gsonBuilder = Converters.registerAll(new GsonBuilder())
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
         private String baseUrl;
 

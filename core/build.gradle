@@ -8,6 +8,7 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:3.13.1"
     compile "com.squareup.okhttp3:logging-interceptor:3.12.1"
 
+    compile "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1" // GSON java.time serialization
     compile "com.google.code.gson:gson:2.8.5"
     compile "com.google.code.findbugs:jsr305:3.0.2"
 
