@@ -60,7 +60,7 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
         this.ws.onEvent(PingEvent.class)
                 .subscribe(ping -> {
                     if (!disableAutoPing) {
-                        this.ws.send(Mono.just("{\"type\": \"PONG\"}"));
+                        buildMessage(MessageType.PONG, null).subscribe();
                     }
                 });
     }

@@ -13,10 +13,6 @@ mkdir ${JAVADOC_DESTINATION}
 for PROJECT in "auth" "chat" "core" "docs" "helix" "kraken" "pubsub"; do
     DIRECTORY=${PROJECT}/build/docs/javadoc
 
-    if [[ ${PROJECT} == "docs" ]]; then
-        PROJECT="all"
-    fi
-
     cp -ar ${DIRECTORY} ${JAVADOC_DESTINATION}/${PROJECT}
 done
 
