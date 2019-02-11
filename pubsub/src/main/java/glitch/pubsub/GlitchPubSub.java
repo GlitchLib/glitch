@@ -7,8 +7,13 @@ import glitch.api.ws.WebSocket;
 import glitch.api.ws.events.IEvent;
 import glitch.api.ws.events.PingEvent;
 import glitch.pubsub.events.PubSubEvent;
+import glitch.pubsub.events.json.ModerationData;
 import glitch.pubsub.events.json.SingleRequest;
 import glitch.pubsub.events.json.TopicRequest;
+import glitch.pubsub.events.json.VideoPlayback;
+import glitch.pubsub.object.adapters.MessageTypeAdapter;
+import glitch.pubsub.object.adapters.ModerationActionAdapter;
+import glitch.pubsub.object.adapters.VideoPlaybackTypeAdapter;
 import glitch.pubsub.object.enums.MessageType;
 import glitch.service.ISocketService;
 import java.util.Arrays;
@@ -165,6 +170,9 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
         }
 
         private void registerDefaultAdapters() {
+            this.gsonBuilder.registerTypeAdapter(MessageType.class, new MessageTypeAdapter())
+                    .registerTypeAdapter(ModerationData.Action.class, new ModerationActionAdapter())
+                    .registerTypeAdapter(VideoPlayback.Type.class, new VideoPlaybackTypeAdapter());
         }
     }
 }
