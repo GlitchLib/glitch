@@ -10,4 +10,8 @@ public class PubSubException extends GlitchException {
     public PubSubException(String message) {
         super(message);
     }
+
+    public PubSubException(Throwable cause) {
+        super(cause);
+    }
 }

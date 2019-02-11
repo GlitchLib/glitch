@@ -1,29 +1,32 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.kraken.object.json.Channel;
-import glitch.kraken.object.json.list.Channels;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.kraken.object.json.collections.Channels;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class ChannelSearchRequest extends AbstractRequest<Channels, Channel> {
+public class ChannelSearchRequest extends AbstractRequest<Channel, Channels> {
     private Integer offset;
     private Integer limit;
 
-    public ChannelSearchRequest(GlitchHttpClient http, String query) {
-        super(http, http.create(HttpMethod.GET, "/search/channels", Channels.class).queryParam("query", query));
+    public ChannelSearchRequest(HttpClient http, String query) {
+        super(http, Routes.get("/search/channels").newRequest().queryParam("query", query));
+    }
+
+    public ChannelSearchRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    public ChannelSearchRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
     }
 
     @Override
-    protected HttpResponse<Channels> exchange() {
+    public Mono<Channels> get() {
         if (limit != null && limit > 0 && limit <= 100) {
             request.queryParam("limit", limit);
         }
@@ -32,16 +35,6 @@ public class ChannelSearchRequest extends AbstractRequest<Channels, Channel> {
             request.queryParam("offset", offset);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<Channels> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<Channel> getIterable() {
-        return exchange().toFlux(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Channels.class);
     }
 }

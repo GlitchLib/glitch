@@ -1,6 +1,6 @@
 package glitch.api.objects.enums;
 
-public enum  BroadcasterType {
+public enum BroadcasterType {
     NONE,
     AFFILIATE,
     PARTNER

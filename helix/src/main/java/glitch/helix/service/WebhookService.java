@@ -1,7 +1,7 @@
 package glitch.helix.service;
 
-import glitch.api.AbstractHttpService;
 import glitch.helix.GlitchHelix;
+import glitch.service.AbstractHttpService;
 
 public class WebhookService extends AbstractHttpService {
     public WebhookService(GlitchHelix helix) {

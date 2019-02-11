@@ -1,31 +1,39 @@
 package glitch.kraken.services.request;
 
-import com.google.common.net.UrlEscapers;
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.kraken.object.json.Stream;
-import glitch.kraken.object.json.list.Streams;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.kraken.object.json.collections.Streams;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class StreamSearchRequest extends AbstractRequest<Streams, Stream> {
+public class StreamSearchRequest extends AbstractRequest<Stream, Streams> {
     private Integer limit;
     private Integer offset;
     private Boolean hls;
 
-    public StreamSearchRequest(GlitchHttpClient http, String query) {
-        super(http, http.create(HttpMethod.GET, "/search/channels", Streams.class).queryParam("query", UrlEscapers.urlFormParameterEscaper().escape(query)));
+    public StreamSearchRequest(HttpClient http, String query) {
+        super(http, Routes.get("/search/channels").newRequest().queryParam("query", encodeQuery(query)));
+    }
+
+    public StreamSearchRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public StreamSearchRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    public StreamSearchRequest setHls(Boolean hls) {
+        this.hls = hls;
+        return this;
     }
 
     @Override
-    protected HttpResponse<Streams> exchange() {
+    public Mono<Streams> get() {
+
         if (limit != null && limit > 0 && limit <= 100) {
             request.queryParam("limit", limit);
         }
@@ -38,16 +46,6 @@ public class StreamSearchRequest extends AbstractRequest<Streams, Stream> {
             request.queryParam("hls", hls);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<Streams> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<Stream> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Streams.class);
     }
 }

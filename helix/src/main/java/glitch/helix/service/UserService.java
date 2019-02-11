@@ -1,26 +1,19 @@
 package glitch.helix.service;
 
-import com.google.common.collect.ImmutableList;
-import glitch.api.AbstractHttpService;
 import glitch.api.http.HttpRequest;
+import glitch.api.http.Routes;
 import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
 import glitch.helix.GlitchHelix;
-import glitch.helix.object.json.Extension;
-import glitch.helix.object.json.InstalledExtension;
-import glitch.helix.object.json.User;
-import glitch.helix.object.json.list.Extensions;
-import glitch.helix.object.json.list.InstalledExtensions;
+import glitch.helix.object.json.*;
 import glitch.helix.service.request.UserFollowRequest;
-import lombok.Data;
+import glitch.service.AbstractHttpService;
+import java.util.Arrays;
+import javax.annotation.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 
 public class UserService extends AbstractHttpService {
     public UserService(GlitchHelix helix) {
@@ -28,10 +21,10 @@ public class UserService extends AbstractHttpService {
     }
 
     public Flux<User> getUsersById(@Nullable Credential credential, Long... id) {
-        HttpRequest<UserList> users = get("/users", UserList.class);
+        HttpRequest users = Routes.get("/users").newRequest();
 
         if (credential != null) {
-            if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_EMAIL)) {
+            if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_EMAIL)) {
                 users.header("Authorization", "Bearer " + credential.getAccessToken());
             }
         }
@@ -39,16 +32,14 @@ public class UserService extends AbstractHttpService {
         Arrays.asList(Arrays.copyOf(id, 100))
                 .forEach(uid -> users.queryParam("id", uid));
 
-        return exchange(users).toFlux(OrdinalList::getData);
+        return exchangeTo(users, Users.class).flatMapIterable(OrdinalList::getData);
     }
 
     public Flux<User> getUsersByLogin(@Nullable Credential credential, String... login) {
-        List<String> logins = Arrays.asList(Arrays.copyOf(login, 100));
-
-        HttpRequest<UserList> users = get("/users", UserList.class);
+        HttpRequest users = Routes.get("/users").newRequest();
 
         if (credential != null) {
-            if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_EMAIL)) {
+            if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_EMAIL)) {
                 users.header("Authorization", "Bearer " + credential.getAccessToken());
             }
         }
@@ -56,7 +47,7 @@ public class UserService extends AbstractHttpService {
         Arrays.asList(Arrays.copyOf(login, 100))
                 .forEach(l -> users.queryParam("login", l));
 
-        return exchange(users).toFlux(OrdinalList::getData);
+        return exchangeTo(users, Users.class).flatMapIterable(OrdinalList::getData);
     }
 
     public UserFollowRequest getUsersFollows(User user) {
@@ -68,49 +59,44 @@ public class UserService extends AbstractHttpService {
     }
 
     public Mono<User> updateUser(Credential credential, String description) {
-        if (checkRequiredScope(credential.getScopes(), Scope.USER_EDIT)) {
-            return exchange(put("/users", UserList.class)
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_EDIT)) {
+            return exchangeTo(Routes.put("/users").newRequest()
                     .header("Authorization", "Bearer " + credential.getAccessToken())
-                    .queryParam("description", description))
-                    .toFlux(OrdinalList::getData).next();
+                    .queryParam("description", description), Users.class)
+                    .flatMapIterable(OrdinalList::getData).next();
         } else {
-            return Mono.error(new ScopeIsMissingException(Scope.USER_EDIT));
+            return Mono.error(new ScopeIsMissingException(GlitchScope.USER_EDIT));
         }
     }
 
     public Flux<Extension> getUserExtensions(Credential credential) {
-        if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_BROADCAST)) {
-            return exchange(get("/users/extensions/list", Extensions.class)
-                    .header("Authorization", "Bearer " + credential.getAccessToken()))
-                    .toFlux(OrdinalList::getData);
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_BROADCAST)) {
+            return exchangeTo(Routes.get("/users/extensions/list").newRequest()
+                    .header("Authorization", "Bearer " + credential.getAccessToken()), Extensions.class)
+                    .flatMapIterable(OrdinalList::getData);
         } else {
-            return Flux.error(new ScopeIsMissingException(Scope.USER_READ_BROADCAST));
+            return Flux.error(new ScopeIsMissingException(GlitchScope.USER_READ_BROADCAST));
         }
     }
 
     public Flux<InstalledExtension> getUserInstalledExtensions(Credential credential) {
-        if (checkRequiredScope(credential.getScopes(), Scope.USER_READ_BROADCAST) || checkRequiredScope(credential.getScopes(), Scope.USER_EDIT_BROADCAST)) {
-            return exchange(get("/users/extensions", InstalledExtensions.class)
-                    .header("Authorization", "Bearer " + credential.getAccessToken()))
-                    .toFlux(OrdinalList::getData);
+        if (checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ_BROADCAST) || checkRequiredScope(credential.getScopes(), GlitchScope.USER_EDIT_BROADCAST)) {
+            return exchangeTo(Routes.get("/users/extensions").newRequest()
+                    .header("Authorization", "Bearer " + credential.getAccessToken()), InstalledExtensions.class)
+                    .flatMapIterable(OrdinalList::getData);
         } else {
             return getUserInstalledExtensions(credential.getUserId());
         }
     }
 
     public Flux<InstalledExtension> getUserInstalledExtensions(Long id) {
-        return exchange(get("/users/extensions", InstalledExtensions.class)
-                .queryParam("user_id", id))
-                .toFlux(OrdinalList::getData);
+        return exchangeTo(Routes.get("/users/extensions").newRequest()
+                .queryParam("user_id", id), InstalledExtensions.class)
+                .flatMapIterable(OrdinalList::getData);
     }
 
     // TODO
     public void updateUserExtension(Credential credential) {
         throw new UnsupportedOperationException("Updating User Extensions is not supported yet");
-    }
-
-    @Data
-    private static class UserList implements OrdinalList<User> {
-        private final ImmutableList<User> data;
     }
 }

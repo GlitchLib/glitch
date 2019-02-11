@@ -1,66 +1,63 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpRequest;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.auth.Scope;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.object.json.Clip;
-import glitch.kraken.object.json.list.Clips;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.kraken.object.json.collections.Clips;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class FollowedClipsRequest extends AbstractRequest<Clips, Clip> {
+public class FollowedClipsRequest extends AbstractRequest<Clip, Clips> {
 
+    private final Credential credential;
     private String cursor;
     private Long limit;
     private Boolean trending;
 
-    private final Credential credential;
-
-    public FollowedClipsRequest(GlitchHttpClient http, HttpRequest<Clips> request, Credential credential) {
-        super(http, request);
+    public FollowedClipsRequest(HttpClient http, Credential credential) {
+        super(http, Routes.get("/clips/followed").newRequest());
         this.credential = credential;
     }
 
-    @Override
-    protected HttpResponse<Clips> exchange() {
-        request.header("Authroization", "OAuth " + credential.getAccessToken());
+    public FollowedClipsRequest setCursor(String cursor) {
+        this.cursor = cursor;
+        return this;
+    }
 
-        if (cursor != null) {
-            request.queryParam("cursor", cursor);
-        }
+    public FollowedClipsRequest setLimit(Long limit) {
+        this.limit = limit;
+        return this;
+    }
 
-        if (limit != null && limit > 0 && limit <= 100) {
-            request.queryParam("limit", limit);
-        }
-
-        if (trending != null) {
-            request.queryParam("trending", trending);
-        }
-
-        return httpClient.exchange(request);
+    public FollowedClipsRequest setTrending(Boolean trending) {
+        this.trending = trending;
+        return this;
     }
 
     @Override
     public Mono<Clips> get() {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_READ)).flatMap(b -> {
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ)).flatMap(b -> {
             if (b) {
-                return exchange().toMono();
+                request.header("Authroization", "OAuth " + credential.getAccessToken());
+
+                if (cursor != null) {
+                    request.queryParam("cursor", cursor);
+                }
+
+                if (limit != null && limit > 0 && limit <= 100) {
+                    request.queryParam("limit", limit);
+                }
+
+                if (trending != null) {
+                    request.queryParam("trending", trending);
+                }
+
+                return httpClient.exchangeAs(request, Clips.class);
             } else {
-                return Mono.error(handleScopeMissing(Scope.USER_READ));
+                return Mono.error(handleScopeMissing(GlitchScope.USER_READ));
             }
         });
-    }
-
-    @Override
-    public Flux<Clip> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
     }
 }

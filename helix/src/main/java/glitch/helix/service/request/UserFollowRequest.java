@@ -1,34 +1,39 @@
 package glitch.helix.service.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.exceptions.GlitchException;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.helix.object.json.Follow;
-import glitch.helix.object.json.list.Follows;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.helix.object.json.Follows;
+import glitch.service.AbstractRequest;
+import javax.annotation.Nullable;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class UserFollowRequest extends AbstractRequest<Follows, Follow> {
+public class UserFollowRequest extends AbstractRequest<Follow, Follows> {
+    @Nullable
+    private final Long fromId;
+    @Nullable
+    private final Long toId;
     private String after;
     private Integer first;
-    private final Long fromId;
-    private final Long toId;
 
-    public UserFollowRequest(GlitchHttpClient httpClient, Long fromId, Long toId) {
-        super(httpClient, httpClient.create(HttpMethod.GET, "/users/follows", Follows.class));
+    public UserFollowRequest(HttpClient httpClient, Long fromId, Long toId) {
+        super(httpClient, Routes.get("/users/follows").newRequest());
         this.fromId = fromId;
         this.toId = toId;
     }
 
+    public UserFollowRequest setAfter(String after) {
+        this.after = after;
+        return this;
+    }
+
+    public UserFollowRequest setFirst(Integer first) {
+        this.first = first;
+        return this;
+    }
+
     @Override
-    protected HttpResponse<Follows> exchange() {
+    public Mono<Follows> get() {
         if (after != null) {
             request.queryParam("after", after);
         }
@@ -45,20 +50,6 @@ public class UserFollowRequest extends AbstractRequest<Follows, Follow> {
             request.queryParam("to_id", toId);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<Follows> get() {
-        if (fromId != null && toId != null) {
-            return Mono.error(new GlitchException("Cannot obtain from booth side user follow"));
-        } else {
-            return exchange().toMono();
-        }
-    }
-
-    @Override
-    public Flux<Follow> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Follows.class);
     }
 }

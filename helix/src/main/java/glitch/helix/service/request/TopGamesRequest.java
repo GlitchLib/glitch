@@ -1,31 +1,40 @@
 package glitch.helix.service.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
-import glitch.exceptions.GlitchException;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.helix.object.json.Game;
-import glitch.helix.object.json.list.Games;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.helix.object.json.Games;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class TopGamesRequest extends AbstractRequest<Games, Game> {
+public class TopGamesRequest extends AbstractRequest<Game, Games> {
     private Long first;
     private String before;
     private String after;
 
-    public TopGamesRequest(GlitchHttpClient http) {
-        super(http, http.create(HttpMethod.GET, "/games/top", Games.class));
+    public TopGamesRequest(HttpClient http) {
+        super(http, Routes.get("/games/top").newRequest());
+    }
+
+    public TopGamesRequest setFirst(Long first) {
+        this.first = first;
+        return this;
+    }
+
+    public TopGamesRequest setBefore(String before) {
+        this.before = before;
+        this.after = null;
+        return this;
+    }
+
+    public TopGamesRequest setAfter(String after) {
+        this.after = after;
+        this.before = null;
+        return this;
     }
 
     @Override
-    protected HttpResponse<Games> exchange() {
+    public Mono<Games> get() {
         if (first != null && first > 0 && first <= 100) {
             request.queryParam("first", first);
         }
@@ -38,20 +47,6 @@ public class TopGamesRequest extends AbstractRequest<Games, Game> {
             request.queryParam("after", after);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<Games> get() {
-        if (before != null && after != null) {
-            return Mono.error(new GlitchException("You must define one of pagination's word. \"#before()\" or \"#after()\""));
-        } else {
-            return exchange().toMono();
-        }
-    }
-
-    @Override
-    public Flux<Game> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Games.class);
     }
 }

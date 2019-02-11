@@ -1,12 +1,12 @@
 package glitch.kraken.services;
 
-import glitch.api.AbstractHttpService;
+import glitch.api.http.Routes;
 import glitch.auth.objects.json.Credential;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.Clip;
-import glitch.kraken.object.json.list.Clips;
 import glitch.kraken.services.request.FollowedClipsRequest;
 import glitch.kraken.services.request.TopClipsRequest;
+import glitch.service.AbstractHttpService;
 import reactor.core.publisher.Mono;
 
 public class ClipService extends AbstractHttpService {
@@ -15,15 +15,15 @@ public class ClipService extends AbstractHttpService {
     }
 
     public Mono<Clip> getClip(String slug) {
-        return exchange(get(String.format("/clips/%s", slug), Clip.class)).toMono();
+        return exchangeTo(Routes.get("/clips/%s").newRequest(slug), Clip.class);
     }
 
     public TopClipsRequest getTopClips() {
-        return new TopClipsRequest(http, get("/clips/top", Clips.class));
+        return new TopClipsRequest(http);
     }
 
     public FollowedClipsRequest getFollowedClips(Credential credential) {
-        return new FollowedClipsRequest(http, get("/clips/followed", Clips.class), credential);
+        return new FollowedClipsRequest(http, credential);
 
     }
 }
