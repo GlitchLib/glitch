@@ -1,20 +1,19 @@
 package glitch.kraken.services;
 
-import glitch.api.AbstractHttpService;
+import glitch.api.http.Routes;
+import glitch.api.http.Unofficial;
 import glitch.api.objects.json.interfaces.OrdinalList;
 import glitch.kraken.GlitchKraken;
-import glitch.kraken.object.json.ChatBadges;
-import glitch.kraken.object.json.ChatRoom;
-import glitch.kraken.object.json.Emote;
-import glitch.kraken.object.json.list.ChatRooms;
-import glitch.kraken.object.json.list.EmoteList;
-import glitch.kraken.object.json.list.EmoteSets;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
+import glitch.kraken.object.json.*;
+import glitch.kraken.object.json.collections.ChatRooms;
+import glitch.kraken.object.json.collections.EmoteSets;
+import glitch.kraken.object.json.collections.Emotes;
+import glitch.service.AbstractHttpService;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public class ChatService extends AbstractHttpService {
     public ChatService(GlitchKraken rest) {
@@ -22,7 +21,7 @@ public class ChatService extends AbstractHttpService {
     }
 
     public Mono<ChatBadges> getChatBadges(Long id) {
-        return exchange(get(String.format("/chat/%s/badges", id), ChatBadges.class)).toMono();
+        return exchangeTo(Routes.get("/chat/%s/badges").newRequest(id), ChatBadges.class);
     }
 
     public Mono<EmoteSets> getChatEmoteSets(Integer... ids) {
@@ -30,15 +29,29 @@ public class ChatService extends AbstractHttpService {
     }
 
     public Mono<EmoteSets> getChatEmoteSets(Collection<Integer> ids) {
-        return exchange(get("/chat/emoticon_images", EmoteSets.class)
-                .queryParam("emotesets", ids.stream().map(String::valueOf).collect(Collectors.joining(",")))).toMono();
+        return exchangeTo(Routes.get("/chat/emoticon_images").newRequest()
+                .queryParam("emotesets", ids.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","))), EmoteSets.class);
     }
 
     public Flux<Emote> getAllEmoticons() {
-        return exchange(get("/chat/emoticons", EmoteList.class)).toFlux(OrdinalList::getData);
+        return exchangeTo(Routes.get("/chat/emoticons").newRequest(), Emotes.class)
+                .flatMapIterable(OrdinalList::getData);
     }
 
     public Flux<ChatRoom> getChatRooms(Long id) {
-        return exchange(get(String.format("/chat/%s/rooms", id), ChatRooms.class)).toFlux(OrdinalList::getData);
+        return exchangeTo(Routes.get("/chat/%s/rooms").newRequest(id), ChatRooms.class)
+                .flatMapIterable(OrdinalList::getData);
+    }
+
+    @Unofficial
+    public Mono<GlobalUserState> getChatUserState(User user) {
+        return getChatUserState(user.getId());
+    }
+
+    @Unofficial
+    public Mono<GlobalUserState> getChatUserState(Long id) {
+        return exchangeTo(Routes.get("/users/%s/chat").newRequest(id), GlobalUserState.class);
     }
 }

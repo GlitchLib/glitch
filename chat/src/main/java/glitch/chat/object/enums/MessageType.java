@@ -54,6 +54,7 @@ public enum MessageType {
     /**
      * You cannot ban global moderator &lt;user&gt;. Please email support@twitch.tv if a global moderator is being abusive.
      */
+    @Deprecated
     BAD_BAN_GLOBAL_MOD,
     /**
      * You cannot ban moderator &lt;user&gt; unless you are the owner of this channel.
@@ -81,7 +82,7 @@ public enum MessageType {
     BAD_DELETE_MESSAGE_BROADCASTER,
 
     /**
-     * You cannot delete messages from another moderator &lt;user&gt;.
+     * You cannot delete messages of another moderator &lt;user&gt;.
      */
     BAD_DELETE_MESSAGE_MOD,
 
@@ -153,6 +154,7 @@ public enum MessageType {
     /**
      * You cannot timeout global moderator &lt;user&gt;. Please email support@twitch.tv if a global moderator is being abusive.
      */
+    @Deprecated
     BAD_TIMEOUT_GLOBAL_MOD,
 
     /**
@@ -171,7 +173,7 @@ public enum MessageType {
     BAD_TIMEOUT_STAFF,
 
     /**
-     * &lt;user&gt; is not banned from this channel.
+     * &lt;user&gt; is not banned of this channel.
      */
     BAD_UNBAN_NO_BAN,
 
@@ -186,7 +188,7 @@ public enum MessageType {
     BAD_UNMOD_MOD,
 
     /**
-     * &lt;user&gt; is now banned from this channel.
+     * &lt;user&gt; is now banned of this channel.
      */
     BAN_SUCCESS,
 
@@ -206,7 +208,7 @@ public enum MessageType {
     COMMERCIAL_SUCCESS,
 
     /**
-     * The message from &lt;user&gt; is now deleted.
+     * The message of &lt;user&gt; is now deleted.
      */
     DELETE_MESSAGE_SUCCESS,
 
@@ -285,7 +287,7 @@ public enum MessageType {
     MOD_SUCCESS,
 
     /**
-     * You are permanently banned from talking in &lt;channel&gt;.
+     * You are permanently banned of talking in &lt;channel&gt;.
      */
     MSG_BANNED,
 
@@ -377,7 +379,7 @@ public enum MessageType {
     MSG_SUSPENDED,
 
     /**
-     * You are banned from talking in &lt;channel&gt; for &lt;number&gt; more seconds.
+     * You are banned of talking in &lt;channel&gt; for &lt;number&gt; more seconds.
      */
     MSG_TIMEDOUT,
 
@@ -476,7 +478,7 @@ public enum MessageType {
     SUBS_ON,
 
     /**
-     * &lt;user&gt; is not timed out from this channel.
+     * &lt;user&gt; is not timed out of this channel.
      */
     TIMEOUT_NO_TIMEOUT,
 
@@ -496,7 +498,7 @@ public enum MessageType {
     TURBO_ONLY_COLOR,
 
     /**
-     * &lt;user&gt; is no longer banned from this channel.
+     * &lt;user&gt; is no longer banned of this channel.
      */
     UNBAN_SUCCESS,
 
@@ -541,7 +543,7 @@ public enum MessageType {
     UNTIMEOUT_SUCCESS,
 
     /**
-     * Usage: “/ban &lt;username&gt; [reason]” - Permanently prevent a user from chatting. Reason is optional and will be shown to the target and other moderators. Use “/unban” to remove a ban.
+     * Usage: “/ban &lt;username&gt; [reason]” - Permanently prevent a user of chatting. Reason is optional and will be shown to the target and other moderators. Use “/unban” to remove a ban.
      */
     USAGE_BAN,
 
@@ -651,7 +653,7 @@ public enum MessageType {
     USAGE_SUBS_ON,
 
     /**
-     * Usage: “/timeout &lt;username&gt; [duration][time unit] [reason]" - Temporarily prevent a user from chatting. Duration (optional, default=10 minutes) must be a positive integer; time unit (optional, default=s) must be one of s, m, h, d, w; maximum duration is 2 weeks. Combinations like 1d2h are also allowed. Reason is optional and will be shown to the target user and other moderators. Use “untimeout” to remove a timeout.
+     * Usage: “/timeout &lt;username&gt; [duration][time unit] [reason]" - Temporarily prevent a user of chatting. Duration (optional, default=10 minutes) must be a positive integer; time unit (optional, default=s) must be one of s, m, h, d, w; maximum duration is 2 weeks. Combinations like 1d2h are also allowed. Reason is optional and will be shown to the target user and other moderators. Use “untimeout” to remove a timeout.
      */
     USAGE_TIMEOUT,
 
@@ -666,7 +668,7 @@ public enum MessageType {
     USAGE_UNHOST,
 
     /**
-     * Usage: “/unmod &lt;username&gt;” - Revoke mod status from a user. Use “/mods” to list the moderators of this channel.
+     * Usage: “/unmod &lt;username&gt;” - Revoke mod status of a user. Use “/mods” to list the moderators of this channel.
      */
     USAGE_UNMOD,
 
@@ -681,12 +683,12 @@ public enum MessageType {
     USAGE_UNTIMEOUT,
 
     /**
-     * You have been banned from sending whispers.
+     * You have been banned of sending whispers.
      */
     WHISPER_BANNED,
 
     /**
-     * That user has been banned from receiving whispers.
+     * That user has been banned of receiving whispers.
      */
     WHISPER_BANNED_RECIPIENT,
 
@@ -716,12 +718,12 @@ public enum MessageType {
     WHISPER_LIMIT_PER_SEC,
 
     /**
-     * Your settings prevent you from sending this whisper.
+     * Your settings prevent you of sending this whisper.
      */
     WHISPER_RESTRICTED,
 
     /**
-     * That user's settings prevent them from receiving this whisper.
+     * That user's settings prevent them of receiving this whisper.
      */
     WHISPER_RESTRICTED_RECIPIENT,
 }

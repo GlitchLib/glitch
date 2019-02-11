@@ -1,56 +1,73 @@
 package glitch.pubsub;
 
+import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.*;
 import glitch.GlitchClient;
-import glitch.api.AbstractWebSocketService;
-import glitch.api.objects.adapters.ColorAdapter;
-import glitch.api.objects.adapters.SubscriptionTypeAdapter;
-import glitch.api.objects.adapters.UserTypeAdapter;
-import glitch.api.objects.enums.SubscriptionType;
-import glitch.api.objects.enums.UserType;
+import glitch.api.ws.WebSocket;
 import glitch.api.ws.events.IEvent;
-import glitch.auth.Scope;
-import glitch.auth.objects.adapters.ScopeAdapter;
-import glitch.pubsub.object.adapters.TopicHandler;
+import glitch.api.ws.events.PingEvent;
+import glitch.pubsub.events.PubSubEvent;
+import glitch.pubsub.events.json.ModerationData;
+import glitch.pubsub.events.json.SingleRequest;
+import glitch.pubsub.events.json.TopicRequest;
+import glitch.pubsub.events.json.VideoPlayback;
+import glitch.pubsub.object.adapters.MessageTypeAdapter;
+import glitch.pubsub.object.adapters.ModerationActionAdapter;
+import glitch.pubsub.object.adapters.VideoPlaybackTypeAdapter;
 import glitch.pubsub.object.enums.MessageType;
-import glitch.pubsub.object.json.SingleRequestType;
-import glitch.pubsub.object.json.TopicRequest;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.EmitterProcessor;
-import reactor.core.publisher.FluxProcessor;
-import reactor.core.publisher.Mono;
-
-import javax.annotation.Nullable;
-import java.awt.*;
+import glitch.service.ISocketService;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
+import okhttp3.logging.HttpLoggingInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.EmitterProcessor;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxProcessor;
+import reactor.core.publisher.Mono;
 
-@Slf4j
-public final class GlitchPubSub extends AbstractWebSocketService<GlitchPubSub> {
+public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
 
     private static final String URI_SECURE = "wss://pubsub-edge.twitch.tv";
     private static final String URI = "ws://pubsub-edge.twitch.tv";
 
-    protected final Gson gson = gsonInit();
-    @Getter
-    private final TopicsCache topics = new TopicsCache(this);
+    private static final Logger LOG = LoggerFactory.getLogger(GlitchPubSub.class);
+    protected final WebSocket<GlitchPubSub> ws;
+    private final GlitchClient client;
+    private final TopicsCache topicsCache = new TopicsCache(this);
+    private final Gson gson;
 
+    @SuppressWarnings("unchecked")
     private GlitchPubSub(
-            GlitchClient client,
+            GlitchClient client, GsonBuilder gson, boolean secure, Map<Topic, Boolean> topics,
             FluxProcessor<IEvent<GlitchPubSub>, IEvent<GlitchPubSub>> eventProcessor,
-            boolean secure
+            boolean disableAutoPing
     ) {
-        super(client, (secure) ? URI_SECURE : URI, eventProcessor, new PubSubConverter());
+        this.client = client;
+        this.gson = gson.registerTypeAdapter(GlitchPubSub.class, (JsonDeserializer<GlitchPubSub>) (json, type, context) -> GlitchPubSub.this).create();
+        this.ws = WebSocket.builder(this)
+                .addInterceptor(new HttpLoggingInterceptor(LOG::debug).setLevel(HttpLoggingInterceptor.Level.BASIC))
+                .setEventConverter(new PubSubConverter(this.gson))
+                .setEventProcessor(eventProcessor)
+                .build((secure) ? URI_SECURE : URI);
+        topics.forEach(this.topicsCache::register);
+        this.ws.onEvent(PubSubEvent.class)
+                .subscribe(PubSubUtils::consume);
+        this.ws.onEvent(PingEvent.class)
+                .subscribe(ping -> {
+                    if (!disableAutoPing) {
+                        buildMessage(MessageType.PONG, null).subscribe();
+                    }
+                });
     }
 
+    public static Builder builder(GlitchClient client) {
+        return new Builder(client);
+    }
 
     Mono<Void> buildMessage(MessageType type, @Nullable Topic topic) {
         if (Arrays.asList(MessageType.LISTEN, MessageType.UNLISTEN).contains(type) && topic != null) {
@@ -63,58 +80,99 @@ public final class GlitchPubSub extends AbstractWebSocketService<GlitchPubSub> {
                 dataType.add("auth_token", new JsonPrimitive(topic.getCredential().getAccessToken()));
             }
 
-            return send(Mono.just(gson.toJson(new TopicRequest(type, topic.getCode().toString(), dataType))));
+            return this.ws.send(Mono.just(gson.toJson(new TopicRequest(type, topic.getCode().toString(), dataType))));
         } else {
-            return send(Mono.just(gson.toJson(new SingleRequestType(type))));
+            return this.ws.send(Mono.just(gson.toJson(new SingleRequest(type))));
         }
     }
 
-    private Gson gsonInit() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        gsonBuilder.registerTypeAdapter(Scope.class, new ScopeAdapter());
-        gsonBuilder.registerTypeAdapter(Color.class, new ColorAdapter());
-        gsonBuilder.registerTypeAdapter(UserType.class, new UserTypeAdapter());
-        gsonBuilder.registerTypeAdapter(SubscriptionType.class, new SubscriptionTypeAdapter());
-
-        gsonBuilder.registerTypeAdapter(Topic.class, new TopicHandler(this));
-
-        return gsonBuilder.create();
+    public TopicsCache getTopicsCache() {
+        return this.topicsCache;
     }
 
-    public static Builder builder(GlitchClient client) {
-        return new Builder(client);
+    @Override
+    public Mono<Void> login() {
+
+        return this.ws.connect()
+                .then(doInit());
     }
 
-    @Data
-    @Accessors(chain = true, fluent = true)
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @Override
+    public void logout() {
+        this.ws.disconnect();
+    }
+
+    @Override
+    public Mono<Void> retry() {
+        return this.ws.retry().then(doInit());
+    }
+
+    @Override
+    public <E extends IEvent<GlitchPubSub>> Flux<E> onEvent(Class<E> type) {
+        return this.ws.onEvent(type);
+    }
+
+    @Override
+    public GlitchClient getClient() {
+        return client;
+    }
+
+    private Mono<Void> doInit() {
+        return Flux.fromIterable(topicsCache.getActive())
+                .flatMap(t -> buildMessage(MessageType.LISTEN, t))
+                .then();
+    }
+
     public static class Builder {
         private final GlitchClient client;
-        private FluxProcessor<IEvent<GlitchPubSub>, IEvent<GlitchPubSub>> eventProcessor = EmitterProcessor.create(true);
+        private final GsonBuilder gsonBuilder = Converters.registerAll(new GsonBuilder())
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
         private final AtomicBoolean secure = new AtomicBoolean(true);
+        private final Map<Topic, Boolean> topics = new LinkedHashMap<>(50);
+        private final AtomicBoolean disableAutoPing = new AtomicBoolean(false);
+        private FluxProcessor<IEvent<GlitchPubSub>, IEvent<GlitchPubSub>> eventProcessor = EmitterProcessor.create(true);
 
-        private final Map<Topic, Boolean> topic = new LinkedHashMap<>(50);
+        private Builder(GlitchClient client) {
+            this.client = client;
+        }
 
-        public Builder setTopic(Topic... topic) {
-            return setTopic(Arrays.asList(topic), false);
+        public Builder setTopics(Topic... topics) {
+            return setTopics(Arrays.asList(topics), false);
         }
 
         public Builder activateTopic(Topic... topic) {
-            return setTopic(Arrays.asList(topic), true);
+            return setTopics(Arrays.asList(topic), true);
         }
 
-        public Builder setTopic(Collection<Topic> topic, boolean active) {
-            topic.forEach(t -> this.topic.put(t, active));
+        public Builder setTopics(Collection<Topic> topic, boolean active) {
+            topic.forEach(t -> this.topics.put(t, active));
             return this;
-        }
-
-        public GlitchPubSub build() {
-            return new GlitchPubSub(client, eventProcessor, secure.get());
         }
 
         public Mono<GlitchPubSub> buildAsync() {
             return Mono.just(build());
+        }
+
+        public Builder setEventProcessor(FluxProcessor<IEvent<GlitchPubSub>, IEvent<GlitchPubSub>> eventProcessor) {
+            this.eventProcessor = eventProcessor;
+            return this;
+        }
+
+        public Builder setDisableAutoPing(boolean disableAutoPing) {
+            this.disableAutoPing.set(disableAutoPing);
+            return this;
+        }
+
+        public GlitchPubSub build() {
+            registerDefaultAdapters();
+
+            return new GlitchPubSub(client, gsonBuilder, secure.get(), topics, eventProcessor, disableAutoPing.get());
+        }
+
+        private void registerDefaultAdapters() {
+            this.gsonBuilder.registerTypeAdapter(MessageType.class, new MessageTypeAdapter())
+                    .registerTypeAdapter(ModerationData.Action.class, new ModerationActionAdapter())
+                    .registerTypeAdapter(VideoPlayback.Type.class, new VideoPlaybackTypeAdapter());
         }
     }
 }

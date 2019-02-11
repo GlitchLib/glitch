@@ -1,26 +1,18 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.kraken.object.enums.StreamType;
 import glitch.kraken.object.json.Channel;
 import glitch.kraken.object.json.Game;
 import glitch.kraken.object.json.Stream;
-import glitch.kraken.object.json.list.Streams;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
+import glitch.kraken.object.json.collections.Streams;
+import glitch.service.AbstractRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(fluent = true, chain = true)
-public class LiveStreamsRequest extends AbstractRequest<Streams, Stream> {
+public class LiveStreamsRequest extends AbstractRequest<Stream, Streams> {
     private final Set<Channel> channel = new LinkedHashSet<>();
     private Game game;
     private Locale langauge;
@@ -28,21 +20,47 @@ public class LiveStreamsRequest extends AbstractRequest<Streams, Stream> {
     private Integer limit;
     private Integer offset;
 
-    public LiveStreamsRequest(GlitchHttpClient http) {
-        super(http, http.create(HttpMethod.GET, "/streams", Streams.class));
+    public LiveStreamsRequest(HttpClient http) {
+        super(http, Routes.get("/streams").newRequest());
     }
 
-    public LiveStreamsRequest channel(Channel... languages) {
-        return channel(Arrays.asList(languages));
+    public LiveStreamsRequest setGame(Game game) {
+        this.game = game;
+        return this;
     }
 
-    public LiveStreamsRequest channel(Collection<Channel> languages) {
+    public LiveStreamsRequest setLangauge(Locale langauge) {
+        this.langauge = langauge;
+        return this;
+    }
+
+    public LiveStreamsRequest setStreamType(StreamType streamType) {
+        this.streamType = streamType;
+        return this;
+    }
+
+    public LiveStreamsRequest setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public LiveStreamsRequest setOffset(Integer offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    public LiveStreamsRequest addChannel(Channel... languages) {
+        return addChannel(Arrays.asList(languages));
+    }
+
+    public LiveStreamsRequest addChannel(Collection<Channel> languages) {
         this.channel.addAll(languages);
         return this;
     }
 
     @Override
-    protected HttpResponse<Streams> exchange() {
+    public Mono<Streams> get() {
+
         if (!channel.isEmpty()) {
             request.queryParam("channel", channel.stream().map(Channel::getId).map(String::valueOf).collect(Collectors.joining(",")));
         }
@@ -67,16 +85,6 @@ public class LiveStreamsRequest extends AbstractRequest<Streams, Stream> {
             request.queryParam("offset", offset);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<Streams> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<Stream> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Streams.class);
     }
 }

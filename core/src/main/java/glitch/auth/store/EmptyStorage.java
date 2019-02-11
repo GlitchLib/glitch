@@ -1,10 +1,9 @@
 package glitch.auth.store;
 
 import glitch.auth.objects.json.Credential;
+import java.util.function.Predicate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.function.Predicate;
 
 /**
  * Empty Storage where they are not saving or storing anywhere.

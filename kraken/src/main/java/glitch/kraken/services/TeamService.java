@@ -1,10 +1,10 @@
 package glitch.kraken.services;
 
-import glitch.api.AbstractHttpService;
+import glitch.api.http.Routes;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.TeamUsers;
-import glitch.kraken.object.json.list.Teams;
 import glitch.kraken.services.request.TeamsRequest;
+import glitch.service.AbstractHttpService;
 import reactor.core.publisher.Mono;
 
 public class TeamService extends AbstractHttpService {
@@ -13,10 +13,10 @@ public class TeamService extends AbstractHttpService {
     }
 
     public TeamsRequest getAllTeams() {
-        return new TeamsRequest(http, get("/teams", Teams.class));
+        return new TeamsRequest(http);
     }
 
     public Mono<TeamUsers> getTeam(String name) {
-        return exchange(get(String.format("/teams/%s", name), TeamUsers.class)).toMono();
+        return exchangeTo(Routes.get("/teams/%s").newRequest(name), TeamUsers.class);
     }
 }

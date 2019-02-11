@@ -1,38 +1,26 @@
 package glitch.pubsub;
 
 import glitch.api.http.Unofficial;
-import glitch.auth.Scope;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ScopeIsMissingException;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-@Data
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Topic {
     private final Topic.Type type;
     private final String[] suffix;
     @Nullable
     private final Credential credential;
 
-    public UUID getCode() {
-        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
-    }
-
-    public String getRawType() {
-        return getType().toRaw(suffix);
-    }
-
-    public String toString() {
-        return String.format("Topic(\"%s\")", getRawType());
+    public Topic(Type type, String[] suffix, Credential credential) {
+        this.type = type;
+        this.suffix = suffix;
+        this.credential = credential;
     }
 
     /**
@@ -50,14 +38,30 @@ public class Topic {
     }
 
     /**
+     * Anyone cheers on a specified channel.
+     */
+    public static Topic bitsV2(Long channelId, Credential credential) {
+        if (credential.getScopes().contains(GlitchScope.BITS_READ)) {
+            return new Topic(Type.CHANNEL_BITS_V2, toArray(channelId), credential);
+        } else throw new ScopeIsMissingException(GlitchScope.BITS_READ);
+    }
+
+    /**
+     * Anyone cheers on a authorized channel.
+     */
+    public static Topic bitsV2(Credential credential) {
+        return bitsV2(credential.getUserId(), credential);
+    }
+
+    /**
      * Anyone subscribes (first month), resubscribes (subsequent months), or gifts a subscription to a channel.
      * <p>
      * Subgift subscription messages contain recipient information.
      */
     public static Topic subscription(Long channelId, Credential credential) throws ScopeIsMissingException {
-        if (credential.getScopes().contains(Scope.CHANNEL_SUBSCRIPTIONS)) {
+        if (credential.getScopes().contains(GlitchScope.CHANNEL_SUBSCRIPTIONS)) {
             return new Topic(Type.CHANNEL_SUBSCRIPTION, toArray(channelId), credential);
-        } else throw new ScopeIsMissingException(Scope.CHANNEL_SUBSCRIPTIONS);
+        } else throw new ScopeIsMissingException(GlitchScope.CHANNEL_SUBSCRIPTIONS);
     }
 
     /**
@@ -73,9 +77,9 @@ public class Topic {
      * Anyone whispers the specified user.
      */
     public static Topic whispers(Credential credential) throws ScopeIsMissingException {
-        if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.WHISPERS_READ)) {
+        if (credential.getScopes().contains(GlitchScope.CHAT_LOGIN) || credential.getScopes().contains(GlitchScope.WHISPERS_READ)) {
             return new Topic(Type.WHISPERS, toArray(credential.getUserId()), credential);
-        } else throw new ScopeIsMissingException(Scope.WHISPERS_READ);
+        } else throw new ScopeIsMissingException(GlitchScope.WHISPERS_READ);
     }
 
     /**
@@ -90,9 +94,9 @@ public class Topic {
      * Owner ID must be a moderator in specific channel.
      */
     public static Topic moderationActions(Long channelId, Credential credential) throws ScopeIsMissingException {
-        if (credential.getScopes().contains(Scope.CHAT_LOGIN) || credential.getScopes().contains(Scope.CHANNEL_MODERATE)) {
+        if (credential.getScopes().contains(GlitchScope.CHAT_LOGIN) || credential.getScopes().contains(GlitchScope.CHANNEL_MODERATE)) {
             return new Topic(Type.CHAT_MODERATION_ACTIONS, toArray(channelId, credential.getUserId()), credential);
-        } else throw new ScopeIsMissingException(Scope.CHANNEL_MODERATE);
+        } else throw new ScopeIsMissingException(GlitchScope.CHANNEL_MODERATE);
     }
 
     /**
@@ -148,7 +152,32 @@ public class Topic {
         }
     }
 
-    @RequiredArgsConstructor
+    public UUID getCode() {
+        return UUID.nameUUIDFromBytes(getRawType().getBytes(Charset.forName("UTF-8")));
+    }
+
+    public String getRawType() {
+        return getType().toRaw(suffix);
+    }
+
+    public String toString() {
+        return String.format("Topic(\"%s\")", getRawType());
+    }
+
+    @Nonnull
+    public Type getType() {
+        return this.type;
+    }
+
+    public String[] getSuffix() {
+        return this.suffix;
+    }
+
+    @Nullable
+    public Credential getCredential() {
+        return this.credential;
+    }
+
     enum Type {
         /**
          * Anyone cheers on a specified channel.
@@ -156,11 +185,15 @@ public class Topic {
         CHANNEL_BITS("channel-bits-events-v1"),
 
         /**
+         * Anyone cheers on a specified channel.
+         */
+        CHANNEL_BITS_V2("channel-bits-events-v2"),
+
+        /**
          * Anyone subscribes (first month), resubscribes (subsequent months), or gifts a subscription to a channel.
          * <p>
          * Subgift subscription messages contain recipient information.
          * Formatting:
-         *
          */
         CHANNEL_SUBSCRIPTION("channel-subscribe-events-v1"),
 
@@ -174,7 +207,7 @@ public class Topic {
          * Formatting: {@code {&quot;display_name&quot;:&quot;&lt;display name&gt;&quot;, &quot;username&quot;:&quot;&lt;username&gt;&quot;, &quot;user_id&quot;:&quot;&lt;id&gt;&quot;}}
          */
         @Unofficial("[Unknown Source]") // TODO: Required Source
-        FOLLOW("following"),
+                FOLLOW("following"),
 
         /**
          * Listening moderation actions in specific channel.
@@ -206,18 +239,25 @@ public class Topic {
         VIDEO_PLAYBACK("video-playback");
 
 
-        @Getter
         private final String value;
+
+        Type(String value) {
+            this.value = value;
+        }
 
         private static Type readType(String raw) {
             for (Type t : values()) {
                 if (t.value.equals(raw)) return t;
             }
-            return null;
+            throw new IllegalArgumentException("Cannot handle unknown raw type: " + raw);
         }
 
         String toRaw(String... subject) {
             return String.format("%s.%s", value, String.join(".", subject));
+        }
+
+        public String getValue() {
+            return this.value;
         }
     }
 }

@@ -1,43 +1,32 @@
 package glitch.kraken.services.request;
 
-import com.google.common.net.UrlEscapers;
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpMethod;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.kraken.object.json.Game;
-import glitch.kraken.object.json.list.GamesSearch;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
+import glitch.kraken.object.json.collections.Games;
+import glitch.service.AbstractRequest;
 import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class GamesSearchRequest extends AbstractRequest<GamesSearch, Game> {
+public class GamesSearchRequest extends AbstractRequest<Game, Games> {
     private Boolean live;
 
-    public GamesSearchRequest(GlitchHttpClient http, String query) {
-        super(http, http.create(HttpMethod.GET, "/search/channels", GamesSearch.class).queryParam("query", UrlEscapers.urlFormParameterEscaper().escape(query)));
+    public GamesSearchRequest(HttpClient http, String query) {
+        super(http, Routes.get("/search/channels").newRequest()
+                .queryParam("query", encodeQuery(query)));
+    }
+
+    public GamesSearchRequest setLive(Boolean live) {
+        this.live = live;
+        return this;
     }
 
     @Override
-    protected HttpResponse<GamesSearch> exchange() {
+    public Mono<Games> get() {
+
         if (live != null) {
             request.queryParam("live", live);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<GamesSearch> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<Game> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Games.class);
     }
 }

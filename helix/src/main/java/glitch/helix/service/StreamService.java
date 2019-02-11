@@ -1,10 +1,10 @@
 package glitch.helix.service;
 
-import glitch.api.AbstractHttpService;
 import glitch.helix.GlitchHelix;
 import glitch.helix.object.json.User;
 import glitch.helix.object.json.Video;
 import glitch.helix.service.request.StreamsRequest;
+import glitch.service.AbstractHttpService;
 
 public class StreamService extends AbstractHttpService {
     public StreamService(GlitchHelix helix) {

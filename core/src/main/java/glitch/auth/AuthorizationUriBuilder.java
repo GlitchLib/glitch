@@ -1,7 +1,6 @@
 package glitch.auth;
 
 import glitch.Config;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -9,7 +8,7 @@ import java.util.stream.Collectors;
 public class AuthorizationUriBuilder {
     private final String baseUrl;
     private final Config config;
-    private final Set<Scope> scopes = new LinkedHashSet<>();
+    private final Set<GlitchScope> scopes = new LinkedHashSet<>();
     private String state;
     private String redirectUri;
     private AtomicBoolean forceVerify = new AtomicBoolean(false);
@@ -20,11 +19,11 @@ public class AuthorizationUriBuilder {
         this.redirectUri = config.getRedirectUri();
     }
 
-    public AuthorizationUriBuilder addScope(Scope... scopes) {
+    public AuthorizationUriBuilder addScope(GlitchScope... scopes) {
         return addScope(Arrays.asList(scopes));
     }
 
-    public AuthorizationUriBuilder addScope(Collection<Scope> scopes) {
+    public AuthorizationUriBuilder addScope(Collection<GlitchScope> scopes) {
         this.scopes.addAll(scopes);
         return this;
     }
@@ -68,6 +67,6 @@ public class AuthorizationUriBuilder {
     }
 
     private String buildScope() {
-        return (scopes.isEmpty()) ? "" : scopes.stream().map(Scope::getValue).collect(Collectors.joining("+"));
+        return (scopes.isEmpty()) ? "" : scopes.stream().map(GlitchScope::getValue).collect(Collectors.joining("+"));
     }
 }

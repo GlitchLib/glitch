@@ -1,3 +1,4 @@
 dependencies {
-    compile project(":core")
+    compileOnly project(":core")
+    testCompile project(":core")
 }
