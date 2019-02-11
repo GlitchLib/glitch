@@ -1,53 +1,76 @@
 package glitch.kraken.services.request;
 
-import glitch.api.AbstractRequest;
-import glitch.api.http.GlitchHttpClient;
-import glitch.api.http.HttpRequest;
-import glitch.api.http.HttpResponse;
-import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.api.http.HttpClient;
+import glitch.api.http.Routes;
 import glitch.kraken.object.enums.ClipPeriod;
 import glitch.kraken.object.json.Channel;
 import glitch.kraken.object.json.Clip;
 import glitch.kraken.object.json.Game;
-import glitch.kraken.object.json.list.Clips;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
+import glitch.kraken.object.json.collections.Clips;
+import glitch.service.AbstractRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+import reactor.core.publisher.Mono;
 
-@Setter
-@Accessors(chain = true, fluent = true)
-public class TopClipsRequest extends AbstractRequest<Clips, Clip> {
+public class TopClipsRequest extends AbstractRequest<Clip, Clips> {
+    private final Set<Locale> language = new LinkedHashSet<>(28);
     private Channel channel;
     private Game game;
     private String cursor;
-    private final Set<Locale> language = new LinkedHashSet<>(28);
     private Long limit;
     private ClipPeriod period;
     private Boolean trending;
 
-    public TopClipsRequest(GlitchHttpClient httpClient, HttpRequest<Clips> request) {
-        super(httpClient, request);
+    public TopClipsRequest(HttpClient httpClient) {
+        super(httpClient, Routes.get("/clips/top").newRequest());
     }
 
-    public TopClipsRequest language(Locale... language) {
-        return language(Arrays.asList(language));
+    public TopClipsRequest addLanguage(Locale... language) {
+        return addLanguage(Arrays.asList(language));
     }
 
-    public TopClipsRequest language(String... language) {
-        return language(Arrays.stream(language).map(Locale::forLanguageTag).collect(Collectors.toSet()));
+    public TopClipsRequest addLanguage(String... language) {
+        return addLanguage(Arrays.stream(language).map(Locale::forLanguageTag).collect(Collectors.toSet()));
     }
 
-    public TopClipsRequest language(Collection<Locale> language) {
+    public TopClipsRequest addLanguage(Collection<Locale> language) {
         this.language.addAll(language);
         return this;
     }
 
+    public TopClipsRequest setChannel(Channel channel) {
+        this.channel = channel;
+        return this;
+    }
+
+    public TopClipsRequest setGame(Game game) {
+        this.game = game;
+        return this;
+    }
+
+    public TopClipsRequest setCursor(String cursor) {
+        this.cursor = cursor;
+        return this;
+    }
+
+    public TopClipsRequest setLimit(Long limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public TopClipsRequest setPeriod(ClipPeriod period) {
+        this.period = period;
+        return this;
+    }
+
+    public TopClipsRequest setTrending(Boolean trending) {
+        this.trending = trending;
+        return this;
+    }
+
     @Override
-    protected HttpResponse<Clips> exchange() {
+    public Mono<Clips> get() {
+
         if (channel != null) {
             request.queryParam("channel", channel.getUsername());
         } else if (game != null) {
@@ -74,16 +97,6 @@ public class TopClipsRequest extends AbstractRequest<Clips, Clip> {
             request.queryParam("trending", trending);
         }
 
-        return httpClient.exchange(request);
-    }
-
-    @Override
-    public Mono<Clips> get() {
-        return exchange().toMono();
-    }
-
-    @Override
-    public Flux<Clip> getIterable() {
-        return get().flatMapIterable(OrdinalList::getData);
+        return httpClient.exchangeAs(request, Clips.class);
     }
 }

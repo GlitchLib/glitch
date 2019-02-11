@@ -1,9 +1,5 @@
 package glitch.api.objects.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public enum SubscriptionType {
     UNKNOWN(""),
     PRIME("Prime"),
@@ -11,8 +7,11 @@ public enum SubscriptionType {
     TIER2("2000"),
     TIER3("3000");
 
-    @Getter
     private final String value;
+
+    SubscriptionType(String value) {
+        this.value = value;
+    }
 
     public static SubscriptionType from(String type) {
         for (SubscriptionType subscriptionType : values()) {
@@ -22,5 +21,9 @@ public enum SubscriptionType {
         }
 
         return UNKNOWN;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

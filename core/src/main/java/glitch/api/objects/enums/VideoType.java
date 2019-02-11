@@ -1,5 +1,5 @@
 package glitch.api.objects.enums;
 
 public enum VideoType {
-    ARCHIVE, HIGHLIGHT, UPLOAD
+    ARCHIVE, HIGHLIGHT, UPLOAD, All
 }

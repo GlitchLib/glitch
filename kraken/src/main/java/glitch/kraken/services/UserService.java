@@ -1,39 +1,41 @@
 package glitch.kraken.services;
 
-import glitch.api.AbstractHttpService;
 import glitch.api.http.HttpRequest;
-import glitch.api.http.Unofficial;
-import glitch.auth.Scope;
+import glitch.api.http.Routes;
+import glitch.api.objects.json.interfaces.OrdinalList;
+import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
 import glitch.exceptions.http.ResponseException;
 import glitch.kraken.GlitchKraken;
 import glitch.kraken.object.json.*;
-import glitch.kraken.object.json.list.EmoteSets;
-import glitch.kraken.object.json.list.UserList;
+import glitch.kraken.object.json.collections.EmoteSets;
+import glitch.kraken.object.json.collections.Users;
+import glitch.kraken.object.json.impl.AuthUserImpl;
 import glitch.kraken.services.request.UserFollowsRequest;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
+import glitch.service.AbstractHttpService;
 import java.util.Arrays;
 import java.util.Collection;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public class UserService extends AbstractHttpService {
     public UserService(GlitchKraken rest) {
         super(rest.getClient(), rest.getHttpClient());
     }
 
-    public Mono<AuthorizedUser> getUsers(Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_READ)).flatMap(b -> {
+    public Mono<AuthUser> getUsers(Credential credential) {
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_READ)).flatMap(b -> {
             if (b) {
-                return exchange(get("/user", AuthorizedUser.class).header("Authorization", "OAuth " + credential.getAccessToken())).toMono();
+                return exchangeTo(Routes.get("/user").newRequest()
+                        .header("Authorization", "OAuth " + credential.getAccessToken()), AuthUserImpl.class);
             } else {
-                return Mono.error(handleScopeMissing(Scope.USER_READ));
+                return Mono.error(handleScopeMissing(GlitchScope.USER_READ));
             }
         });
     }
 
     public Mono<User> getUserById(Long id) {
-        return exchange(get(String.format("/users/%s", id), User.class)).toMono();
+        return exchangeTo(Routes.get("/users/%s").newRequest(id), User.class);
     }
 
     public Flux<User> getUsers(String... logins) {
@@ -41,29 +43,28 @@ public class UserService extends AbstractHttpService {
     }
 
     public Flux<User> getUsers(Collection<String> logins) {
-        return exchange(get("/users", UserList.class).queryParam("login", String.join(",", logins))).toFlux(UserList::getData);
+        return exchangeTo(Routes.get("/users").newRequest()
+                .queryParam("login", String.join(",", logins)), Users.class).flatMapIterable(OrdinalList::getData);
     }
 
     public Flux<EmoteSet> getUserEmotes(Long id, Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_SUBSCRIPTIONS))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_SUBSCRIPTIONS))
                 .flatMap(b -> {
                     if (b) {
-                        return exchange(get(String.format("/users/%s/emotes", id), EmoteSets.class)
-                                .header("Authorization", "OAuth " + credential.getAccessToken()))
-                                .toMono();
+                        return exchangeTo(Routes.get("/users/%s/emotes").newRequest(id)
+                                .header("Authorization", "OAuth " + credential.getAccessToken()), EmoteSets.class);
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.USER_SUBSCRIPTIONS));
+                        return Mono.error(handleScopeMissing(GlitchScope.USER_SUBSCRIPTIONS));
                     }
                 }).flatMapIterable(EmoteSets::toEmoteSets);
     }
 
     public Mono<Subscriber> checkUserSubscriptionByChannel(User user, Channel channel, Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_SUBSCRIPTIONS))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_SUBSCRIPTIONS))
                 .flatMap(b -> {
                     if (b) {
-                        return exchange(get(String.format("/users/%s/subscriptions/%s", user.getId(), channel.getId()), Subscriber.class)
-                                .header("Authorization", "OAuth " + credential.getAccessToken()))
-                                .toMono()
+                        return exchangeTo(Routes.get("/users/%s/subscriptions/%s").newRequest(user.getId(), channel.getId())
+                                .header("Authorization", "OAuth " + credential.getAccessToken()), Subscriber.class)
                                 .onErrorResume(ResponseException.class, (e) -> {
                                     if (e.getStatus() == 404 && e.getMessage().matches("^(.+) has no subscriptions to (.+)$")) {
                                         return Mono.empty();
@@ -72,7 +73,7 @@ public class UserService extends AbstractHttpService {
                                     }
                                 });
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.USER_SUBSCRIPTIONS));
+                        return Mono.error(handleScopeMissing(GlitchScope.USER_SUBSCRIPTIONS));
                     }
                 });
     }
@@ -81,8 +82,8 @@ public class UserService extends AbstractHttpService {
         return new UserFollowsRequest(http, id);
     }
 
-    public Mono<ChannelFollow> getFollow(User user, Channel channel) {
-        return exchange(get(String.format("/users/%s/follows/channels/%s", user.getId(), channel.getId()), ChannelFollow.class)).toMono()
+    public Mono<ChannelUserFollow> getFollow(User user, Channel channel) {
+        return exchangeTo(Routes.get("/users/%s/follows/channels/%s").newRequest(user.getId(), channel.getId()), ChannelUserFollow.class)
                 .onErrorResume(ResponseException.class, (e) -> {
                     if (e.getStatus() == 404 && e.getMessage().matches("^(.+) is not following (.+)$")) {
                         return Mono.empty();
@@ -92,46 +93,36 @@ public class UserService extends AbstractHttpService {
                 });
     }
 
-    public Mono<ChannelFollow> followChannel(User user, Channel channel, Credential credential, Boolean notifications) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_FOLLOWS_EDIT))
+    public Mono<ChannelUserFollow> followChannel(User user, Channel channel, Credential credential, Boolean notifications) {
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_FOLLOWS_EDIT))
                 .flatMap(b -> {
                     if (b) {
-                        HttpRequest<ChannelFollow> request = put(String.format("/users/%s/follows/channels/%s", user.getId(), channel.getId()), ChannelFollow.class)
+                        HttpRequest request = Routes.put("/users/%s/follows/channels/%s").newRequest(user.getId(), channel.getId())
                                 .header("Authorization", "OAuth " + credential.getAccessToken());
 
                         if (notifications != null) {
                             request.queryParam("notifications", notifications);
                         }
 
-                        return exchange(request).toMono();
+                        return exchangeTo(request, ChannelUserFollow.class);
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.USER_FOLLOWS_EDIT));
+                        return Mono.error(handleScopeMissing(GlitchScope.USER_FOLLOWS_EDIT));
                     }
                 });
     }
 
     public Mono<Boolean> unfollowChannel(User user, Channel channel, Credential credential) {
-        return Mono.just(checkRequiredScope(credential.getScopes(), Scope.USER_FOLLOWS_EDIT))
+        return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.USER_FOLLOWS_EDIT))
                 .flatMap(b -> {
                     if (b) {
-                        return Mono.just(exchange(delete(String.format("/users/%s/follows/channels/%s", user.getId(), channel.getId()), ChannelFollow.class)
+                        return exchange(Routes.delete("/users/%s/follows/channels/%s").newRequest(user.getId(), channel.getId())
                                 .header("Authorization", "OAuth " + credential.getAccessToken()))
-                                .isSuccessful());
+                                .map(r -> r.getStatus().getCode() == 204);
                     } else {
-                        return Mono.error(handleScopeMissing(Scope.USER_FOLLOWS_EDIT));
+                        return Mono.error(handleScopeMissing(GlitchScope.USER_FOLLOWS_EDIT));
                     }
                 });
     }
 
     // TODO: Block List & VHS - https://dev.twitch.tv/docs/v5/reference/users/#get-user-block-list
-
-    @Unofficial
-    public Mono<GlobalUserState> getChatUserState(User user) {
-        return getChatUserState(user.getId());
-    }
-
-    @Unofficial
-    public Mono<GlobalUserState> getChatUserState(Long id) {
-        return null;
-    }
 }

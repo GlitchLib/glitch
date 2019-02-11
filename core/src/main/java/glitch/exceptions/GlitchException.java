@@ -1,6 +1,6 @@
 package glitch.exceptions;
 
-public class GlitchException extends Exception {
+public class GlitchException extends RuntimeException {
     public GlitchException() {
         super();
     }
@@ -13,5 +13,7 @@ public class GlitchException extends Exception {
         super(message, cause);
     }
 
-
+    public GlitchException(Throwable cause) {
+        super(cause);
+    }
 }

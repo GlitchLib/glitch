@@ -1,26 +1,27 @@
 package glitch.auth.store;
 
 import glitch.auth.objects.json.Credential;
-import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.util.Collection;
 import java.util.function.Predicate;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Cached storage storing only in active JVM session using {@link Collection}
  */
-@RequiredArgsConstructor
 public class CachedStorage implements Storage {
     private final Collection<Credential> credentials;
+
+    public CachedStorage(Collection<Credential> credentials) {
+        this.credentials = credentials;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Mono<Credential> register(Credential credential) {
-        credentials.stream().filter(c -> c.getUserId().equals(credential.getUserId()))
+        credentials.stream().filter(c -> c.getUserId() == credential.getUserId())
                 .findFirst().ifPresent(this::drop);
         credentials.add(credential);
 
@@ -32,7 +33,7 @@ public class CachedStorage implements Storage {
      */
     @Override
     public Mono<Void> drop(Credential credential) {
-        return Mono.just(credentials.removeIf(c -> c.getUserId().equals(credential.getUserId())))
+        return Mono.just(credentials.removeIf(c -> c.getUserId() == credential.getUserId()))
                 .then();
     }
 

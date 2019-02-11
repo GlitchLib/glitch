@@ -3,7 +3,6 @@ package glitch.auth.objects.adapters;
 import com.google.gson.*;
 import glitch.auth.objects.json.Validate;
 import glitch.auth.objects.json.impl.ValidateImpl;
-
 import java.lang.reflect.Type;
 
 public final class ValidateAdapter implements JsonDeserializer<Validate>, JsonSerializer<Validate> {

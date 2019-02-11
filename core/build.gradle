@@ -1,18 +1,20 @@
 plugins {
-    id "com.gorylenko.gradle-git-properties" version "1.5.2"
+    id "com.gorylenko.gradle-git-properties"
 }
 
 dependencies {
-    compile "com.google.guava:guava:27.0.1-jre"
-    
-    compile "com.squareup.okhttp3:okhttp:3.12.0"
-    compile "com.squareup.okhttp3:logging-interceptor:3.12.0"
-    
-    compile "com.google.code.gson:gson:2.8.5"
+    compile "org.apache.commons:commons-collections4:4.2"
 
+    compile "com.squareup.okhttp3:okhttp:3.13.1"
+    compile "com.squareup.okhttp3:logging-interceptor:3.13.1"
+
+    compile "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1" // GSON java.time serialization
+    compile "com.google.code.gson:gson:2.8.5"
     compile "com.google.code.findbugs:jsr305:3.0.2"
 
     compile "io.projectreactor:reactor-core"
+
+    testCompile "com.squareup.okhttp3:mockwebserver:3.12.1"
 }
 
 gitProperties {
@@ -23,8 +25,8 @@ gitProperties {
             "git.commit.id.describe"
     ]
     dateFormatTimeZone = "GMT"
-    customProperty("application.name", "Glitch")
-    customProperty("application.version", project.version)
-    customProperty("application.url", "https://glitchlib.github.io/")
+    customProperty("application.name", rootProject.name)
+    customProperty("application.version", rootProject.version)
+    customProperty("application.url", project_url)
     customProperty("application.description", rootProject.description)
 }
