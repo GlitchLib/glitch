@@ -46,8 +46,10 @@ subprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
 
-
-    archivesBaseName = "${rootProject.name.toLowerCase()}-${project.name.replace(':', '-')}"
+    archivesBaseName = "${rootProject.name.toLowerCase()}-${project.projectDir.canonicalPath.replace(rootProject.projectDir.canonicalPath, "").substring(1).replace('\\', '-')}"
+    if (archivesBaseName.contains("auth")) {
+        group = "io.glitchlib.auth"
+    }
     sourceCompatibility = targetCompatibility = 1.8
 
     dependencies {
@@ -191,6 +193,11 @@ subprojects {
                 }
             }
         }
+    }
+
+    if (sourceSets.main.allSource.isEmpty() && !["bom", "all"].contains(project.name)) {
+        bintrayUpload.enabled = false
+        bintrayPublish.enabled = false
     }
 
     bintray {
