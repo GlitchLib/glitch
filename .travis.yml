@@ -24,12 +24,34 @@ after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 jobs:
   include:
     - stage: deploy
+      name: "Documentation"
       jdk: openjdk11
-      install: chmod +x ./javadoc.sh
-      script: ./javadoc.sh
+      script: ./gradlew publishDoc
       if: tag IS present
+      deploy: &pages
+        provider: pages
+        repo: GlitchLib/docs
+        target-branch: master
+        skip-cleanup: true
+        github-token: $GITHUB_TOKEN
+        keep-history: true
+        verbose: true
+        committer-from-gh: true
+        local-dir: build/docs
+        on:
+          tags: true
     - stage: deploy
+      name: "Upload to Bintray"
       jdk: openjdk8
       install: skip
-      script: ./gradlew bintrayUpload -x test
+      script: ./gradlew bintrayUpload publishRelease -x test
       if: tag IS present
+      deploy: &releases
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file_glob: true
+        file: ./build/release/*.jar
+        prerelease: true
+        skip_cleanup: true
+        on:
+          tags: true

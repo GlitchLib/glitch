@@ -1,7 +1,7 @@
 The MIT License (MIT)
 =====================
 
-Copyright © 2018 [Damian Staszewski](https://github.com/stachu540)
+Copyright © 2019 [Damian Staszewski](https://github.com/stachu540)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
