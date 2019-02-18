@@ -50,8 +50,8 @@ jobs:
         provider: releases
         api_key: $GITHUB_TOKEN
         file_glob: true
-        file: ./build/release/*.jar
-        prerelease: true
+        file: build/release/*
+        draft: true
         skip_cleanup: true
         on:
           tags: true
