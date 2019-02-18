@@ -69,9 +69,6 @@ subprojects {
     }
 
     val javadoc by tasks.getting(Javadoc::class) {
-        if (sourceSets.main.get().allSource.isEmpty || name != "all") {
-            enabled = false
-        }
         options {
             encoding = "UTF-8"
         }
@@ -146,12 +143,12 @@ subprojects {
         publications {
             register("maven", MavenPublication::class) {
                 artifactId = base.archivesBaseName
-                if (name != "bom") {
-                    if (name != "all") {
+                if (project.name != "bom") {
+                    if (project.name != "all") {
                         from(components["java"])
                         artifact(sourceJar)
-                        artifact(shadowJar)
                     }
+                    artifact(shadowJar)
                     artifact(javadocJar)
                     artifact(kdocJar)
                 }
@@ -206,7 +203,7 @@ subprojects {
         dryRun = false
         publish = true
         override = false
-        pkg.closureOf<BintrayExtension.PackageConfig> {
+        pkg.apply {
             userOrg = bintrayUser
             repo = "GlitchLib"
             name = "Glitch"
@@ -214,7 +211,7 @@ subprojects {
             setLicenses("MIT")
             publicDownloadNumbers = true
             vcsUrl = "https://github.com/GlitchLib/glitch.git"
-            version.closureOf<BintrayExtension.VersionConfig> {
+            version.apply {
                 name = rootProject.version.toString()
                 vcsTag = "v${rootProject.version}"
                 released = Date().toString()
