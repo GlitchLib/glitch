@@ -20,12 +20,12 @@ public enum GitProperty {
     GIT_COMMIT_ID_ABBREV("git.commit.id.abbrev"),
     GIT_COMMIT_ID_DESCRIBE("git.commit.id.describe");
 
-    private static final Properties properties = new Properties();
+    private static final Properties PROPERTIES = new Properties();
 
     static {
         try (InputStream inputStream = GitProperty.class.getClassLoader().getResourceAsStream("git.properties")) {
             if (inputStream != null) {
-                properties.load(inputStream);
+                PROPERTIES.load(inputStream);
             }
         } catch (IOException ignore) {
         }
@@ -38,6 +38,6 @@ public enum GitProperty {
     }
 
     public static String get(GitProperty key) {
-        return properties.getProperty(key.value);
+        return PROPERTIES.getProperty(key.value);
     }
 }

@@ -169,8 +169,8 @@ public class WebSocket<S extends ISocketService<S>> {
             return this;
         }
 
-        public WebSocket build(String url) {
-            if (!Objects.requireNonNull(url, "url == null").matches("^[wS][sS]{1,2}://(.+)")) {
+        public WebSocket<S> build(String url) {
+            if (!Objects.requireNonNull(url, "url == null").matches("^ws(s)?://(.+)")) {
                 throw new RequestException("URL it is not be a matched pattern!!! (ws / wss)");
             }
 

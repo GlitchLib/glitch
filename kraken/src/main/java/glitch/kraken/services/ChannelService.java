@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 
 public class ChannelService extends AbstractHttpService {
 
-    private static final Set<Integer> commercialDuration = new LinkedHashSet<>(Arrays.asList(30, 60, 90, 120, 150, 180));
+    private static final Set<Integer> COMMERCIAL_DURATION = new LinkedHashSet<>(Arrays.asList(30, 60, 90, 120, 150, 180));
 
     public ChannelService(GlitchKraken rest) {
         super(rest.getClient(), rest.getHttpClient());
@@ -125,7 +125,7 @@ public class ChannelService extends AbstractHttpService {
     }
 
     public Mono<CommercialData> startChannelCommercial(Long id, Credential credential, int duration) {
-        Map<String, Object> dur = Collections.singletonMap("length", commercialDuration.stream().min(Comparator.comparingInt(i -> Math.abs(i - duration))).orElse(30));
+        Map<String, Object> dur = Collections.singletonMap("length", COMMERCIAL_DURATION.stream().min(Comparator.comparingInt(i -> Math.abs(i - duration))).orElse(30));
 
         return Mono.just(checkRequiredScope(credential.getScopes(), GlitchScope.CHANNEL_COMMERCIAL))
                 .flatMap(b -> {

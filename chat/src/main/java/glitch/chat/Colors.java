@@ -3,24 +3,71 @@ package glitch.chat;
 import java.awt.Color;
 
 /**
+ * Default Twitch Colors
+ *
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
  * @since 1.0
  */
 public class Colors {
-    public static Color Red = Color.decode("#FF0000");
-    public static Color Blue = Color.decode("#0000FF");
-    public static Color Green = Color.decode("#00FF00");
-    public static Color FireBrick = Color.decode("#B22222");
-    public static Color Coral = Color.decode("#FF7F50");
-    public static Color YellowGreen = Color.decode("#9ACD32");
-    public static Color OrangeRed = Color.decode("#FF4500");
-    public static Color SeaGreen = Color.decode("#2E8B57");
-    public static Color GoldenRod = Color.decode("#DAA520");
-    public static Color Chocolate = Color.decode("#D2691E");
-    public static Color CadetBlue = Color.decode("#5F9EA0");
-    public static Color DodgerBlue = Color.decode("#1E90FF");
-    public static Color HotPink = Color.decode("#FF69B4");
-    public static Color BlueViolet = Color.decode("#8A2BE2");
-    public static Color SpringGreen = Color.decode("#00FF7F");
+    /**
+     * Red
+     */
+    public static Color RED = Color.decode("#FF0000");
+    /**
+     * Blue
+     */
+    public static Color BLUE = Color.decode("#0000FF");
+    /**
+     * Green
+     */
+    public static Color GREEN = Color.decode("#00FF00");
+    /**
+     * Fire Brick
+     */
+    public static Color FIRE_BRICK = Color.decode("#B22222");
+    /**
+     * Coral
+     */
+    public static Color CORAL = Color.decode("#FF7F50");
+    /**
+     * Yellow Green
+     */
+    public static Color YELLOW_GREEN = Color.decode("#9ACD32");
+    /**
+     * Orange Red
+     */
+    public static Color ORANGE_RED = Color.decode("#FF4500");
+    /**
+     * Sea Green
+     */
+    public static Color SEA_GREEN = Color.decode("#2E8B57");
+    /**
+     * Golden Rod
+     */
+    public static Color GOLDEN_ROD = Color.decode("#DAA520");
+    /**
+     * Chocolate
+     */
+    public static Color CHOCOLATE = Color.decode("#D2691E");
+    /**
+     * Cadet Blue
+     */
+    public static Color CADET_BLUE = Color.decode("#5F9EA0");
+    /**
+     * Dodger Blue
+     */
+    public static Color DODGER_BLUE = Color.decode("#1E90FF");
+    /**
+     * Hot Pink
+     */
+    public static Color HOT_PINK = Color.decode("#FF69B4");
+    /**
+     * Blue Violet
+     */
+    public static Color BLUE_VIOLET = Color.decode("#8A2BE2");
+    /**
+     * Spring Green
+     */
+    public static Color SPRING_GREEN = Color.decode("#00FF7F");
 }

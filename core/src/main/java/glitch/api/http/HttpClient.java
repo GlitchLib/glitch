@@ -19,9 +19,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -95,13 +93,19 @@ public class HttpClient {
      * @return Non throwing response if any subjects are be fulfilled. If it throws exceptions will be return {@code null}
      */
     public final Mono<HttpResponse> exchange(HttpRequest request) {
-        return Mono.create(sink -> {
-            try {
-                sink.success(doResponse(request, httpClient.newCall(doRequest(request)).execute()));
-            } catch (IOException e) {
-                sink.error(e);
-            }
-        });
+        return Mono.create(sink ->
+                httpClient.newCall(doRequest(request)).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        sink.error(e);
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        sink.success(doResponse(request, response));
+                    }
+                })
+        );
     }
 
     /**
@@ -265,7 +269,7 @@ public class HttpClient {
                 });
             }
 
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(LOG::debug).setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(LOG::debug).setLevel(HttpLoggingInterceptor.Level.BASIC);
 
             interceptor.redactHeader("Client-ID");
             interceptor.redactHeader("Authorization");

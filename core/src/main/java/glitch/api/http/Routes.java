@@ -14,31 +14,31 @@ public class Routes {
         this.endpoint = endpoint;
     }
 
-    public static <T> Routes create(HttpMethod method, String endpoint) {
+    public static Routes create(HttpMethod method, String endpoint) {
         return new Routes(method, endpoint);
     }
 
-    public static <T> Routes get(String endpoint) {
+    public static Routes get(String endpoint) {
         return create(HttpMethod.GET, endpoint);
     }
 
-    public static <T> Routes post(String endpoint) {
+    public static Routes post(String endpoint) {
         return create(HttpMethod.POST, endpoint);
     }
 
-    public static <T> Routes put(String endpoint) {
+    public static Routes put(String endpoint) {
         return create(HttpMethod.PUT, endpoint);
     }
 
-    public static <T> Routes patch(String endpoint) {
+    public static Routes patch(String endpoint) {
         return create(HttpMethod.PATCH, endpoint);
     }
 
-    public static <T> Routes delete(String endpoint) {
+    public static Routes delete(String endpoint) {
         return create(HttpMethod.DELETE, endpoint);
     }
 
-    public static <T> Routes options(String endpoint) {
+    public static Routes options(String endpoint) {
         return create(HttpMethod.OPTIONS, endpoint);
     }
 

@@ -246,12 +246,12 @@ public class GlitchChat implements ISocketService<GlitchChat> {
                     });
         }
 
-        public GlitchChat build() throws ExecutionException, InterruptedException, RuntimeException {
+        public GlitchChat build() {
             return new CompletableFuture<GlitchChat>() {
                 {
                     buildAsync().subscribe(this::complete);
                 }
-            }.get();
+            }.join();
         }
 
         private Mono<Credential> createBotConfig() {
