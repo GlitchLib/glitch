@@ -1,17 +1,17 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.jfrog.bintray.gradle.BintrayExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.*
 
 plugins {
+    jacoco
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
     id("org.jetbrains.dokka") version "0.9.17"
     id("org.jetbrains.kotlin.jvm") version "1.3.21"
     id("com.github.ben-manes.versions") version "0.20.0"
-    id("com.github.johnrengelman.shadow") version "4.0.3"
+    id("com.github.johnrengelman.shadow") version "4.0.4"
     id("com.gorylenko.gradle-git-properties") version "2.0.0" apply false
 }
 
@@ -34,6 +34,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "jacoco")
     apply(plugin = "maven-publish")
     apply(plugin = "com.jfrog.bintray")
     apply(plugin = "org.jetbrains.dokka")
@@ -50,7 +51,7 @@ subprojects {
     dependencies {
         if (!arrayOf("bom", "all", "auth", rootProject.name).contains(project.name)) {
             // https://docs.gradle.org/5.0/userguide/managing_transitive_dependencies.html#sec:bom_import
-            compile(enforcedPlatform("io.projectreactor:reactor-bom:Californium-SR4"))
+            compile(enforcedPlatform("io.projectreactor:reactor-bom:Californium-SR5"))
 
             compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
             compile("org.jetbrains.kotlin:kotlin-reflect")
