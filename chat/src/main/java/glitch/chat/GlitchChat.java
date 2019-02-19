@@ -12,7 +12,6 @@ import glitch.chat.exceptions.NotJoinedChannelException;
 import glitch.service.ISocketService;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import okhttp3.logging.HttpLoggingInterceptor;

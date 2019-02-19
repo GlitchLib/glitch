@@ -20,10 +20,10 @@ dependencies {
 }
 extensions.getByType<GitPropertiesPluginExtension>().apply {
     keys = listOf(
-        "git.branch",
-        "git.commit.id",
-        "git.commit.id.abbrev",
-        "git.commit.id.describe"
+            "git.branch",
+            "git.commit.id",
+            "git.commit.id.abbrev",
+            "git.commit.id.describe"
     )
     dateFormatTimeZone = "GMT"
     customProperty("application.name", rootProject.name)

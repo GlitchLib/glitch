@@ -3,7 +3,6 @@ package glitch.auth.objects.json
 import com.google.gson.annotations.SerializedName
 import glitch.api.objects.json.interfaces.Creation
 import glitch.auth.GlitchScope
-import java.time.Instant
 
 interface AccessToken : Creation {
     val accessToken: String

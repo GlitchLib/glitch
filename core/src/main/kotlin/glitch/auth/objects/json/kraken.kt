@@ -13,13 +13,13 @@ import java.time.Instant
  * @since 1.0
  */
 data class Kraken(
-    @SerializedName("valid")
-    val isValid: Boolean,
-    val authorization: Authorization,
-    @SerializedName("user_name")
-    val username: String,
-    val userId: Long,
-    val clientId: String
+        @SerializedName("valid")
+        val isValid: Boolean,
+        val authorization: Authorization,
+        @SerializedName("user_name")
+        val username: String,
+        val userId: Long,
+        val clientId: String
 )
 
 data class Authorization(
@@ -27,4 +27,4 @@ data class Authorization(
         val scope: Set<GlitchScope>,
         override val createdAt: Instant,
         override val updatedAt: Instant
-): Creation, Updated
+) : Creation, Updated

@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
-
 /**
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%

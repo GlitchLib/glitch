@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.junit.Test;
 import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Damian Staszewski [damian@stachuofficial.tv]
@@ -34,8 +34,8 @@ public class GlitchClientTest {
                 .expectSubscription()
                 .expectNextMatches(validate ->
                         validate.getUserId() == 120074641L &&
-                        Objects.equals(validate.getLogin(), "sandalphon_ai") &&
-                        validate.getScopes().contains(GlitchScope.CHAT_READ)
+                                Objects.equals(validate.getLogin(), "sandalphon_ai") &&
+                                validate.getScopes().contains(GlitchScope.CHAT_READ)
                 ).expectComplete()
                 .verify();
     }
@@ -48,12 +48,12 @@ public class GlitchClientTest {
                         // checks if saved after subscription
                         CLIENT.getCredentialManager().getCredentialStorage().getById(c.getUserId())
                                 .blockOptional().isPresent() &&
-                        // asserting
-                        c.getUserId() == 120074641L &&
-                        Objects.equals(c.getLogin(), "sandalphon_ai") &&
-                        c.getScopes().contains(GlitchScope.CHAT_READ) &&
-                        Objects.equals(c.getAccessToken(), credential.getAccessToken()) &&
-                        Objects.equals(c.getRefreshToken(), credential.getRefreshToken())
+                                // asserting
+                                c.getUserId() == 120074641L &&
+                                Objects.equals(c.getLogin(), "sandalphon_ai") &&
+                                c.getScopes().contains(GlitchScope.CHAT_READ) &&
+                                Objects.equals(c.getAccessToken(), credential.getAccessToken()) &&
+                                Objects.equals(c.getRefreshToken(), credential.getRefreshToken())
                 ).expectComplete()
                 .verify();
     }

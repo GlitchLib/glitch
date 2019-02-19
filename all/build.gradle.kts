@@ -37,7 +37,7 @@ tasks {
         sourceDirs = files(projectList.flatMap { it.sourceSets.main.get().allSource }.filter { it.name.endsWith(".kt") }.toList())
         classpath = files(projectList.flatMap { it.tasks.getByName<DokkaTask>("dokka").classpath }.toList())
     }
-    
+
     withType<ShadowJar> {
         enabled = true
     }

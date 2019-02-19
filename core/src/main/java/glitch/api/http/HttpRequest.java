@@ -21,13 +21,13 @@ import org.apache.commons.collections4.MultiValuedMap;
  *
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
- * @since 1.0
  * @see glitch.api.http.Routes#get(String)
  * @see glitch.api.http.Routes#post(String)
  * @see glitch.api.http.Routes#put(String)
  * @see glitch.api.http.Routes#patch(String)
  * @see glitch.api.http.Routes#delete(String)
  * @see glitch.api.http.Routes#options(String)
+ * @since 1.0
  */
 public class HttpRequest {
     final HttpMethod method;

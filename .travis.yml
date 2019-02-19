@@ -12,13 +12,13 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-before_install: chmod +x ./gradlew
+install: chmod +x ./gradlew
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-script: ./gradlew check
+script: ./gradlew test
 after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 jobs:
@@ -26,7 +26,6 @@ jobs:
     - stage: deploy
       name: "Documentation Deploy"
       jdk: openjdk11
-      install: skip
       script: ./gradlew publishDoc
       if: tag IS present
       deploy:
@@ -44,13 +43,11 @@ jobs:
     - stage: deploy
       name: "Bintray Upload"
       jdk: openjdk8
-      install: skip
       script: ./gradlew bintrayUpload -x test
       if: tag IS present
     - stage: deploy
       name: "Create Release"
       jdk: openjdk8
-      install: skip
       script: ./gradlew publishRelease
       if: tag IS present
       deploy:

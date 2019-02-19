@@ -2,7 +2,6 @@ package glitch.auth.objects.json.impl
 
 import glitch.auth.GlitchScope
 import glitch.auth.objects.json.Validate
-import java.util.*
 
 data class ValidateImpl(
         override val clientId: String,

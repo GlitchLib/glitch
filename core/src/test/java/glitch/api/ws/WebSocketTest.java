@@ -19,6 +19,11 @@ public class WebSocketTest {
         ws.login().subscribe();
     }
 
+    @AfterClass
+    public static void tearDown() {
+        ws.logout();
+    }
+
     @Test
     public void echoTest() {
         ws.send("{\"hello\":\"world\"}").subscribe(ignore ->
@@ -41,10 +46,5 @@ public class WebSocketTest {
                         .expectComplete()
                         .verify()
         );
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        ws.logout();
     }
 }

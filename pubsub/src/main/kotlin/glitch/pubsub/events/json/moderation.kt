@@ -67,7 +67,7 @@ class MessageDelete(
         override val targetName: String,
         override val targetId: Long,
         val message: String
-): IDObject<UUID>, IModerator, ITarget {
+) : IDObject<UUID>, IModerator, ITarget {
     constructor(data: ModerationData) : this(
             UUID.fromString(data.args[2]),
             data.createdBy,

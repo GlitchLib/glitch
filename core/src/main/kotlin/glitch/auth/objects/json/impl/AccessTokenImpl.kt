@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 import glitch.auth.GlitchScope
 import glitch.auth.objects.json.AccessToken
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 data class AccessTokenImpl(
         override val accessToken: String,

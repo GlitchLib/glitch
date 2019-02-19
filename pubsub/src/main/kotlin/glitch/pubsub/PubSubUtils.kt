@@ -1,34 +1,20 @@
 package glitch.pubsub
 
+import com.google.gson.JsonParseException
+import com.google.gson.TypeAdapter
+import com.google.gson.annotations.JsonAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import glitch.api.ws.events.IEvent
 import glitch.api.ws.events.PingEvent
 import glitch.api.ws.events.PongEvent
 import glitch.pubsub.`object`.enums.MessageType
-import glitch.pubsub.events.*
-import glitch.pubsub.exceptions.TopicException
-import java.util.*
-import com.google.gson.JsonParseException
-import java.io.IOException
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
-import com.google.gson.TypeAdapter
-import com.google.gson.annotations.JsonAdapter
-import glitch.pubsub.events.WhisperThreadEvent
-import glitch.pubsub.events.WhisperReceivedEvent
-import glitch.pubsub.events.WhisperSentEvent
-import glitch.pubsub.events.StreamUpEvent
-import glitch.pubsub.events.json.*
-import glitch.pubsub.events.CommerceEvent
-import glitch.pubsub.events.json.Commerce
-import glitch.pubsub.events.json.GiftSubscriptionMessage
-import glitch.pubsub.events.SubGiftEvent
 import glitch.pubsub.`object`.enums.SubscriptionContext
-import glitch.pubsub.events.SubscriptionEvent
-import glitch.pubsub.events.json.SubscriptionMessage
-import glitch.pubsub.events.ChannelExtensionBroadcastEvent
-import glitch.pubsub.events.TimeoutUserEvent
-import glitch.pubsub.events.json.ModerationData
-import glitch.pubsub.events.json.Timeout
+import glitch.pubsub.events.*
+import glitch.pubsub.events.json.*
+import glitch.pubsub.exceptions.TopicException
+import java.io.IOException
+import java.util.*
 
 
 /**
@@ -52,28 +38,28 @@ object PubSubUtils {
     }
 
     private fun doResponse(event: PubSubEvent) =
-        event.dispatch(event.let {
-            val topicsCache = it.client.topicsCache
-            val nonce = UUID.fromString(it.data["nonce"].asString)
-            val error = it.data["error"].asString.orEmpty()
-            for (topic in topicsCache.all) {
-                if (topic.code == nonce) {
-                    return@let if (error.isBlank()) {
-                        SucessfulResponseEvent(event.client, topic)
-                    } else {
-                        val err = when (error) {
-                            "ERR_BADMESSAGE" -> "Inappropriate message!"
-                            "ERR_BADAUTH" -> "Failed to using authorization!"
-                            "ERR_SERVER" ->  "Internal Server Error!"
-                            "ERR_BADTOPIC" ->  "Inappropriate topic!"
-                            else -> error
+            event.dispatch(event.let {
+                val topicsCache = it.client.topicsCache
+                val nonce = UUID.fromString(it.data["nonce"].asString)
+                val error = it.data["error"].asString.orEmpty()
+                for (topic in topicsCache.all) {
+                    if (topic.code == nonce) {
+                        return@let if (error.isBlank()) {
+                            SucessfulResponseEvent(event.client, topic)
+                        } else {
+                            val err = when (error) {
+                                "ERR_BADMESSAGE" -> "Inappropriate message!"
+                                "ERR_BADAUTH" -> "Failed to using authorization!"
+                                "ERR_SERVER" -> "Internal Server Error!"
+                                "ERR_BADTOPIC" -> "Inappropriate topic!"
+                                else -> error
+                            }
+                            ErrorResponseEvent(event.client, topic, TopicException(err))
                         }
-                        ErrorResponseEvent(event.client, topic, TopicException(err))
                     }
                 }
-            }
-            return@let ErrorResponseEvent(event.client, null, TopicException("Unknown registered topic for nonce: $nonce"))
-        })
+                return@let ErrorResponseEvent(event.client, null, TopicException("Unknown registered topic for nonce: $nonce"))
+            })
 
     private fun doMessage(event: PubSubEvent) {
         val topicsCache = event.client.topicsCache
@@ -111,6 +97,7 @@ object PubSubUtils {
     private fun message_follow(event: PubSubEvent, topic: Topic, rawMessage: String) {
         event.dispatch(FollowEvent(event.client, topic, event.mapper.fromJson(rawMessage, Following::class.java)))
     }
+
     private fun message_whisper(event: PubSubEvent, topic: Topic, rawMessage: String) {
         val whisper = event.mapper.fromJson(rawMessage, WhisperMode::class.java)
         when (whisper.type) {
@@ -122,13 +109,15 @@ object PubSubUtils {
                 event.dispatch(WhisperSentEvent(event.client, topic, event.mapper.fromJson(whisper.data, WhisperMessage::class.java)))
         }
     }
+
     private fun message_bits(event: PubSubEvent, topic: Topic, rawMessage: String) {
         event.dispatch(BitsEvent(event.client, topic, event.mapper.fromJson(rawMessage, BitsMessage::class.java)))
     }
+
     private fun message_playback(event: PubSubEvent, topic: Topic, rawMessage: String) {
         val playback = event.mapper.fromJson(rawMessage, VideoPlayback::class.java)
 
-        when(playback.type) {
+        when (playback.type) {
             VideoPlayback.Type.STREAM_UP ->
                 event.dispatch(StreamUpEvent(event.client, topic, event.mapper.fromJson(rawMessage, StreamUp::class.java)))
             VideoPlayback.Type.STREAM_DOWN ->
@@ -137,9 +126,11 @@ object PubSubUtils {
                 event.dispatch(ViewCountEvent(event.client, topic, event.mapper.fromJson(rawMessage, ViewCount::class.java)))
         }
     }
+
     private fun message_commerce(event: PubSubEvent, topic: Topic, rawMessage: String) {
         event.dispatch(CommerceEvent(event.client, topic, event.mapper.fromJson(rawMessage, Commerce::class.java)))
     }
+
     private fun message_sub(event: PubSubEvent, topic: Topic, rawMessage: String) {
         val sub = event.mapper.fromJson(rawMessage, SubscriptionMessage::class.java)
 
@@ -149,6 +140,7 @@ object PubSubUtils {
             event.dispatch(SubscriptionEvent(event.client, topic, sub))
         }
     }
+
     private fun message_moderation(event: PubSubEvent, topic: Topic, rawMessage: String) {
         val modData = event.mapper.fromJson(rawMessage, ModerationData::class.java)
 
@@ -174,6 +166,7 @@ object PubSubUtils {
 
         }
     }
+
     private fun message_ebs(event: PubSubEvent, topic: Topic, rawMessage: String) {
         event.dispatch(ChannelExtensionBroadcastEvent(event.client, topic, event.mapper.toJsonTree(rawMessage).asJsonObject.getAsJsonArray("content")))
     }
