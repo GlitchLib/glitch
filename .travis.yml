@@ -46,6 +46,7 @@ jobs:
       jdk: openjdk8
       install: skip
       script: ./gradlew bintrayUpload -x test
+      if: tag IS present
     - stage: deploy
       name: "Create Release"
       jdk: openjdk8
