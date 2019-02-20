@@ -9,6 +9,7 @@ import glitch.auth.objects.json.Credential;
 import glitch.chat.events.IRCEvent;
 import glitch.chat.exceptions.AlreadyJoinedChannelException;
 import glitch.chat.exceptions.NotJoinedChannelException;
+import glitch.chat.irc.TmiConverter;
 import glitch.service.ISocketService;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -56,7 +57,7 @@ public class GlitchChat implements ISocketService<GlitchChat> {
         this.client = client;
         this.ws = WebSocket.builder(this)
                 .addInterceptor(new HttpLoggingInterceptor(LOG::debug).setLevel(HttpLoggingInterceptor.Level.BASIC))
-                .setEventConverter(TmiConverter.create())
+                .setEventConverter(new TmiConverter())
                 .setEventProcessor(eventProcessor)
                 .setEventScheduler(scheduler)
                 .build((secure) ? URI_SECURE : URI);

@@ -17,7 +17,7 @@ import java.util.*
  */
 data class PrivateMessageEvent(
         override val client: GlitchChat,
-        override val id: UUID,
+        override val id: Int,
         override val badges: Set<Badge>,
         override val color: Color,
         override val username: String,
@@ -26,7 +26,7 @@ data class PrivateMessageEvent(
         override val userType: UserType,
         override val message: String?,
         override val createdAt: Instant
-) : IUser, IMessage, GlobalUserState, IEvent<GlitchChat>, IDObject<UUID> {
+) : IUser, IMessage, GlobalUserState, IEvent<GlitchChat>, IDObject<Int> {
 //    fun reply(message: String) = user.send(message)
 }
 
