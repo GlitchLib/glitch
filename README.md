@@ -16,16 +16,6 @@ A hybrid-reactive Java wrapper for the Twitch. Supports using:
 * [Gson](https://github.com/google/gson) - JSON
 * [Project Reactor](http://projectreactor.io/)
 
-# Module Supports
-| Name | JVM | Android | 
-|:---:|:---:|:---:|
-| [glitch-core](core) | 1.8+ | ✔ SDK 26 |
-| [glitch-kraken](kraken) | 1.8+ | ✔ SDK 26 |
-| [glitch-helix](helix) | 1.8+ | ✔ SDK 26 |
-| [glitch-auth](auth) | 1.8+ | ✔ SDK 26 |
-| [glitch-chat](chat) | 1.8+ | ❌ |
-| [glitch-pubsub](pubsub) | 1.8+ | ❌ |
-
 # Getting started
 
 Please introduce the [wiki page](https://glitchlib.github.io/wiki/getting-started/welcome/)
