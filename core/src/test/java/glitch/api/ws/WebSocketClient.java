@@ -39,6 +39,11 @@ public class WebSocketClient implements ISocketService<WebSocketClient> {
     }
 
     @Override
+    public Flux<IEvent<WebSocketClient>> onEvents() {
+        return this.ws.onEvents();
+    }
+
+    @Override
     public GlitchClient getClient() {
         return GlitchClientTest.CLIENT;
     }

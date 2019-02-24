@@ -134,6 +134,12 @@ public class WebSocket<S extends ISocketService<S>> {
                 .then();
     }
 
+    public Flux<IEvent<S>> onEvents() {
+        return eventProcessor.publishOn(eventScheduler)
+                .log("glitch.ws.events.ALL", Level.FINE,
+                        SignalType.ON_NEXT, SignalType.ON_SUBSCRIBE, SignalType.ON_ERROR, SignalType.CANCEL);
+    }
+
     public static class Builder<S extends ISocketService<S>> {
 
         private final S service;

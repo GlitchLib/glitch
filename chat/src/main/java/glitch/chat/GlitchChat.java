@@ -128,6 +128,11 @@ public class GlitchChat implements ISocketService<GlitchChat> {
         return this.ws.onEvent(type);
     }
 
+    @Override
+    public Flux<IEvent<GlitchChat>> onEvents() {
+        return this.ws.onEvents();
+    }
+
     public Mono<Void> sendChannel(String channel, Publisher<String> message) throws NotJoinedChannelException {
         final String fchannel = (channel.startsWith("#")) ?
                 channel.substring(1) : channel;
