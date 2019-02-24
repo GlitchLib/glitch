@@ -49,7 +49,7 @@ class TmiConverter : IEventConverter<GlitchChat> {
                     prefix = Prefix.fromRaw(s)
                     middle = middle.filter { it != s }
                 }
-                s.matches(Regex("^([A-Z]+|[0-9]{3})$")) -> {
+                s.matches(Regex("^([A-Z]+|[0-9]{3}|(^ACK))$")) -> {
                     command = Command.of(s)
                     middle = middle.filter { it != s }
                 }

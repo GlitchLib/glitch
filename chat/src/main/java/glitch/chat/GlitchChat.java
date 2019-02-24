@@ -69,7 +69,7 @@ public class GlitchChat implements ISocketService<GlitchChat> {
         this.ws.onEvent(PingEvent.class)
                 .subscribe(ping -> {
                     if (!configuration.isDisableAutoPing()) {
-                        this.ws.send(Mono.just("PONG :tmi.twitch.tv"));
+                        this.ws.send(Mono.just("PONG :tmi.twitch.tv")).subscribe();
                     }
                 });
     }
@@ -89,10 +89,7 @@ public class GlitchChat implements ISocketService<GlitchChat> {
 
     @Override
     public Mono<Void> login() {
-        // TODO: Whispers
-//        if (!channels.contains("jtv")) {
-//            channels.add("jtv");
-//        }
+//        channels.add("jtv");
 
         return this.ws.connect()
                 .then(doInit());
