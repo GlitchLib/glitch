@@ -1,6 +1,9 @@
 package glitch.pubsub.events.json
 
+import com.fatboyindustrial.gsonjavatime.InstantConverter
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import java.time.Instant
 
 /**
  *
@@ -30,7 +33,8 @@ data class Data(
         @SerializedName("chat_message")
         val message: String,
         val context: String,
-        val time: String,
+        @JsonAdapter(InstantConverter::class)
+        val time: Instant,
         val totalBitsUsed: Int,
         val userId: Long?,
         @SerializedName("user_name")

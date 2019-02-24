@@ -1,6 +1,7 @@
 package glitch.pubsub.events.json
 
 import com.google.gson.annotations.JsonAdapter
+import glitch.pubsub.`object`.adapters.ServerTimeAdapter
 import glitch.pubsub.`object`.adapters.VideoPlaybackTypeAdapter
 import java.time.Instant
 
@@ -13,6 +14,7 @@ import java.time.Instant
 data class VideoPlayback(
         @JsonAdapter(VideoPlaybackTypeAdapter::class)
         val type: Type,
+        @JsonAdapter(ServerTimeAdapter::class)
         val serverTime: Instant
 ) {
 
@@ -36,6 +38,7 @@ data class VideoPlayback(
  * @since 1.0
  */
 data class StreamUp(
+        @JsonAdapter(ServerTimeAdapter::class)
         val serverTime: Instant,
         val delay: Int
 )
@@ -46,7 +49,11 @@ data class StreamUp(
  * @version %I%, %G%
  * @since 1.0
  */
-class ViewCount(val serverTime: Instant, val viewers: Long)
+data class ViewCount(
+        @JsonAdapter(ServerTimeAdapter::class)
+        val serverTime: Instant,
+        val viewers: Long
+)
 
 /**
  *
@@ -55,5 +62,6 @@ class ViewCount(val serverTime: Instant, val viewers: Long)
  * @since 1.0
  */
 data class StreamDown(
+        @JsonAdapter(ServerTimeAdapter::class)
         val serverTime: Instant
 )

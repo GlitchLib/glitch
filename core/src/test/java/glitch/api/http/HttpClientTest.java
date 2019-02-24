@@ -1,9 +1,7 @@
-package glitch.test.api.http;
+package glitch.api.http;
 
-import glitch.api.http.HttpClient;
-import glitch.api.http.HttpRequest;
-import glitch.api.http.Routes;
 import java.io.IOException;
+import java.util.Objects;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -15,10 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.test.StepVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-
 /**
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
@@ -27,7 +21,7 @@ import static org.junit.Assert.assertNull;
 public class HttpClientTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpClientTest.class);
-    private static final MockWebServer webserver = new MockWebServer();
+    private static final MockWebServer WEB_SERVER = new MockWebServer();
     private HttpClient httpClient = HttpClient.builder()
             .withBaseUrl("http://localhost:8080/endpoint")
             .addHeader("Client-ID", "0123456789")
@@ -35,7 +29,7 @@ public class HttpClientTest {
 
     @BeforeClass
     public static void setUp() {
-        webserver.setDispatcher(new Dispatcher() {
+        WEB_SERVER.setDispatcher(new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
                 if (request.getPath().contains("/endpoint/test1")) {
@@ -57,7 +51,7 @@ public class HttpClientTest {
         });
 
         try {
-            webserver.start(8080);
+            WEB_SERVER.start(8080);
         } catch (IOException e) {
             LOG.error("Cannot start web server!", e);
         }
@@ -66,7 +60,7 @@ public class HttpClientTest {
     @AfterClass
     public static void tearDown() {
         try {
-            webserver.close();
+            WEB_SERVER.close();
         } catch (IOException e) {
             LOG.error("Cannot stopping web server!", e);
         }
@@ -81,7 +75,7 @@ public class HttpClientTest {
                 .expectNextMatches(response ->
                         (response != null && response.isSuccessful()) && response.getStatus().getCode() == 200 &&
                                 response.getHeader("Client-ID", 0).equals("0123456789") &&
-                                response.getBodyString().equals("{\"primary\": \"Tested Primary Endpoint\"}"))
+                                Objects.equals(response.getBodyString(), "{\"primary\": \"Tested Primary Endpoint\"}"))
                 .expectComplete()
                 .verify();
     }
@@ -92,14 +86,11 @@ public class HttpClientTest {
 
         StepVerifier.create(httpClient.exchangeAs(request, TestingResponse.class))
                 .expectSubscription()
-                .expectNextMatches(body -> {
-                    assertEquals(body.getPrimary(), "Tested Primary Endpoint");
-                    assertFalse(body.isSecondary());
-                    assertEquals(body.getTertiary(), 104L);
-                    assertNull(body.getQuaternary());
-                    return true;
-                })
-                .expectComplete()
+                .expectNextMatches(body -> body.getPrimary().equals("Tested Primary Endpoint") &&
+                        !body.isSecondary() &&
+                        body.getTertiary() == 104L &&
+                        body.getQuaternary() == null
+                ).expectComplete()
                 .verify();
     }
 

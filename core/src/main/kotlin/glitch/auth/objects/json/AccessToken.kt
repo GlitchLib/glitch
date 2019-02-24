@@ -1,16 +1,13 @@
 package glitch.auth.objects.json
 
 import com.google.gson.annotations.SerializedName
+import glitch.api.objects.json.interfaces.Creation
 import glitch.auth.GlitchScope
-import java.time.Instant
 
-interface AccessToken {
+interface AccessToken : Creation {
     val accessToken: String
 
     val refreshToken: String
-
-    @get:SerializedName("expires_in")
-    val expiredAt: Instant
 
     @get:SerializedName("scope")
     val scopes: Set<GlitchScope>

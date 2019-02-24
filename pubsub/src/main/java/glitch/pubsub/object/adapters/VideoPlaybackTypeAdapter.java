@@ -7,11 +7,18 @@ import glitch.pubsub.events.json.VideoPlayback;
 import java.io.IOException;
 
 public class VideoPlaybackTypeAdapter extends TypeAdapter<VideoPlayback.Type> {
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void write(JsonWriter out, VideoPlayback.Type value) throws IOException {
         out.value(value.name().toLowerCase());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public VideoPlayback.Type read(JsonReader in) throws IOException {
         String type = in.nextString().replace("-", "_");

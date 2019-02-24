@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit
 data class Credential(
         override val accessToken: String,
         override val refreshToken: String,
-        override val expiredAt: Instant,
+        override val createdAt: Instant,
         override val scopes: Set<GlitchScope>,
         override val clientId: String,
         override val login: String,
@@ -17,20 +17,22 @@ data class Credential(
     constructor(token: AccessToken, validate: Validate) : this(
             token.accessToken,
             token.refreshToken,
-            token.expiredAt,
+            token.createdAt,
             validate.scopes,
             validate.clientId,
             validate.login,
             validate.userId
     )
 
-    constructor(token: UserCredential, validate: Validate) : this(
+    constructor(token: UserCredential, validate: Validate, kraken: Kraken) : this(
             token.accessToken,
             token.refreshToken,
-            Instant.now().plus(60, ChronoUnit.DAYS),
+            kraken.authorization.createdAt,
             validate.scopes,
             validate.clientId,
             validate.login,
             validate.userId
     )
+
+    val expiredAt: Instant = createdAt.plus(60, ChronoUnit.DAYS)
 }

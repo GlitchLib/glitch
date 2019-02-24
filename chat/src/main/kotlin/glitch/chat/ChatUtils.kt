@@ -4,6 +4,8 @@ import glitch.api.ws.events.IEvent
 import glitch.api.ws.events.PingEvent
 import glitch.api.ws.events.PongEvent
 import glitch.chat.events.*
+import glitch.chat.irc.Command
+import glitch.chat.events.IRCEvent
 import java.util.*
 
 /**
@@ -82,7 +84,7 @@ internal object ChatUtils {
         val username = event.prefix.nick!!
         val displayName = event.tags["display-name"]!!
         val timestamp = event.tags.sentTimestamp
-        val id = UUID.fromString(event.tags["id"]!!)
+        val id = event.tags.getInteger("id")
         val userId = event.tags.getLong("user-id")
 
         event.client.ws.dispatch(PrivateMessageEvent(

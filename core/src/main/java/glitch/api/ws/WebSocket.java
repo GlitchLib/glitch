@@ -134,6 +134,12 @@ public class WebSocket<S extends ISocketService<S>> {
                 .then();
     }
 
+    public Flux<IEvent<S>> onEvents() {
+        return eventProcessor.publishOn(eventScheduler)
+                .log("glitch.ws.events.ALL", Level.FINE,
+                        SignalType.ON_NEXT, SignalType.ON_SUBSCRIBE, SignalType.ON_ERROR, SignalType.CANCEL);
+    }
+
     public static class Builder<S extends ISocketService<S>> {
 
         private final S service;
@@ -169,8 +175,8 @@ public class WebSocket<S extends ISocketService<S>> {
             return this;
         }
 
-        public WebSocket build(String url) {
-            if (!Objects.requireNonNull(url, "url == null").matches("^[wS][sS]{1,2}://(.+)")) {
+        public WebSocket<S> build(String url) {
+            if (!Objects.requireNonNull(url, "url == null").matches("^ws(s)?://(.+)")) {
                 throw new RequestException("URL it is not be a matched pattern!!! (ws / wss)");
             }
 

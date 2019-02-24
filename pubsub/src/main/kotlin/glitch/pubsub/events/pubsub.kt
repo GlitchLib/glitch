@@ -1,6 +1,5 @@
 package glitch.pubsub.events
 
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import glitch.api.ws.events.IEvent
 import glitch.pubsub.GlitchPubSub
@@ -15,7 +14,6 @@ import glitch.pubsub.exceptions.PubSubException
  */
 data class PubSubEvent(
         override val client: GlitchPubSub,
-        val mapper: Gson,
         val data: JsonObject
 ) : IEvent<GlitchPubSub>
 

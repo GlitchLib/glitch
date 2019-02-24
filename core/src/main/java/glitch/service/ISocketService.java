@@ -43,4 +43,12 @@ public interface ISocketService<S extends ISocketService<S>> extends IService {
      * @return events
      */
     <E extends IEvent<S>> Flux<E> onEvent(Class<E> type);
+
+    /**
+     * Dispatch any events using {@link reactor.core.publisher.FluxProcessor}
+     *
+     * @return events
+     */
+    Flux<IEvent<S>> onEvents();
+
 }

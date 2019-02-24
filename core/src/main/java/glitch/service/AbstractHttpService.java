@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
  * @since 1.0
  */
 public abstract class AbstractHttpService implements IService {
-    protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final HttpClient http;
     private final GlitchClient client;
 

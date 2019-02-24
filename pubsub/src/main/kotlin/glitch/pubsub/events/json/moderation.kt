@@ -60,14 +60,14 @@ data class Host(
     )
 }
 
-class MessageDelete(
+data class MessageDelete(
         override val id: UUID,
         override val moderatorName: String,
         override val moderatorId: Long,
         override val targetName: String,
         override val targetId: Long,
         val message: String
-): IDObject<UUID>, IModerator, ITarget {
+) : IDObject<UUID>, IModerator, ITarget {
     constructor(data: ModerationData) : this(
             UUID.fromString(data.args[2]),
             data.createdBy,
@@ -78,7 +78,7 @@ class MessageDelete(
     )
 }
 
-class ModerationData(
+data class ModerationData(
         val type: String,
         @JsonAdapter(ModerationActionAdapter::class)
         val moderationAction: Action,

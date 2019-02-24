@@ -9,10 +9,10 @@ import glitch.auth.objects.json.Credential;
 import glitch.chat.events.IRCEvent;
 import glitch.chat.exceptions.AlreadyJoinedChannelException;
 import glitch.chat.exceptions.NotJoinedChannelException;
+import glitch.chat.irc.TmiConverter;
 import glitch.service.ISocketService;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -57,7 +57,7 @@ public class GlitchChat implements ISocketService<GlitchChat> {
         this.client = client;
         this.ws = WebSocket.builder(this)
                 .addInterceptor(new HttpLoggingInterceptor(LOG::debug).setLevel(HttpLoggingInterceptor.Level.BASIC))
-                .setEventConverter(TmiConverter.create())
+                .setEventConverter(new TmiConverter())
                 .setEventProcessor(eventProcessor)
                 .setEventScheduler(scheduler)
                 .build((secure) ? URI_SECURE : URI);
@@ -69,7 +69,7 @@ public class GlitchChat implements ISocketService<GlitchChat> {
         this.ws.onEvent(PingEvent.class)
                 .subscribe(ping -> {
                     if (!configuration.isDisableAutoPing()) {
-                        this.ws.send(Mono.just("PONG :tmi.twitch.tv"));
+                        this.ws.send(Mono.just("PONG :tmi.twitch.tv")).subscribe();
                     }
                 });
     }
@@ -89,10 +89,7 @@ public class GlitchChat implements ISocketService<GlitchChat> {
 
     @Override
     public Mono<Void> login() {
-        // TODO: Whispers
-//        if (!channels.contains("jtv")) {
-//            channels.add("jtv");
-//        }
+//        channels.add("jtv");
 
         return this.ws.connect()
                 .then(doInit());
@@ -126,6 +123,11 @@ public class GlitchChat implements ISocketService<GlitchChat> {
     @Override
     public <E extends IEvent<GlitchChat>> Flux<E> onEvent(Class<E> type) {
         return this.ws.onEvent(type);
+    }
+
+    @Override
+    public Flux<IEvent<GlitchChat>> onEvents() {
+        return this.ws.onEvents();
     }
 
     public Mono<Void> sendChannel(String channel, Publisher<String> message) throws NotJoinedChannelException {
@@ -246,12 +248,12 @@ public class GlitchChat implements ISocketService<GlitchChat> {
                     });
         }
 
-        public GlitchChat build() throws ExecutionException, InterruptedException, RuntimeException {
+        public GlitchChat build() {
             return new CompletableFuture<GlitchChat>() {
                 {
                     buildAsync().subscribe(this::complete);
                 }
-            }.get();
+            }.join();
         }
 
         private Mono<Credential> createBotConfig() {

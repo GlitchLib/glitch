@@ -16,14 +16,20 @@ import org.apache.commons.collections4.MultiMapUtils;
 import org.apache.commons.collections4.MultiValuedMap;
 
 /**
- * HTTP Request created by {@code {@link HttpClient#create(HttpMethod, String, Class)}}.
+ * HTTP Request created by {@code {@link Routes#newRequest(Object...)}}.
  * This is a ordinal Request Builder.
  *
  * @author Damian Staszewski [damian@stachuofficial.tv]
  * @version %I%, %G%
+ * @see glitch.api.http.Routes#get(String)
+ * @see glitch.api.http.Routes#post(String)
+ * @see glitch.api.http.Routes#put(String)
+ * @see glitch.api.http.Routes#patch(String)
+ * @see glitch.api.http.Routes#delete(String)
+ * @see glitch.api.http.Routes#options(String)
  * @since 1.0
  */
-public class HttpRequest extends Object {
+public class HttpRequest {
     final HttpMethod method;
     final String endpoint;
     final MultiValuedMap<String, String> headers = MultiMapUtils.newSetValuedHashMap();
