@@ -60,7 +60,7 @@ data class Host(
     )
 }
 
-class MessageDelete(
+data class MessageDelete(
         override val id: UUID,
         override val moderatorName: String,
         override val moderatorId: Long,
@@ -78,7 +78,7 @@ class MessageDelete(
     )
 }
 
-class ModerationData(
+data class ModerationData(
         val type: String,
         @JsonAdapter(ModerationActionAdapter::class)
         val moderationAction: Action,

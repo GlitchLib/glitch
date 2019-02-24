@@ -13,8 +13,9 @@ public class TopicsCache {
     private final GlitchPubSub client;
     private final Map<Topic, Boolean> topics = new LinkedHashMap<>(50);
 
-    TopicsCache(GlitchPubSub client) {
+    TopicsCache(GlitchPubSub client, Map<Topic, Boolean> topics) {
         this.client = client;
+        this.topics.putAll(topics);
     }
 
     public Collection<Topic> getAll() {
@@ -99,10 +100,9 @@ public class TopicsCache {
             return Mono.error(new TopicException("Topic is not registered or it is not exist: " + topic.getRawType()));
     }
 
-
     Mono<Void> exchange(MessageType type, Topic topic) {
         if (client.ws.isConnected()) {
-            return client.buildMessage(type, topic);
+            return client.ws.send(Mono.just(this.client.createMessage(type, topic)));
         } else return Mono.error(new GlitchException("Cannot send message!", new NotYetConnectedException()));
     }
 

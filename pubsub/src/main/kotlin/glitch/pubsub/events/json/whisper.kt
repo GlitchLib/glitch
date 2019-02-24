@@ -1,5 +1,7 @@
 package glitch.pubsub.events.json
 
+import com.fatboyindustrial.gsonjavatime.InstantConverter
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import glitch.api.objects.enums.UserType
 import glitch.api.objects.json.Badge
@@ -16,6 +18,7 @@ import java.time.Instant
 data class WhisperThread(
         val isArchived: Boolean,
         val isMuted: Boolean,
+        @JsonAdapter(InstantConverter::class)
         val whitelistedUntil: Instant
 )
 
@@ -30,6 +33,7 @@ data class WhisperMessage(
         @SerializedName("body")
         val message: String,
         @SerializedName("sent_ts")
+        @JsonAdapter(InstantConverter::class)
         val createdAt: Instant,
         @SerializedName("from_id")
         val senderId: Long,

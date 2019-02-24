@@ -15,7 +15,6 @@ import glitch.pubsub.exceptions.PubSubException
  */
 data class PubSubEvent(
         override val client: GlitchPubSub,
-        val mapper: Gson,
         val data: JsonObject
 ) : IEvent<GlitchPubSub>
 

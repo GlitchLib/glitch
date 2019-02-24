@@ -1,5 +1,7 @@
 package glitch.pubsub.events.json
 
+import com.fatboyindustrial.gsonjavatime.InstantConverter
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import glitch.api.objects.enums.SubscriptionType
 import glitch.pubsub.`object`.enums.SubscriptionContext
@@ -12,6 +14,7 @@ data class GiftSubscriptionMessage(
         override val channelName: String,
         override val userId: Long,
         override val channelId: Long,
+        @JsonAdapter(InstantConverter::class)
         override val time: Instant,
         @SerializedName("sub_plan")
         override val subscriptionType: SubscriptionType,
@@ -33,6 +36,7 @@ data class SubscriptionMessage(
         override val channelName: String,
         override val userId: Long,
         override val channelId: Long,
+        @JsonAdapter(InstantConverter::class)
         override val time: Instant,
         @SerializedName("sub_plan")
         override val subscriptionType: SubscriptionType,

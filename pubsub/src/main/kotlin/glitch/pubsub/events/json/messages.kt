@@ -1,5 +1,7 @@
 package glitch.pubsub.events.json
 
+import com.fatboyindustrial.gsonjavatime.InstantConverter
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import java.time.Instant
 
@@ -24,6 +26,7 @@ data class Commerce(
         val channelName: String,
         val userId: Long,
         val channelId: Long,
+        @JsonAdapter(InstantConverter::class)
         val time: Instant,
         val itemImageUrl: String,
         val itemDescription: String,

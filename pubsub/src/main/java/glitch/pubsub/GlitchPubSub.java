@@ -8,8 +8,6 @@ import glitch.api.ws.events.IEvent;
 import glitch.api.ws.events.PingEvent;
 import glitch.pubsub.events.PubSubEvent;
 import glitch.pubsub.events.json.ModerationData;
-import glitch.pubsub.events.json.SingleRequest;
-import glitch.pubsub.events.json.TopicRequest;
 import glitch.pubsub.events.json.VideoPlayback;
 import glitch.pubsub.object.adapters.MessageTypeAdapter;
 import glitch.pubsub.object.adapters.ModerationActionAdapter;
@@ -38,15 +36,15 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
     private static final Logger LOG = LoggerFactory.getLogger(GlitchPubSub.class);
     protected final WebSocket<GlitchPubSub> ws;
     private final GlitchClient client;
-    private final TopicsCache topicsCache = new TopicsCache(this);
+    private final TopicsCache topicsCache;
     private final Gson gson;
 
     @SuppressWarnings("unchecked")
     private GlitchPubSub(
             GlitchClient client, GsonBuilder gson, boolean secure, Map<Topic, Boolean> topics,
             FluxProcessor<IEvent<GlitchPubSub>, IEvent<GlitchPubSub>> eventProcessor,
-            boolean disableAutoPing
-    ) {
+            boolean disableAutoPing,
+            boolean shutdownHook) {
         this.client = client;
         this.gson = gson.registerTypeAdapter(GlitchPubSub.class, (JsonDeserializer<GlitchPubSub>) (json, type, context) -> GlitchPubSub.this).create();
         this.ws = WebSocket.builder(this)
@@ -54,22 +52,27 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
                 .setEventConverter(new PubSubConverter(this.gson))
                 .setEventProcessor(eventProcessor)
                 .build((secure) ? URI_SECURE : URI);
-        topics.forEach(this.topicsCache::register);
-        this.ws.onEvent(PubSubEvent.class)
-                .subscribe(PubSubUtils::consume);
+        this.topicsCache = new TopicsCache(this, topics);
         this.ws.onEvent(PingEvent.class)
-                .subscribe(ping -> {
+                .subscribe(ignore -> {
                     if (!disableAutoPing) {
-                        buildMessage(MessageType.PONG, null).subscribe();
+                        this.ws.send(Mono.just(createMessage(MessageType.PONG, null))).subscribe();
                     }
                 });
+
+        if (shutdownHook) {
+            Runtime.getRuntime().addShutdownHook(new Thread(this::logout));
+        }
     }
 
     public static Builder builder(GlitchClient client) {
         return new Builder(client);
     }
 
-    Mono<Void> buildMessage(MessageType type, @Nullable Topic topic) {
+    String createMessage(MessageType type, @Nullable Topic topic) {
+        JsonObject object = new JsonObject();
+        object.add("type", new JsonPrimitive(type.name()));
+
         if (Arrays.asList(MessageType.LISTEN, MessageType.UNLISTEN).contains(type) && topic != null) {
             JsonArray topics = new JsonArray();
             topics.add(new JsonPrimitive(topic.getRawType()));
@@ -80,10 +83,11 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
                 dataType.add("auth_token", new JsonPrimitive(topic.getCredential().getAccessToken()));
             }
 
-            return this.ws.send(Mono.just(gson.toJson(new TopicRequest(type, topic.getCode().toString(), dataType))));
-        } else {
-            return this.ws.send(Mono.just(gson.toJson(new SingleRequest(type))));
+            object.addProperty("nonce", topic.getCode().toString());
+            object.add("data", dataType);
         }
+
+        return gson.toJson(object);
     }
 
     public TopicsCache getTopicsCache() {
@@ -113,23 +117,28 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
     }
 
     @Override
+    public Flux<IEvent<GlitchPubSub>> onEvents() {
+        return this.ws.onEvents();
+    }
+
+    @Override
     public GlitchClient getClient() {
         return client;
     }
 
     private Mono<Void> doInit() {
-        return Flux.fromIterable(topicsCache.getActive())
-                .flatMap(t -> buildMessage(MessageType.LISTEN, t))
-                .then();
+        return this.ws.send(Flux.fromIterable(topicsCache.getActive())
+                .map(t -> createMessage(MessageType.LISTEN, t)));
     }
 
     public static class Builder {
         private final GlitchClient client;
-        private final GsonBuilder gsonBuilder = Converters.registerAll(new GsonBuilder())
+        private final GsonBuilder gsonBuilder = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
         private final AtomicBoolean secure = new AtomicBoolean(true);
         private final Map<Topic, Boolean> topics = new LinkedHashMap<>(50);
         private final AtomicBoolean disableAutoPing = new AtomicBoolean(false);
+        private final AtomicBoolean shutdownHook = new AtomicBoolean(false);
         private FluxProcessor<IEvent<GlitchPubSub>, IEvent<GlitchPubSub>> eventProcessor = EmitterProcessor.create(true);
 
         private Builder(GlitchClient client) {
@@ -158,6 +167,11 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
             return this;
         }
 
+        public Builder addShutdownHook() {
+            this.shutdownHook.set(true);
+            return this;
+        }
+
         public Builder setDisableAutoPing(boolean disableAutoPing) {
             this.disableAutoPing.set(disableAutoPing);
             return this;
@@ -166,7 +180,7 @@ public final class GlitchPubSub implements ISocketService<GlitchPubSub> {
         public GlitchPubSub build() {
             registerDefaultAdapters();
 
-            return new GlitchPubSub(client, gsonBuilder, secure.get(), topics, eventProcessor, disableAutoPing.get());
+            return new GlitchPubSub(client, gsonBuilder, secure.get(), topics, eventProcessor, disableAutoPing.get(), shutdownHook.get());
         }
 
         private void registerDefaultAdapters() {
