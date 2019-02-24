@@ -123,7 +123,7 @@ class PubSubConverter(private val gson: Gson) : IEventConverter<GlitchPubSub> {
     }
 
     private fun message_commerce(client: GlitchPubSub, topic: Topic, rawMessage: JsonObject) =
-        CommerceEvent(client, topic, gson.fromJson(rawMessage, Commerce::class.java))
+            CommerceEvent(client, topic, gson.fromJson(rawMessage, Commerce::class.java))
 
     private fun message_sub(client: GlitchPubSub, topic: Topic, rawMessage: JsonObject): IEvent<GlitchPubSub> {
         val sub = gson.fromJson(rawMessage, SubscriptionMessage::class.java)

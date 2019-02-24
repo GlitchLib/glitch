@@ -1,6 +1,5 @@
 package glitch.pubsub.events
 
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import glitch.api.ws.events.IEvent
 import glitch.pubsub.GlitchPubSub

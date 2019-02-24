@@ -1,12 +1,8 @@
 package glitch.pubsub;
 
 import glitch.api.http.Unofficial;
-import glitch.auth.GlitchScope;
 import glitch.auth.objects.json.Credential;
-import glitch.exceptions.http.ScopeIsMissingException;
-import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

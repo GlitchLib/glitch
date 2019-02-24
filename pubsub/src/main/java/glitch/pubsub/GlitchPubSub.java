@@ -1,12 +1,10 @@
 package glitch.pubsub;
 
-import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.*;
 import glitch.GlitchClient;
 import glitch.api.ws.WebSocket;
 import glitch.api.ws.events.IEvent;
 import glitch.api.ws.events.PingEvent;
-import glitch.pubsub.events.PubSubEvent;
 import glitch.pubsub.events.json.ModerationData;
 import glitch.pubsub.events.json.VideoPlayback;
 import glitch.pubsub.object.adapters.MessageTypeAdapter;

@@ -5,7 +5,7 @@ import glitch.api.ws.events.IEvent
 import glitch.chat.GlitchChat
 import glitch.chat.events.IRCEvent
 
-class TmiConverter: IEventConverter<GlitchChat> {
+class TmiConverter : IEventConverter<GlitchChat> {
 
     override fun convert(client: GlitchChat, raw: String): IEvent<GlitchChat> {
         if (raw.contains(System.lineSeparator())) {
@@ -19,7 +19,7 @@ class TmiConverter: IEventConverter<GlitchChat> {
 
     private fun parse(client: GlitchChat, line: String): IRCEvent {
 
-        var pairLine = line.split(" :", limit = 3).mapIndexed { i, string ->  if (i == 0) string else ":$string" }
+        var pairLine = line.split(" :", limit = 3).mapIndexed { i, string -> if (i == 0) string else ":$string" }
 
         val tags = Tags(if (pairLine[0].startsWith('@')) pairLine[0].substring(1).split(";").map {
             val p = it.split('=')
@@ -43,7 +43,7 @@ class TmiConverter: IEventConverter<GlitchChat> {
         var command = Command.UNKNOWN
         var middle = if (mid.isEmpty()) emptyList() else mid
 
-        mid.forEach {s ->
+        mid.forEach { s ->
             when {
                 s.startsWith(':') -> {
                     prefix = Prefix.fromRaw(s)

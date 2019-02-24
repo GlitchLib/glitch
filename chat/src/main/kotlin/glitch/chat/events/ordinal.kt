@@ -7,7 +7,6 @@ import glitch.api.ws.events.IEvent
 import glitch.chat.GlitchChat
 import java.awt.Color
 import java.time.Instant
-import java.util.*
 
 /**
  *
