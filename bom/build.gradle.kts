@@ -1,12 +1,10 @@
 plugins {
-    id("io.spring.dependency-management") version "1.0.6.RELEASE"
+    `dependency-management`
 }
 
-description = "Bills of Materials (BOM) for Glitch packages"
-
 tasks {
-    compileJava.get().enabled = false
     javadoc.get().enabled = false
+    dokka.get().enabled = false
     withType<Jar> {
         enabled = false
     }
@@ -15,11 +13,8 @@ tasks {
 
 dependencyManagement {
     dependencies {
-        rootProject.subprojects.forEach {
-            if (!arrayOf("bom", "all").contains(it.name) && !it.sourceSets.main.get().allSource.isEmpty) {
-                dependency("${it.group}:${it.base.archivesBaseName}:${it.version}")
-            }
+        moduleList.map { project(":$it") }.forEach {
+            dependency("${it.group}:${it.base.archivesBaseName}:${it.version}")
         }
     }
 }
-

@@ -1,4 +1,6 @@
 dependencies {
-    compileOnly(project(":core"))
-    testCompile(project(":core"))
+    base()
+    `test-base`()
+    api(project(":core"))
+    compile("com.drewnoakes:metadata-extractor:2.11.0")
 }

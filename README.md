@@ -1,4 +1,4 @@
-<p align="center"><a href="https://glitchlib.github.io"><img src="https://glitchlib.github.io/img/glitch-mug-typo.svg" height="200"></a></p>
+<p align="center"><img src="https://glitchlib.github.io/img/logo/purple.svg" height="200"></p>
 <p align="center">
     <a href="https://bintray.com/stachu540/GlitchLib/Glitch/_latestVersion"><img src="https://api.bintray.com/packages/stachu540/GlitchLib/Glitch/images/download.svg" alt="Download"></a>
     <a href="https://travis-ci.com/GlitchLib/glitch"><img src="https://travis-ci.com/GlitchLib/glitch.svg" alt="Build Status"></a><br>
@@ -10,11 +10,8 @@
 </p>
 
 # Glitch
-A hybrid-reactive Java wrapper for the Twitch. Supports using:
 
-* [OkHttpClient](http://square.github.io/okhttp) - http client
-* [Gson](https://github.com/google/gson) - JSON
-* [Project Reactor](http://projectreactor.io/)
+A hybrid-reactive Java wrapper for the Twitch. 
 
 # Getting started
 

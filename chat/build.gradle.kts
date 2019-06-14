@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly(project(":core"))
-
-    testCompile(project(":core"))
+    base()
+    `test-base`()
+    api(project(":core"))
 }

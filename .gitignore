@@ -28,3 +28,5 @@ build/
 
 # Misc
 logs/
+*.log*
+local.properties
