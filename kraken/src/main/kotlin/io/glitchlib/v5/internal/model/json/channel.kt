@@ -15,7 +15,6 @@ import java.util.Locale
  * @since 1.0
  */
 data class ChannelImpl(
-    override val client: GlitchClient,
     @SerializedName(value = "id", alternate = ["_id"])
     override val id: Long,
     @SerializedName(value = "username", alternate = ["login", "name"])
@@ -46,7 +45,6 @@ data class ChannelImpl(
  * @since 1.0
  */
 data class AuthChannelImpl(
-    override val client: GlitchClient,
     @SerializedName(value = "id", alternate = ["_id"])
     override val id: Long,
     @SerializedName(value = "username", alternate = ["login", "name"])

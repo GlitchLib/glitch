@@ -13,7 +13,6 @@ import java.util.Date
  * @since 1.0
  */
 data class UserImpl(
-    override val client: GlitchClient,
     override val userBio: String,
     override val displayName: String,
     override val logo: String,
@@ -31,7 +30,6 @@ data class UserImpl(
  * @since 1.0
  */
 data class AuthUserImpl(
-    override val client: GlitchClient,
     override val userBio: String,
     override val displayName: String,
     override val logo: String,
