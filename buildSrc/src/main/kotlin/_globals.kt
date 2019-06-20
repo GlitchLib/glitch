@@ -12,4 +12,4 @@ val Project.githubToken: String
 val Project.isSnapshot: Boolean
     get() = (rootProject.version as String).endsWith("-SNAPSHOT")
 
-val moduleList = arrayOf("core", "chat", "kraken", "helix", "pubsub", "webhook")
+val moduleList = arrayOf("core", "chat", "kraken", "helix", "pubsub")
