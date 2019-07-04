@@ -30,3 +30,5 @@ build/
 logs/
 *.log*
 local.properties
+docs/api/
+site/
