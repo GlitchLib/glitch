@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.lang.GroovyObject
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
-import java.util.Date
+import java.util.*
 
 plugins {
     dokka
@@ -43,12 +43,12 @@ subprojects {
         classifier = "sources"
     }
 
-    val kdocJar by tasks.creating(Jar::class) {
+    val javadocJar by tasks.creating(Jar::class) {
         dependsOn(tasks.dokka)
         description = "Builds the KotlinDoc jar."
         group = "build"
         from(tasks.dokka.get().outputDirectory)
-        classifier = "kdoc"
+        classifier = "javadoc"
     }
 
     val shadowJar by tasks.getting(ShadowJar::class) {
@@ -58,10 +58,10 @@ subprojects {
     if (project.name != "bom") {
         artifacts {
             if (project.name != "all") {
-                add("archives", sourceJar)
+                archives(sourceJar)
             }
-            add("archives", shadowJar)
-            add("archives", kdocJar)
+            archives(shadowJar)
+            archives(javadocJar)
         }
     }
 
@@ -77,7 +77,7 @@ subprojects {
                         artifact(sourceJar)
                     }
                     artifact(shadowJar)
-                    artifact(kdocJar)
+                    artifact(javadocJar)
                 }
                 pom.default()
             }
@@ -148,6 +148,8 @@ subprojects {
         }
 
         dokka {
+            jdkVersion = 8
+            outputFormat = "javadoc"
             skipEmptyPackages = true
             outputDirectory = File(buildDir, "docs/dokka").absolutePath
         }
@@ -178,7 +180,7 @@ subprojects {
 
 tasks {
     withType<Wrapper> {
-        gradleVersion = "5.4.1"
+        gradleVersion = "5.5"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
