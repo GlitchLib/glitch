@@ -50,31 +50,31 @@ markdown_extensions:
 nav:
   - 'Overview': index.md
   - 'Getting Started':
-    - 'Welcome': getting-started.md
-    - 'Build Setup':
-      - 'Maven': getting-started/build-setup/maven.md
-      - 'Gradle': getting-started/build-setup/gradle.md
-    - 'Glossary': getting-started/glossary.md
+      - 'Welcome': getting-started.md
+      - 'Build Setup':
+          - 'Maven': getting-started/build-setup/maven.md
+          - 'Gradle': getting-started/build-setup/gradle.md
+      - 'Glossary': getting-started/glossary.md
   - 'Getting Client ID and Secret': getting-client-id-and-secret.md
   - 'Basic Tutorials':
-    - 'Client Initialization': basic-tutorials/client.md
-    - 'API (Kraken/Helix)': basic-tutorials/api.md
-    - 'Chat (TMI)': basic-tutorials/chat.md
-    - 'PubSub': basic-tutorials/pubsub.md
-    - 'WebSub': basic-tutorials/websub.md
+      - 'Client Initialization': basic-tutorials/client.md
+      - 'API (Kraken/Helix)': basic-tutorials/api.md
+      - 'Chat (TMI)': basic-tutorials/chat.md
+      - 'PubSub': basic-tutorials/pubsub.md
+      - 'WebSub': basic-tutorials/websub.md
   - 'FAQ': FAQ.md
   - 'Miscellaneous':
-    - 'Rate Limits': miscellaneous/rate-limits.md
-    - 'Reactive Streams': miscellaneous/reactive-streams.md
-    - 'Android Compatibility': miscellaneous/android-comaptibility.md
-    - 'Logging': miscellaneous/logging.md
-    - 'Bot Account': miscellaneous/bot-account.md
+      - 'Rate Limits': miscellaneous/rate-limits.md
+      - 'Reactive Streams': miscellaneous/reactive-streams.md
+      - 'Android Compatibility': miscellaneous/android-comaptibility.md
+      - 'Logging': miscellaneous/logging.md
+      - 'Bot Account': miscellaneous/bot-account.md
   - 'Guidelines':
-    - 'Community Guidelines': guidelines/community.md
-    - 'IDE Setup':
-      - 'IntelliJ': guidelines/ide-setup/intellij.md
-      - 'Eclipse': guidelines/ide-setup/eclipse.md
-      - 'Netbeans': guidelines/ide-setup/netbeans.md
+      - 'Community Guidelines': guidelines/community.md
+      - 'IDE Setup':
+          - 'IntelliJ': guidelines/ide-setup/intellij.md
+          - 'Eclipse': guidelines/ide-setup/eclipse.md
+          - 'Netbeans': guidelines/ide-setup/netbeans.md
   - 'API': /api
   - 'Releases': https://github.com/GlitchLib/glitch/releases
   - 'Discord': https://discord.gg/nJJ2fDM
