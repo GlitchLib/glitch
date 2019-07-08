@@ -1,6 +1,6 @@
 package io.glitchlib.api.model
 
-import java.util.Date
+import java.util.*
 
 
 /**
@@ -18,11 +18,11 @@ class DateRange(val startedAt: Date, val endedAt: Date)
  * @since 1.0
  */
 data class ManifestBody(
-    val campaignId: String,
-    val clientId: String,
-    val gameWatched: String,
-    val broadcasterId: String,
-    val itemId: String,
-    val reason: DropReason,
-    val users: Collection<String>
+        val campaignId: String,
+        val clientId: String,
+        val gameWatched: String,
+        val broadcasterId: String,
+        val itemId: String,
+        val reason: DropReason,
+        val users: Collection<String>
 )

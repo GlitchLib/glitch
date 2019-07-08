@@ -15,22 +15,22 @@ import io.glitchlib.model.OrdinalList
 
 class ClipsService(client: GlitchClient) : AbstractHelixService(client) {
     fun createClip(credential: Credential, userId: Long, delay: Boolean = false) =
-        post<OrdinalList<ClipCreate>>("/clips") {
-            addQueryParameters("broadcaster_id", userId.toString())
-            if (delay) {
-                addQueryParameters("has_delay", delay.toString())
-            }
-        }.bodySingle.map { it.data[0] }
+            post<OrdinalList<ClipCreate>>("/clips") {
+                addQueryParameters("broadcaster_id", userId.toString())
+                if (delay) {
+                    addQueryParameters("has_delay", delay.toString())
+                }
+            }.bodySingle.map { it.data[0] }
 
     fun get(user: User, request: ClipRequest.() -> Unit = {}) =
-        get<CursorList<Clip>>("/clips", ClipRequest(user).apply(request)()).bodySingle
+            get<CursorList<Clip>>("/clips", ClipRequest(user).apply(request)()).bodySingle
 
     fun get(game: Game, request: ClipRequest.() -> Unit = {}) =
-        get<CursorList<Clip>>("/clips", ClipRequest(game).apply(request)()).bodySingle
+            get<CursorList<Clip>>("/clips", ClipRequest(game).apply(request)()).bodySingle
 
     fun get(vararg id: String) = get(id.toSet())
     fun get(id: Collection<String>) =
-        get<OrdinalList<Clip>>("/clips") {
-            addQueryParameters("id", *id.toList().subList(0, 99).toTypedArray())
-        }.bodyFlowable
+            get<OrdinalList<Clip>>("/clips") {
+                addQueryParameters("id", *id.toList().subList(0, 99).toTypedArray())
+            }.bodyFlowable
 }

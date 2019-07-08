@@ -60,7 +60,7 @@ import io.glitchlib.pubsub.model.json.ViewCount
 import io.glitchlib.pubsub.model.json.WhisperMessage
 import io.glitchlib.pubsub.model.json.WhisperThread
 import java.io.IOException
-import java.util.UUID
+import java.util.*
 
 class PubSubFormatter(private val client: GlitchClientImpl) : (String) -> IEvent {
     override fun invoke(raw: String): IEvent {
@@ -109,9 +109,9 @@ class PubSubFormatter(private val client: GlitchClientImpl) : (String) -> IEvent
         val topic = client.settings.topics.firstOrNull { it.rawType == topicRaw }
 
         return if (topic != null) handleMessage(client, topic, rawMessage) else UnknownMessageEvent(
-            client,
-            topicRaw,
-            rawMessage
+                client,
+                topicRaw,
+                rawMessage
         )
     }
 
@@ -130,54 +130,54 @@ class PubSubFormatter(private val client: GlitchClientImpl) : (String) -> IEvent
     }
 
     private fun message_bits_badge_unlocked(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject): IEvent =
-        TODO("Not yet supported for this topic ${topic.rawType}")
+            TODO("Not yet supported for this topic ${topic.rawType}")
 
     private fun message_follow(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject) =
-        FollowEvent(client, topic, client.http.gson.fromJson(rawMessage, Following::class.java))
+            FollowEvent(client, topic, client.http.gson.fromJson(rawMessage, Following::class.java))
 
     private fun message_whisper(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject) =
-        client.http.gson.fromJson(rawMessage, WhisperMode::class.java).let {
-            when (it.type) {
-                WhisperMode.Type.THREAD ->
-                    WhisperThreadEvent(client, topic, client.http.gson.fromJson(it.data, WhisperThread::class.java))
-                WhisperMode.Type.WHISPER_RECEIVED ->
-                    WhisperReceivedEvent(client, topic, client.http.gson.fromJson(it.data, WhisperMessage::class.java))
-                WhisperMode.Type.WHISPER_SENT ->
-                    WhisperSentEvent(client, topic, client.http.gson.fromJson(it.data, WhisperMessage::class.java))
+            client.http.gson.fromJson(rawMessage, WhisperMode::class.java).let {
+                when (it.type) {
+                    WhisperMode.Type.THREAD ->
+                        WhisperThreadEvent(client, topic, client.http.gson.fromJson(it.data, WhisperThread::class.java))
+                    WhisperMode.Type.WHISPER_RECEIVED ->
+                        WhisperReceivedEvent(client, topic, client.http.gson.fromJson(it.data, WhisperMessage::class.java))
+                    WhisperMode.Type.WHISPER_SENT ->
+                        WhisperSentEvent(client, topic, client.http.gson.fromJson(it.data, WhisperMessage::class.java))
+                }
             }
-        }
 
     private fun message_bits(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject) =
-        BitsEvent(client, topic, client.http.gson.fromJson(rawMessage, BitsMessage::class.java))
+            BitsEvent(client, topic, client.http.gson.fromJson(rawMessage, BitsMessage::class.java))
 
     private fun message_playback(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject) =
-        client.http.gson.fromJson(rawMessage, VideoPlayback::class.java).let {
-            when (it.type) {
-                VideoPlayback.Type.STREAM_UP ->
-                    StreamUpEvent(client, topic, client.http.gson.fromJson(rawMessage, StreamUp::class.java))
-                VideoPlayback.Type.STREAM_DOWN ->
-                    StreamDownEvent(client, topic, client.http.gson.fromJson(rawMessage, StreamDown::class.java))
-                VideoPlayback.Type.VIEW_COUNT ->
-                    ViewCountEvent(client, topic, client.http.gson.fromJson(rawMessage, ViewCount::class.java))
+            client.http.gson.fromJson(rawMessage, VideoPlayback::class.java).let {
+                when (it.type) {
+                    VideoPlayback.Type.STREAM_UP ->
+                        StreamUpEvent(client, topic, client.http.gson.fromJson(rawMessage, StreamUp::class.java))
+                    VideoPlayback.Type.STREAM_DOWN ->
+                        StreamDownEvent(client, topic, client.http.gson.fromJson(rawMessage, StreamDown::class.java))
+                    VideoPlayback.Type.VIEW_COUNT ->
+                        ViewCountEvent(client, topic, client.http.gson.fromJson(rawMessage, ViewCount::class.java))
+                }
             }
-        }
 
     private fun message_commerce(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject) =
-        CommerceEvent(client, topic, client.http.gson.fromJson(rawMessage, Commerce::class.java))
+            CommerceEvent(client, topic, client.http.gson.fromJson(rawMessage, Commerce::class.java))
 
     private fun message_sub(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject) =
-        client.http.gson.fromJson(rawMessage, SubscriptionMessage::class.java).let {
-            if (it.context == SubscriptionContext.SUBGIFT) {
-                SubGiftEvent(client, topic, client.http.gson.fromJson(rawMessage, GiftSubscriptionMessage::class.java))
-            } else {
-                SubscriptionEvent(client, topic, it)
+            client.http.gson.fromJson(rawMessage, SubscriptionMessage::class.java).let {
+                if (it.context == SubscriptionContext.SUBGIFT) {
+                    SubGiftEvent(client, topic, client.http.gson.fromJson(rawMessage, GiftSubscriptionMessage::class.java))
+                } else {
+                    SubscriptionEvent(client, topic, it)
+                }
             }
-        }
 
     private fun message_moderation(
-        client: GlitchClientImpl,
-        topic: Topic,
-        rawMessage: JsonObject
+            client: GlitchClientImpl,
+            topic: Topic,
+            rawMessage: JsonObject
     ) = client.http.gson.fromJson(rawMessage, ModerationData::class.java).let {
         when (it.moderationAction) {
             ModerationData.Action.DELETE ->
@@ -192,39 +192,39 @@ class PubSubFormatter(private val client: GlitchClientImpl) : (String) -> IEvent
                 HostEvent(client, topic, Host(it))
             ModerationData.Action.SUBSCRIBERS, ModerationData.Action.SUBSCRIBERSOFF ->
                 SubscribersOnlyEvent(
-                    client,
-                    topic,
-                    ActivationByMod(it, it.moderationAction == ModerationData.Action.SUBSCRIBERS)
+                        client,
+                        topic,
+                        ActivationByMod(it, it.moderationAction == ModerationData.Action.SUBSCRIBERS)
                 )
             ModerationData.Action.CLEAR ->
                 ClearChatEvent(client, topic, Moderator(it))
             ModerationData.Action.EMOTEONLY, ModerationData.Action.EMOTEONLYOFF ->
                 EmoteOnlyEvent(
-                    client,
-                    topic,
-                    ActivationByMod(it, it.moderationAction == ModerationData.Action.EMOTEONLY)
+                        client,
+                        topic,
+                        ActivationByMod(it, it.moderationAction == ModerationData.Action.EMOTEONLY)
                 )
             ModerationData.Action.R9KBETA, ModerationData.Action.R9KBETAOFF ->
                 Robot9000Event(
-                    client,
-                    topic,
-                    ActivationByMod(it, it.moderationAction == ModerationData.Action.R9KBETA)
+                        client,
+                        topic,
+                        ActivationByMod(it, it.moderationAction == ModerationData.Action.R9KBETA)
                 )
         }
     }
 
     private fun message_ebs(client: GlitchClientImpl, topic: Topic, rawMessage: JsonObject) =
-        ChannelExtensionBroadcastEvent(
-            client,
-            topic,
-            client.http.gson.toJsonTree(rawMessage).asJsonObject.getAsJsonArray("content")
-        )
+            ChannelExtensionBroadcastEvent(
+                    client,
+                    topic,
+                    client.http.gson.toJsonTree(rawMessage).asJsonObject.getAsJsonArray("content")
+            )
 
 
     internal data class WhisperMode(
-        @JsonAdapter(WhisperTypeAdapter::class)
-        internal val type: Type,
-        internal val data: String
+            @JsonAdapter(WhisperTypeAdapter::class)
+            internal val type: Type,
+            internal val data: String
     ) {
         internal enum class Type {
             WHISPER_RECEIVED,

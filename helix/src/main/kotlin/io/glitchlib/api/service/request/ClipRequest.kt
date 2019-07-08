@@ -5,7 +5,7 @@ import io.glitchlib.api.model.Game
 import io.glitchlib.api.model.User
 import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
-import java.util.Date
+import java.util.*
 
 class ClipRequest : AbstractRequest {
     private val user: User?

@@ -25,61 +25,61 @@ class UsersService(client: GlitchClient) : AbstractHelixService(client) {
     fun get(credential: Credential? = null, vararg login: String) = get(credential, login = login.toSet())
 
     fun get(credential: Credential? = null, id: Collection<Long> = setOf(), login: Collection<String> = setOf()) =
-        get<OrdinalList<User>>("/users") {
-            if (credential != null && credential.scopeCheck(Scope.USER_READ_EMAIL)) {
-                addHeaders("Authorization", "Bearer ${credential.accessToken}")
-            }
+            get<OrdinalList<User>>("/users") {
+                if (credential != null && credential.scopeCheck(Scope.USER_READ_EMAIL)) {
+                    addHeaders("Authorization", "Bearer ${credential.accessToken}")
+                }
 
-            if (id.isNotEmpty()) {
-                addHeaders("id", *id.toList().subList(0, 99).map(Long::toString).toTypedArray())
-            }
+                if (id.isNotEmpty()) {
+                    addHeaders("id", *id.toList().subList(0, 99).map(Long::toString).toTypedArray())
+                }
 
-            if (login.isNotEmpty()) {
-                addHeaders("login", *login.toList().subList(0, 99).toTypedArray())
-            }
-        }.bodyFlowable
+                if (login.isNotEmpty()) {
+                    addHeaders("login", *login.toList().subList(0, 99).toTypedArray())
+                }
+            }.bodyFlowable
 
     fun getFollows(request: UserFollowRequest.() -> Unit = {}) =
-        get<CursorList<Follow>>("/users/follows", UserFollowRequest().apply(request)()).bodySingle
+            get<CursorList<Follow>>("/users/follows", UserFollowRequest().apply(request)()).bodySingle
 
     fun updateDescription(credential: Credential, description: String) =
-        if (credential.scopeCheck(Scope.USER_EDIT))
-            put<OrdinalList<User>>("/users") {
-                addHeaders("Authorization", "Bearer ${credential.accessToken}")
-                addQueryParameters("description", description)
-            }.bodySingleFirst
-        else scopeIsMissing(Scope.USER_EDIT)
+            if (credential.scopeCheck(Scope.USER_EDIT))
+                put<OrdinalList<User>>("/users") {
+                    addHeaders("Authorization", "Bearer ${credential.accessToken}")
+                    addQueryParameters("description", description)
+                }.bodySingleFirst
+            else scopeIsMissing(Scope.USER_EDIT)
 
     fun getExtensions(credential: Credential) =
-        if (credential.scopeCheck(Scope.USER_READ_BROADCAST))
-            get<OrdinalList<Extension>>("/users/extensions/list") {
-                addHeaders("Authorization", "Bearer ${credential.accessToken}")
-            }.bodyFlowable
-        else scopeIsMissing<Extension>(Scope.USER_READ_BROADCAST).toFlowable()
+            if (credential.scopeCheck(Scope.USER_READ_BROADCAST))
+                get<OrdinalList<Extension>>("/users/extensions/list") {
+                    addHeaders("Authorization", "Bearer ${credential.accessToken}")
+                }.bodyFlowable
+            else scopeIsMissing<Extension>(Scope.USER_READ_BROADCAST).toFlowable()
 
     fun getActiveExtensions(userId: Long) =
-        get<JsonObject>("/users/extensions") {
-            addQueryParameters("user_id", userId.toString())
-        }.bodySingle.map {
-            (client as GlitchClientImpl).http.gson.fromJson(it.get("data"), UserExtensionComponent::class.java)
-        }
+            get<JsonObject>("/users/extensions") {
+                addQueryParameters("user_id", userId.toString())
+            }.bodySingle.map {
+                (client as GlitchClientImpl).http.gson.fromJson(it.get("data"), UserExtensionComponent::class.java)
+            }
 
     fun getActiveExtensions(credential: Credential) =
-        if (credential.scopeCheck(Scope.USER_READ_BROADCAST) || credential.scopeCheck(Scope.USER_EDIT_BROADCAST))
-            get<JsonObject>("/users/extensions") {
-                addHeaders("Authorization", "Bearer ${credential.accessToken}")
-            }.bodySingle.map {
-                (client as GlitchClientImpl).http.gson.fromJson(it.get("data"), UserExtensionComponent::class.java)
-            }
-        else getActiveExtensions(credential.id)
+            if (credential.scopeCheck(Scope.USER_READ_BROADCAST) || credential.scopeCheck(Scope.USER_EDIT_BROADCAST))
+                get<JsonObject>("/users/extensions") {
+                    addHeaders("Authorization", "Bearer ${credential.accessToken}")
+                }.bodySingle.map {
+                    (client as GlitchClientImpl).http.gson.fromJson(it.get("data"), UserExtensionComponent::class.java)
+                }
+            else getActiveExtensions(credential.id)
 
     fun updateExtension(credential: Credential, body: UserExtensionComponent) =
-        if (credential.scopeCheck(Scope.USER_EDIT_BROADCAST))
-            put<JsonObject>("/users/extensions") {
-                setBody(body)
-                addHeaders("Authorization", "Bearer ${credential.accessToken}")
-            }.bodySingle.map {
-                (client as GlitchClientImpl).http.gson.fromJson(it.get("data"), UserExtensionComponent::class.java)
-            }
-        else scopeIsMissing(Scope.USER_EDIT_BROADCAST)
+            if (credential.scopeCheck(Scope.USER_EDIT_BROADCAST))
+                put<JsonObject>("/users/extensions") {
+                    setBody(body)
+                    addHeaders("Authorization", "Bearer ${credential.accessToken}")
+                }.bodySingle.map {
+                    (client as GlitchClientImpl).http.gson.fromJson(it.get("data"), UserExtensionComponent::class.java)
+                }
+            else scopeIsMissing(Scope.USER_EDIT_BROADCAST)
 }

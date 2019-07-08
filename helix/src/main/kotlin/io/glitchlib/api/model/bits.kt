@@ -3,7 +3,7 @@ package io.glitchlib.api.model
 import com.google.gson.annotations.SerializedName
 import io.glitchlib.model.IDObject
 import io.glitchlib.model.OrdinalList
-import java.util.Date
+import java.util.*
 
 
 /**
@@ -13,10 +13,10 @@ import java.util.Date
  * @since 1.0
  */
 data class BitsLeaderboard(
-    override val data: List<BitsRank>,
-    @SerializedName("total")
-    override val size: Int,
-    val dateRange: DateRange
+        override val data: List<BitsRank>,
+        @SerializedName("total")
+        override val size: Int,
+        val dateRange: DateRange
 ) : OrdinalList<BitsRank>
 
 /**
@@ -26,11 +26,11 @@ data class BitsLeaderboard(
  * @since 1.0
  */
 data class BitsRank(
-    val userId: Long,
-    @SerializedName("user_name")
-    val username: String,
-    val rank: Int,
-    val score: Int
+        val userId: Long,
+        @SerializedName("user_name")
+        val username: String,
+        val rank: Int,
+        val score: Int
 )
 
 /**
@@ -40,15 +40,15 @@ data class BitsRank(
  * @since 1.0
  */
 data class ExtensionInvoice(
-    override val id: String,
-    val timestamp: Date,
-    val broadcasterId: Long,
-    val broadcasterName: String,
-    val userId: Long,
-    @SerializedName("user_name")
-    val username: String,
-    val productType: ProductType,
-    val productData: ProductData
+        override val id: String,
+        val timestamp: Date,
+        val broadcasterId: Long,
+        val broadcasterName: String,
+        val userId: Long,
+        @SerializedName("user_name")
+        val username: String,
+        val productType: ProductType,
+        val productData: ProductData
 ) : IDObject<String>
 
 /**
@@ -58,10 +58,10 @@ data class ExtensionInvoice(
  * @since 1.0
  */
 data class ProductData(
-    val sku: String,
-    val cost: Cost,
-    val displayName: String,
-    val inDevelopment: Boolean
+        val sku: String,
+        val cost: Cost,
+        val displayName: String,
+        val inDevelopment: Boolean
 ) {
     /**
      *
@@ -70,7 +70,7 @@ data class ProductData(
      * @since 1.0
      */
     data class Cost(
-        val amount: Int, // TODO: if someone report cannot serialize bigger amount, change to `Long`
-        val type: String
+            val amount: Int, // TODO: if someone report cannot serialize bigger amount, change to `Long`
+            val type: String
     )
 }

@@ -12,9 +12,9 @@ import io.glitchlib.pubsub.model.json.WhisperThread
  * @since 1.0
  */
 data class WhisperThreadEvent(
-    override val client: GlitchClient,
-    override val topic: Topic,
-    override val message: WhisperThread
+        override val client: GlitchClient,
+        override val topic: Topic,
+        override val message: WhisperThread
 ) : PubSubMessageEvent<WhisperThread>
 
 /**
@@ -24,9 +24,9 @@ data class WhisperThreadEvent(
  * @since 1.0
  */
 data class WhisperReceivedEvent(
-    override val client: GlitchClient,
-    override val topic: Topic,
-    override val message: WhisperMessage
+        override val client: GlitchClient,
+        override val topic: Topic,
+        override val message: WhisperMessage
 ) : PubSubMessageEvent<WhisperMessage>
 
 /**
@@ -36,7 +36,7 @@ data class WhisperReceivedEvent(
  * @since 1.0
  */
 data class WhisperSentEvent(
-    override val client: GlitchClient,
-    override val topic: Topic,
-    override val message: WhisperMessage
+        override val client: GlitchClient,
+        override val topic: Topic,
+        override val message: WhisperMessage
 ) : PubSubMessageEvent<WhisperMessage>

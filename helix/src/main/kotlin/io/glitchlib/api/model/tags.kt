@@ -2,15 +2,14 @@ package io.glitchlib.api.model
 
 import com.google.gson.annotations.SerializedName
 import io.glitchlib.model.IDObject
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 
 data class Tag(
-    @SerializedName("tag_id")
-    override val id: UUID,
-    val isAuto: Boolean,
-    val localizationNames: Localized,
-    val localizationDescriptions: Localized
+        @SerializedName("tag_id")
+        override val id: UUID,
+        val isAuto: Boolean,
+        val localizationNames: Localized,
+        val localizationDescriptions: Localized
 ) : IDObject<UUID> {
 
     fun getName(locale: Locale = Locale.forLanguageTag("en-us")) = localizationNames.getValue(locale)

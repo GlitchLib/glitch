@@ -5,8 +5,7 @@ import io.glitchlib.internal.http.HttpRequest
 import io.glitchlib.v5.model.ClipPeriod
 import io.glitchlib.v5.model.json.Channel
 import io.glitchlib.v5.model.json.Game
-import java.util.LinkedHashSet
-import java.util.Locale
+import java.util.*
 
 class TopClipsRequest : AbstractRequest {
 

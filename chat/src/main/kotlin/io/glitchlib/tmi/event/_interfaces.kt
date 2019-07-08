@@ -1,6 +1,7 @@
 package io.glitchlib.tmi.event
 
 import io.glitchlib.model.Badge
+import io.glitchlib.model.IEvent
 import io.glitchlib.model.UserType
 import java.awt.Color
 
@@ -46,7 +47,7 @@ interface IDChannelUser : IDChannel, IDUser
  * @version %I%, %G%
  * @since 1.0
  */
-interface IDUser {
+interface IDUser : IEvent {
     val userId: Long
 }
 
@@ -56,7 +57,7 @@ interface IDUser {
  * @version %I%, %G%
  * @since 1.0
  */
-interface IDChannel {
+interface IDChannel : IEvent {
     val channelId: Long
 }
 
@@ -66,7 +67,7 @@ interface IDChannel {
  * @version %I%, %G%
  * @since 1.0
  */
-interface GlobalUserState {
+interface GlobalUserState : IEvent {
     val badges: Set<Badge>
     val color: Color
     val userType: UserType

@@ -4,5 +4,5 @@ import io.glitchlib.GlitchClient
 import io.glitchlib.model.GlitchObject
 
 data class EventObject(
-    override val client: GlitchClient
+        override val client: GlitchClient
 ) : GlitchObject

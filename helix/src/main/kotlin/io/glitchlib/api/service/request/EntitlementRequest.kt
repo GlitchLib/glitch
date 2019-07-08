@@ -4,7 +4,6 @@ import io.glitchlib.api.model.ManifestBody
 import io.glitchlib.auth.AppCredential
 import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
-import java.io.File
 
 class EntitlementRequest internal constructor(private val credential: AppCredential) : AbstractRequest {
     private lateinit var manifestId: String

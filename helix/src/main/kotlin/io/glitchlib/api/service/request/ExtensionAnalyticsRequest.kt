@@ -5,10 +5,10 @@ import io.glitchlib.api.model.AnalyticsReportType
 import io.glitchlib.auth.Credential
 import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
-import java.util.Date
+import java.util.*
 
 class ExtensionAnalyticsRequest internal constructor(
-    private val credential: Credential
+        private val credential: Credential
 ) : AbstractRequest {
 
     private var after: String? = null

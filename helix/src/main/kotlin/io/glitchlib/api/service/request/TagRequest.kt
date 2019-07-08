@@ -3,7 +3,7 @@ package io.glitchlib.api.service.request
 import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
 
-class TagRequest internal constructor(): AbstractRequest {
+class TagRequest internal constructor() : AbstractRequest {
     private var limit: Int? = null
     private var after: String? = null
     private var before: String? = null

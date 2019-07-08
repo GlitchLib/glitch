@@ -3,8 +3,11 @@ package io.glitchlib.tmi.event
 import io.glitchlib.model.IEvent
 import io.glitchlib.model.PingEvent
 import io.glitchlib.model.PongEvent
+import io.glitchlib.model.SubscriptionType
+import io.glitchlib.tmi.MessageType
 import io.glitchlib.tmi.irc.Command
-import java.util.UUID
+import java.time.Duration
+import java.util.*
 
 object Events {
     fun from(event: IRCEvent, consumer: (IEvent) -> Unit) {
@@ -27,15 +30,15 @@ object Events {
     }
 
     private fun doUserJoinChannel(event: IRCEvent, consumer: (IEvent) -> Unit) =
-        consumer(UserJoinedChannelEvent(event.client, event.middle[0].substring(1), event.prefix.user!!))
+            consumer(UserJoinedChannelEvent(event.client, event.middle[0].substring(1), event.prefix.user!!))
 
     private fun doUserLeavingChannel(event: IRCEvent, consumer: (IEvent) -> Unit) =
-        consumer(UserLeavingChannelEvent(event.client, event.middle[0].substring(1), event.prefix.user!!))
+            consumer(UserLeavingChannelEvent(event.client, event.middle[0].substring(1), event.prefix.user!!))
 
     private fun doPing(event: IRCEvent, consumer: (IEvent) -> Unit) = consumer(PingEvent(event.client))
     private fun doPong(event: IRCEvent, consumer: (IEvent) -> Unit) = consumer(PongEvent(event.client))
     private fun doNotice(event: IRCEvent, consumer: (IEvent) -> Unit) {
-
+        consumer(ChannelNoticeEvent(event.client, event.middle[0].substring(1), MessageType.valueOf(event.tags["msg-id"]!!.toUpperCase()), event.trailing!!))
     }
 
     private fun doChannelMessage(event: IRCEvent, consumer: (IEvent) -> Unit) {
@@ -47,13 +50,13 @@ object Events {
             consumer(event.trailing!!.let {
                 val host = it.split(' ').first()
                 val views = it.split("up to ")[1]
-                    .let { if (it.contains(' ')) it.split(' ')[0] else it }
-                    .trim().toInt()
+                        .let { if (it.contains(' ')) it.split(' ')[0] else it }
+                        .trim().toInt()
                 val autoHost = it.contains("auto hosting")
 
                 return@let ChannelHostedEvent(
-                    event.client, channelName,
-                    channelId, host, views, autoHost
+                        event.client, channelName,
+                        host, views, autoHost
                 )
             })
         } else {
@@ -65,18 +68,18 @@ object Events {
             val userId = event.tags.getLong("user-id")
 
             consumer(
-                when {
-                    bits > 0 -> ChannelBitsMessageEvent(
-                        event.client, id, channelId, userId, event.tags.badges,
-                        event.tags.color!!, event.tags.userType, displayName, channelName, username,
-                        event.formattedTrailing, timestamp, bits, event.isActionMessage
-                    )
-                    else -> ChannelMessageEvent(
-                        event.client, id, channelId, userId, event.tags.badges, event.tags.color!!,
-                        event.tags.userType, displayName, channelName, username, event.formattedTrailing,
-                        timestamp, event.isActionMessage
-                    )
-                }
+                    when {
+                        bits > 0 -> ChannelBitsMessageEvent(
+                                event.client, id, channelId, userId, event.tags.badges,
+                                event.tags.color!!, event.tags.userType, displayName, channelName, username,
+                                event.formattedTrailing, timestamp, bits, event.isActionMessage
+                        )
+                        else -> ChannelMessageEvent(
+                                event.client, id, channelId, userId, event.tags.badges, event.tags.color!!,
+                                event.tags.userType, displayName, channelName, username, event.formattedTrailing,
+                                timestamp, event.isActionMessage
+                        )
+                    }
             )
         }
     }
@@ -89,18 +92,18 @@ object Events {
         val userId = event.tags.getLong("user-id")
 
         consumer(
-            PrivateMessageEvent(
-                event.client,
-                id,
-                event.tags.badges,
-                event.tags.color!!,
-                username,
-                displayName,
-                userId,
-                event.tags.userType,
-                event.trailing,
-                timestamp
-            )
+                PrivateMessageEvent(
+                        event.client,
+                        id,
+                        event.tags.badges,
+                        event.tags.color!!,
+                        username,
+                        displayName,
+                        userId,
+                        event.tags.userType,
+                        event.trailing,
+                        timestamp
+                )
         )
     }
 
@@ -127,45 +130,110 @@ object Events {
             val sub = event.tags.getBoolean("subs-only")
 
             consumer(
-                ChannelStateEvent(
-                    event.client, event.middle[0].substring(1),
-                    channelId, loc, emotes, follows, r9k, slow, sub
-                )
+                    ChannelStateEvent(
+                            event.client, event.middle[0].substring(1),
+                            channelId, loc, emotes, follows, r9k, slow, sub
+                    )
             )
         } else {
             consumer(
-                ChannelStateChangedEvent(
-                    event.client, event.middle[0].substring(1),
-                    channelId, event.tags.keys.first(), event.tags.values.firstOrNull()
-                )
+                    ChannelStateChangedEvent(
+                            event.client, event.middle[0].substring(1),
+                            channelId, event.tags.keys.first(), event.tags.values.firstOrNull()
+                    )
             )
         }
     }
 
-    private fun doGlobalUserState(event: IRCEvent, consumer: (IEvent) -> Unit) {}
-    private fun doChannelUserState(event: IRCEvent, consumer: (IEvent) -> Unit) {}
-    private fun doClearChat(event: IRCEvent, consumer: (IEvent) -> Unit) {}
-    private fun doHost(event: IRCEvent, consumer: (IEvent) -> Unit) {}
+    private fun doGlobalUserState(event: IRCEvent, consumer: (IEvent) -> Unit) {
+        consumer(GlobalUserStateEvent(event.client, event.tags.badges, event.tags.color!!, event.tags.userType, event.tags["display-name"]!!))
+    }
+
+    private fun doChannelUserState(event: IRCEvent, consumer: (IEvent) -> Unit) {
+        consumer(ChannelUserStateEvent(
+                event.client,
+                event.tags.badges,
+                event.tags.color!!,
+                event.tags.userType,
+                event.tags["display-name"]!!
+        ))
+    }
+
+    private fun doClearChat(event: IRCEvent, consumer: (IEvent) -> Unit) {
+        val channel = event.middle[0].substring(1)
+        val reason = Optional.ofNullable(event.tags["ban-reason"])
+
+        consumer(if (event.trailing != null) {
+            if (event.tags.containsKey("ban-duration")) {
+                ChannelTimeoutEvent(event.client, channel, event.trailing, Duration.ofSeconds(event.tags.getLong("ban-duration")), reason)
+            } else {
+                ChannelBanEvent(event.client, channel, event.trailing, reason)
+            }
+        } else {
+            ChannelClearChatEvent(event.client, channel)
+        })
+    }
+
+    private fun doHost(event: IRCEvent, consumer: (IEvent) -> Unit) {
+        val (target, views) = if (event.middle.size > 1) {
+            arrayOf(event.middle[1], event.middle[2])
+        } else {
+            arrayOf(null, event.trailing!!.substring(2))
+        }
+
+        consumer(ChannelHostedEvent(event.client, event.middle[0].substring(1), target, views?.toInt() ?: 0))
+    }
+
     private fun doChannelDeletedMessage(event: IRCEvent, consumer: (IEvent) -> Unit) {
         consumer(
-            ChannelMessageDeletedEvent(
-                event.client,
-                UUID.fromString(event.tags["target-msg-id"]),
-                event.middle[0].substring(1),
-                event.tags.getLong("user-id"),
-                event.tags["login"]!!,
-                event.formattedTrailing,
-                event.isActionMessage
-            )
+                ChannelMessageDeletedEvent(
+                        event.client,
+                        UUID.fromString(event.tags["target-msg-id"]),
+                        event.middle[0].substring(1),
+                        event.tags.getLong("user-id"),
+                        event.tags["login"]!!,
+                        event.formattedTrailing,
+                        event.isActionMessage
+                )
         )
     }
 
     // USERNOTICE
-    private fun doSub(event: IRCEvent, consumer: (IEvent) -> Unit) {}
+    private fun doSub(event: IRCEvent, consumer: (IEvent) -> Unit) {
+        consumer(SubscriptionEvent(
+                event.client,
+                event.tags.badges,
+                event.tags.color!!,
+                event.tags.userType,
+                event.tags["display-name"]!!,
+                event.middle[0].substring(1),
+                event.tags["login"]!!,
+                SubscriptionType.from(event.tags["msg-param-sub-plan"]!!),
+                event.tags.getInteger("msg-param-cumulative-months")
+        ))
+    }
 
-    private fun doResub(event: IRCEvent, consumer: (IEvent) -> Unit) {}
+    private fun doResub(event: IRCEvent, consumer: (IEvent) -> Unit) {
+        consumer(SubscriptionEvent(
+                event.client,
+                event.tags.badges,
+                event.tags.color!!,
+                event.tags.userType,
+                event.tags["display-name"]!!,
+                event.middle[0].substring(1),
+                event.tags["login"]!!,
+                SubscriptionType.from(event.tags["msg-param-sub-plan"]!!),
+                event.tags.getInteger("msg-param-cumulative-months"),
+                event.tags.getInteger("msg-param-streak-months"),
+                Optional.ofNullable(event.trailing)
+        ))
+    }
+
+    // TODO ---
     private fun doSubGift(event: IRCEvent, consumer: (IEvent) -> Unit) {}
+
     private fun doAnonSubGift(event: IRCEvent, consumer: (IEvent) -> Unit) {}
     private fun doRaid(event: IRCEvent, consumer: (IEvent) -> Unit) {}
     private fun doRitual(event: IRCEvent, consumer: (IEvent) -> Unit) {}
+    // TODO END ---
 }

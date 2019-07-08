@@ -14,18 +14,18 @@ import io.glitchlib.model.OrdinalList
 
 class AnalyticsService(client: GlitchClient) : AbstractHelixService(client) {
     fun getExtensionAnalytics(credential: Credential, request: ExtensionAnalyticsRequest.() -> Unit = {}) =
-        if (credential.scopeCheck(Scope.ANALYTICS_READ_EXTENSIONS))
-            get<OrdinalList<ExtensionReport>>(
-                "/analytics/extensions",
-                ExtensionAnalyticsRequest(credential).apply(request)()
-            ).bodySingle
-        else scopeIsMissing(Scope.ANALYTICS_READ_EXTENSIONS)
+            if (credential.scopeCheck(Scope.ANALYTICS_READ_EXTENSIONS))
+                get<OrdinalList<ExtensionReport>>(
+                        "/analytics/extensions",
+                        ExtensionAnalyticsRequest(credential).apply(request)()
+                ).bodySingle
+            else scopeIsMissing(Scope.ANALYTICS_READ_EXTENSIONS)
 
     fun getGameAnalytics(credential: Credential, request: GameAnalyticsRequest.() -> Unit = {}) =
-        if (credential.scopeCheck(Scope.ANALYTICS_READ_GAMES))
-            get<CursorList<GameReport>>(
-                "/analytics/extensions",
-                GameAnalyticsRequest(credential).apply(request)()
-            ).bodySingle
-        else scopeIsMissing(Scope.ANALYTICS_READ_GAMES)
+            if (credential.scopeCheck(Scope.ANALYTICS_READ_GAMES))
+                get<CursorList<GameReport>>(
+                        "/analytics/extensions",
+                        GameAnalyticsRequest(credential).apply(request)()
+                ).bodySingle
+            else scopeIsMissing(Scope.ANALYTICS_READ_GAMES)
 }

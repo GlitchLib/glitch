@@ -15,7 +15,7 @@ import java.util.Locale
 class Tags(private val tags: Map<String, String?>) : Map<String, String?> by tags {
 
     private val booleanKeys =
-        arrayOf("turbo", "mod", "subscriber", "emote-only", "r9k", "subs-only", "msg-param-should-share-streak")
+            arrayOf("turbo", "mod", "subscriber", "emote-only", "r9k", "subs-only", "msg-param-should-share-streak")
 
     fun getOrDefault(key: String, defaultValue: String) = get(key) ?: defaultValue
 
@@ -27,24 +27,24 @@ class Tags(private val tags: Map<String, String?>) : Map<String, String?> by tag
 
     val badges
         get() = get("badges")?.split(',')
-            ?.map { Badge(it.split('/')[0], it.split('/')[1].toInt()) }
-            ?.toSet()
-            .orEmpty()
+                ?.map { Badge(it.split('/')[0], it.split('/')[1].toInt()) }
+                ?.toSet()
+                .orEmpty()
 
     val emotes
         get() = get("emotes")?.split('/')
-            ?.map {
-                val index = it.split(';')
-                val pairSet = index[1].split(',').map { it.split('-') }
-                    .map { it.first().toInt() to it.last().toInt() }.toSet()
-                return@map Emote(index[0].toInt(), pairSet)
-            }?.toSet().orEmpty()
+                ?.map {
+                    val index = it.split(';')
+                    val pairSet = index[1].split(',').map { it.split('-') }
+                            .map { it.first().toInt() to it.last().toInt() }.toSet()
+                    return@map Emote(index[0].toInt(), pairSet)
+                }?.toSet().orEmpty()
 
     val emoteSets
         get() = get("emote-sets")?.split(',')
-            ?.map { it.toInt() }
-            ?.toSet()
-            .orEmpty()
+                ?.map { it.toInt() }
+                ?.toSet()
+                .orEmpty()
 
     val sentTimestamp
         get() = if (containsKey("tmi-sent-ts") && get("tmi-sent-ts") != null) Date(get("tmi-sent-ts")!!.toLong()) else Date()

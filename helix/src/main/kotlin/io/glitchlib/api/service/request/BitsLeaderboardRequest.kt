@@ -5,10 +5,10 @@ import io.glitchlib.api.model.Period
 import io.glitchlib.auth.Credential
 import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
-import java.util.Date
+import java.util.*
 
 class BitsLeaderboardRequest internal constructor(
-    private val credential: Credential
+        private val credential: Credential
 ) : AbstractRequest {
     private var limit: Int? = null
     private var period: Period? = null

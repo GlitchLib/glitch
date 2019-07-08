@@ -2,9 +2,17 @@ package io.glitchlib.api.service.request
 
 import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
-import java.util.Locale
+import java.util.*
+import kotlin.collections.Collection
+import kotlin.collections.LinkedHashSet
+import kotlin.collections.isNotEmpty
+import kotlin.collections.map
+import kotlin.collections.plusAssign
+import kotlin.collections.toList
+import kotlin.collections.toSet
+import kotlin.collections.toTypedArray
 
-class StreamRequest internal constructor(): AbstractRequest {
+class StreamRequest internal constructor() : AbstractRequest {
     private var limit: Int? = null
     private var after: String? = null
     private var before: String? = null

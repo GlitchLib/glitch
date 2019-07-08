@@ -15,7 +15,7 @@ import io.glitchlib.api.service.WebhooksService
 import io.glitchlib.model.GlitchObject
 
 class GlitchApi(
-    override val client: GlitchClient
+        override val client: GlitchClient
 ) : GlitchObject {
 
     val analytics

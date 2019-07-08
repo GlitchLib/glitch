@@ -4,8 +4,7 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import io.glitchlib.model.CreatedAt
 import io.glitchlib.model.IDObject
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 /**
  *
@@ -14,19 +13,19 @@ import java.util.Locale
  * @since 1.0
  */
 data class Stream(
-    override val id: Long,
-    val userId: Long,
-    val userName: String,
-    val gameId: Long,
-    val communityIds: Collection<String>,
-    @SerializedName("type")
-    @JsonAdapter(StreamTypeSerializer::class)
-    val isLive: Boolean,
-    val title: String,
-    val viewerCount: Int,
-    val startedAt: Date,
-    val language: Locale,
-    val thumbnailUrl: String
+        override val id: Long,
+        val userId: Long,
+        val userName: String,
+        val gameId: Long,
+        val communityIds: Collection<String>,
+        @SerializedName("type")
+        @JsonAdapter(StreamTypeSerializer::class)
+        val isLive: Boolean,
+        val title: String,
+        val viewerCount: Int,
+        val startedAt: Date,
+        val language: Locale,
+        val thumbnailUrl: String
 ) : IDObject<Long>
 
 /**
@@ -36,10 +35,10 @@ data class Stream(
  * @since 1.0
  */
 data class StreamMarkerData(
-    val userId: Long,
-    @SerializedName("user_name")
-    val username: String,
-    val videos: StreamVod
+        val userId: Long,
+        @SerializedName("user_name")
+        val username: String,
+        val videos: StreamVod
 )
 
 /**
@@ -49,9 +48,9 @@ data class StreamMarkerData(
  * @since 1.0
  */
 data class StreamVod(
-    @SerializedName("video_id")
-    override val id: Long,
-    val markers: Collection<Marker>
+        @SerializedName("video_id")
+        override val id: Long,
+        val markers: Collection<Marker>
 ) : IDObject<Long> {
     /**
      *
@@ -60,12 +59,12 @@ data class StreamVod(
      * @since 1.0
      */
     data class Marker(
-        override val id: String,
-        override val createdAt: Date,
-        val description: String,
-        val positionSeconds: Long,
-        @SerializedName("URL")
-        val url: String
+            override val id: String,
+            override val createdAt: Date,
+            val description: String,
+            val positionSeconds: Long,
+            @SerializedName("URL")
+            val url: String
     ) : IDObject<String>, CreatedAt
 }
 
@@ -76,8 +75,8 @@ data class StreamVod(
  * @since 1.0
  */
 data class MarkerCreate(
-    override val id: Long,
-    override val createdAt: Date,
-    val description: String,
-    val positionSeconds: Long
+        override val id: Long,
+        override val createdAt: Date,
+        val description: String,
+        val positionSeconds: Long
 ) : IDObject<Long>, CreatedAt

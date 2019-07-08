@@ -14,13 +14,13 @@ import io.glitchlib.model.OrdinalList
 class VideosService(client: GlitchClient) : AbstractHelixService(client) {
     fun get(vararg id: Long) = get(id.toSet())
     fun get(id: Collection<Long>) =
-        get<OrdinalList<Video>>("/videos") {
-            addQueryParameters("id", *id.toList().subList(0, 99).map(Long::toString).toTypedArray())
-        }.bodyFlowable
+            get<OrdinalList<Video>>("/videos") {
+                addQueryParameters("id", *id.toList().subList(0, 99).map(Long::toString).toTypedArray())
+            }.bodyFlowable
 
     fun get(game: Game, request: VideoRequest.() -> Unit = {}) =
-        get<CursorList<Video>>("/videos", VideoRequest(game).apply(request)()).bodySingle
+            get<CursorList<Video>>("/videos", VideoRequest(game).apply(request)()).bodySingle
 
     fun get(user: User, request: VideoRequest.() -> Unit = {}) =
-        get<CursorList<Video>>("/videos", VideoRequest(user).apply(request)()).bodySingle
+            get<CursorList<Video>>("/videos", VideoRequest(user).apply(request)()).bodySingle
 }

@@ -17,8 +17,8 @@ import io.reactivex.rxkotlin.cast
 class TeamService(client: GlitchClient) : AbstractKrakenService(client) {
 
     fun getAllTeams(request: TeamsRequest.() -> Unit = {}): Flowable<TeamItem> =
-        get<OrdinalList<TeamItemImpl>>("/teams", TeamsRequest().apply(request)()).bodyFlowable.cast()
+            get<OrdinalList<TeamItemImpl>>("/teams", TeamsRequest().apply(request)()).bodyFlowable.cast()
 
     fun getTeam(name: String): Single<Team> =
-        get<TeamImpl>("/teams/$name").bodySingle.cast()
+            get<TeamImpl>("/teams/$name").bodySingle.cast()
 }

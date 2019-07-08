@@ -5,8 +5,7 @@ import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
 import io.glitchlib.model.VideoType
 import io.glitchlib.v5.model.VideoSort
-import java.util.Arrays
-import java.util.Locale
+import java.util.*
 
 // Scope.USER_READ
 class FollowedVideosRequest internal constructor(private val credential: Credential) : AbstractRequest {

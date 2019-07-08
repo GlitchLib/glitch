@@ -12,9 +12,9 @@ import io.glitchlib.pubsub.model.json.SubscriptionMessage
  * @since 1.0
  */
 data class SubscriptionEvent(
-    override val client: GlitchClient,
-    override val topic: Topic,
-    override val message: SubscriptionMessage
+        override val client: GlitchClient,
+        override val topic: Topic,
+        override val message: SubscriptionMessage
 ) : PubSubMessageEvent<SubscriptionMessage>
 
 /**
@@ -24,7 +24,7 @@ data class SubscriptionEvent(
  * @since 1.0
  */
 data class SubGiftEvent(
-    override val client: GlitchClient,
-    override val topic: Topic,
-    override val message: GiftSubscriptionMessage
+        override val client: GlitchClient,
+        override val topic: Topic,
+        override val message: GiftSubscriptionMessage
 ) : PubSubMessageEvent<GiftSubscriptionMessage>

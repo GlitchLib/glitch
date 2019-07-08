@@ -9,11 +9,11 @@ import com.google.gson.annotations.SerializedName
  * @since 1.0
  */
 data class ExtensionReport(
-    val extensionId: String,
-    @SerializedName("URL")
-    val url: String,
-    val type: String,
-    val dateRange: DateRange
+        val extensionId: String,
+        @SerializedName("URL")
+        val url: String,
+        val type: String,
+        val dateRange: DateRange
 )
 
 /**
@@ -23,9 +23,9 @@ data class ExtensionReport(
  * @since 1.0
  */
 data class GameReport(
-    val gameId: Long,
-    @SerializedName("URL")
-    val url: String,
-    val type: String,
-    val dateRange: DateRange
+        val gameId: Long,
+        @SerializedName("URL")
+        val url: String,
+        val type: String,
+        val dateRange: DateRange
 )

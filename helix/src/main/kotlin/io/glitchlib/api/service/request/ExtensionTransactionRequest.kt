@@ -5,7 +5,7 @@ import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
 
 class ExtensionTransactionRequest internal constructor(
-    private val credential: AppCredential
+        private val credential: AppCredential
 ) : AbstractRequest {
     private var limit: Int? = null
     private var after: String? = null

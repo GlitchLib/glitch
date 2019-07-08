@@ -17,34 +17,34 @@ class IrcFormatter(private val client: GlitchClient) : (String) -> IEvent {
 
     private fun parse(raw: String): IEvent {
         var pairLine = raw.split(" :", limit = 3)
-            .mapIndexed { i, string -> if (i == 0 && string.startsWith("@")) string else ":$string" }
-            .let {
-                var (first, second, third) = it
-                if (!first.startsWith("@")) {
-                    third = second
-                    second = first
-                }
+                .mapIndexed { i, string -> if (i == 0 && string.startsWith("@")) string else ":$string" }
+                .let {
+                    var (first, second, third) = it
+                    if (!first.startsWith("@")) {
+                        third = second
+                        second = first
+                    }
 
-                return@let Triple(
-                    if (first == second) null else first,
-                    second,
-                    if (third == ":") null else third
-                )
-            }
-
-        val tags = Tags(
-            pairLine.first?.substring(1)?.split(';')?.map {
-                it.split('=', limit = 2).let {
-                    Pair(
-                        it.first(), it.last()
-                            .replace("\\:", ";")
-                            .replace("\\s", " ")
-                            .replace("\\\\", "\\")
-                            .replace("\\r", "\r")
-                            .replace("\\n", "\n")
+                    return@let Triple(
+                            if (first == second) null else first,
+                            second,
+                            if (third == ":") null else third
                     )
                 }
-            }?.toMap() ?: emptyMap()
+
+        val tags = Tags(
+                pairLine.first?.substring(1)?.split(';')?.map {
+                    it.split('=', limit = 2).let {
+                        Pair(
+                                it.first(), it.last()
+                                .replace("\\:", ";")
+                                .replace("\\s", " ")
+                                .replace("\\\\", "\\")
+                                .replace("\\r", "\r")
+                                .replace("\\n", "\n")
+                        )
+                    }
+                }?.toMap() ?: emptyMap()
         )
 
         val trailing = pairLine.third

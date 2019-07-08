@@ -11,9 +11,9 @@ import io.glitchlib.tmi.irc.IrcFormatter
 import io.reactivex.Flowable
 
 class MessageInterface(client: GlitchClient) : GlitchSocketObject(
-    client as GlitchClientImpl,
-    "ws${if (client.settings.isConnectionSecure) "s" else ""}://irc-ws.chat.twitch.tv",
-    IrcFormatter(client)
+        client as GlitchClientImpl,
+        "ws${if (client.settings.isConnectionSecure) "s" else ""}://irc-ws.chat.twitch.tv",
+        IrcFormatter(client)
 ) {
     init {
         if (client.settings.botUser == null) {

@@ -3,7 +3,7 @@ package io.glitchlib.pubsub.model.json
 import com.google.gson.annotations.JsonAdapter
 import io.glitchlib.pubsub.model.adapters.ServerTimeAdapter
 import io.glitchlib.pubsub.model.adapters.VideoPlaybackTypeAdapter
-import java.util.Date
+import java.util.*
 
 /**
  *
@@ -12,10 +12,10 @@ import java.util.Date
  * @since 1.0
  */
 data class VideoPlayback(
-    @JsonAdapter(VideoPlaybackTypeAdapter::class)
-    val type: Type,
-    @JsonAdapter(ServerTimeAdapter::class)
-    val serverTime: Date
+        @JsonAdapter(VideoPlaybackTypeAdapter::class)
+        val type: Type,
+        @JsonAdapter(ServerTimeAdapter::class)
+        val serverTime: Date
 ) {
 
     /**
@@ -38,9 +38,9 @@ data class VideoPlayback(
  * @since 1.0
  */
 data class StreamUp(
-    @JsonAdapter(ServerTimeAdapter::class)
-    val serverTime: Date,
-    val delay: Int
+        @JsonAdapter(ServerTimeAdapter::class)
+        val serverTime: Date,
+        val delay: Int
 )
 
 /**
@@ -50,9 +50,9 @@ data class StreamUp(
  * @since 1.0
  */
 data class ViewCount(
-    @JsonAdapter(ServerTimeAdapter::class)
-    val serverTime: Date,
-    val viewers: Long
+        @JsonAdapter(ServerTimeAdapter::class)
+        val serverTime: Date,
+        val viewers: Long
 )
 
 /**
@@ -62,6 +62,6 @@ data class ViewCount(
  * @since 1.0
  */
 data class StreamDown(
-    @JsonAdapter(ServerTimeAdapter::class)
-    val serverTime: Date
+        @JsonAdapter(ServerTimeAdapter::class)
+        val serverTime: Date
 )

@@ -11,12 +11,12 @@ import io.glitchlib.model.OrdinalList
  * @since 1.0
  */
 data class Ingest(
-    @SerializedName("_id")
-    override val id: Int,
-    val availability: Double,
-    val isDefault: Boolean,
-    val name: String,
-    val urlTemplate: String
+        @SerializedName("_id")
+        override val id: Int,
+        val availability: Double,
+        val isDefault: Boolean,
+        val name: String,
+        val urlTemplate: String
 ) : IDObject<Int> {
     fun buildUrl(streamKey: String): String {
         return urlTemplate.replace("{stream_key}", streamKey)
@@ -30,7 +30,7 @@ data class Ingest(
  * @since 1.0
  */
 data class IngestCollection(
-    override val data: List<Ingest>
+        override val data: List<Ingest>
 ) : OrdinalList<Ingest> {
     override val size: Int
         get() = data.size

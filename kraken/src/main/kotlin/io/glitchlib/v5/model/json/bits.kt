@@ -9,8 +9,8 @@ import io.glitchlib.model.IDObject
  * @since 1.0
  */
 data class Cheermote(
-    val prefix: String,
-    val tiers: List<Tier>
+        val prefix: String,
+        val tiers: List<Tier>
 ) {
 
     /**
@@ -20,12 +20,12 @@ data class Cheermote(
      * @since 1.0
      */
     data class Tier(
-        override val id: Long,
-        val color: String,
-        val images: Map<Background, Map<Type, Map<Size, String>>>
+            override val id: Long,
+            val color: String,
+            val images: Map<Background, Map<Type, Map<Size, String>>>
     ) : IDObject<Long> {
         fun getImage(background: Background, type: Type, size: Size) =
-            images.getValue(background).getValue(type).getValue(size)
+                images.getValue(background).getValue(type).getValue(size)
     }
 
     /**
@@ -67,7 +67,7 @@ data class Cheermote(
         companion object {
             fun of(size: Double): Size {
                 return values().firstOrNull { it.value == size }
-                    ?: throw NullPointerException("Cannot obtain requested size: $size")
+                        ?: throw NullPointerException("Cannot obtain requested size: $size")
             }
         }
     }
