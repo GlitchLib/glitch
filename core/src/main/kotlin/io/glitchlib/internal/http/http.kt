@@ -10,10 +10,12 @@ import io.reactivex.Single
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 import java.io.File
@@ -53,43 +55,42 @@ class HttpClient(
 
 
     inline fun <reified T> exchange(request: HttpRequest): Single<HttpResponse<T>> =
-        httpClient.newCall(request.toRequest()).toResponse()
+        httpClient.newCall(request.toRequest()).toResponse(request)
 
     @PublishedApi
-    internal inline fun <reified T> Call.toResponse(): Single<HttpResponse<T>> =
-        Single.create<Response> {
+    internal inline fun <reified T> Call.toResponse(request: HttpRequest): Single<HttpResponse<T>> =
+        Single.create {
             enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     it.onError(e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    it.onSuccess(response)
+                    HttpResponse<T>(
+                        request,
+                        response.toStatus(),
+                        response.headers.toImmutableMultimap(),
+                        Maybe.unsafeCreate {
+                            if (response.code in 400..599) {
+                                it.onError(
+                                    GlitchHttpException(
+                                        URI.create(request.url).toURL(),
+                                        response.body.mapTo<ErrorResponse>()!!
+                                    )
+                                )
+                            } else {
+                                it.onSuccess(response.body.mapTo<T>())
+                            }
+                        }
+                    )
                 }
-
             })
-        }.toResponse()
-
-    @PublishedApi
-    internal inline fun <reified T> Single<Response>.toResponse(): Single<HttpResponse<T>> = map {
-        val err =
-            if (it.code() in 400..599) gson.fromJson(it.body()!!.charStream(), ErrorResponse::class.java) else null
-        return@map HttpResponse<T>(
-            err?.toStatus() ?: it.toStatus(),
-            it.headers().toImmutableMultimap(),
-            if (err != null) Maybe.error(
-                GlitchHttpException(
-                    it.request().url().url(),
-                    err
-                )
-            ) else it.body().toMaybe<T>()
-        )
-    }
+        }
 
     @PublishedApi
     internal fun HttpRequest.toRequest() = Request.Builder().apply {
         url(checkAndUseUrls(url, queryParams))
-        method(method.name, body.toRequestBody())
+        method(method.name, this@toRequest.body.asRequestBody)
         headers.toList().forEach {
             addHeader(it.first, it.second)
         }
@@ -111,7 +112,7 @@ class HttpClient(
         }
 
     @PublishedApi
-    internal fun Response.toStatus() = HttpStatus(code(), message())
+    internal fun Response.toStatus() = HttpStatus(code, message)
 
     @PublishedApi
     internal fun Headers.toImmutableMultimap() = Multimaps.unmodifiableListMultimap(
@@ -119,9 +120,8 @@ class HttpClient(
     )
 
     @PublishedApi
-    internal inline fun <reified T> ResponseBody?.toMaybe() = if (this != null) Maybe.create<T> {
-        it.onSuccess(gson.fromJson(charStream(), T::class.java))
-    } else Maybe.empty()
+    internal inline fun <reified T> ResponseBody?.mapTo(): T? =
+        this@mapTo?.charStream()?.let { gson.fromJson(it, T::class.java) }
 
     private fun Any?.toJson(): String? = when (this) {
         null, "" -> null
@@ -129,13 +129,14 @@ class HttpClient(
         else -> gson.toJson(this)
     }
 
-    private fun Any?.toRequestBody(): RequestBody? = when (this) {
-        null -> null
-        is String -> RequestBody.create(MediaType.get("application/json"), this)
-        is RequestBody -> this
-        is File -> RequestBody.create(MediaType.get(this.mimeType), this)
-        else -> RequestBody.create(MediaType.get("application/json"), gson.toJson(this))
-    }
+    private val Any?.asRequestBody: RequestBody?
+        get() = when (this) {
+            null -> null
+            is String -> toRequestBody("application/json".toMediaType())
+            is RequestBody -> this
+            is File -> asRequestBody(this.mimeType.toMediaType())
+            else -> toJson().asRequestBody
+        }
 
     private val File.mimeType: String
         get() = URLConnection.getFileNameMap().getContentTypeFor(this.toURI().toString())
@@ -146,6 +147,7 @@ enum class HttpMethod {
 }
 
 class HttpRequest(
+    @PublishedApi
     internal val url: String,
     internal val method: HttpMethod = HttpMethod.GET
 ) {
@@ -168,12 +170,15 @@ class HttpRequest(
 }
 
 
-data class HttpResponse<T>
+class HttpResponse<T>
 @PublishedApi internal constructor(
+    protected val request: HttpRequest,
     val status: HttpStatus,
     val headers: Multimap<String, String>,
     val body: Maybe<T>
-)
+) {
+
+}
 
 data class HttpStatus internal constructor(
     val code: Int,

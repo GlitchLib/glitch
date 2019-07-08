@@ -13,7 +13,7 @@ val <T> Single<HttpResponse<T>>.body: Maybe<T>
     get() = flatMapMaybe { it.body }
 
 val <T, C : OrdinalList<T>> Single<HttpResponse<C>>.bodyFlowable: Flowable<T>
-    get() = body.flattenAsFlowable { it.data }
+    get() = bodySingle.flattenAsFlowable { it.data }
 
 val <T, C : OrdinalList<T>> Single<HttpResponse<C>>.bodySingleFirst: Single<T>
     get() = bodySingle.map { it.data[0] }
