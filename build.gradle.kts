@@ -65,7 +65,7 @@ subprojects {
         }
     }
 
-    sourceSets.getByName("main").runtimeClasspath
+    base.archivesBaseName = "glitch-$name"
 
     publishing {
         publications {
