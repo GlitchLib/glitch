@@ -1,7 +1,3 @@
-plugins {
-    `dependency-management`
-}
-
 tasks {
     javadoc.get().enabled = false
     dokka.get().enabled = false
@@ -11,10 +7,22 @@ tasks {
     test.get().enabled = false
 }
 
-dependencyManagement {
-    dependencies {
-        moduleList.map { project(":$it") }.forEach {
-            dependency("${it.group}:${it.base.archivesBaseName}:${it.version}")
+publishing {
+    publications {
+        withType<MavenPublication> {
+            pom {
+                withXml {
+                    asNode().appendNode("dependencyManagement").appendNode("dependencies").apply {
+                        moduleList.map { project(":$it") }.forEach {
+                            appendNode("dependency").apply {
+                                appendNode("groupId", "${it.group}")
+                                appendNode("artifactId", it.base.archivesBaseName)
+                                appendNode("version", "${it.version}")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

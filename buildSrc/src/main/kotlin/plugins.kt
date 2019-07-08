@@ -22,6 +22,3 @@ val PluginDependenciesSpec.`git-properties`
 
 val PluginDependenciesSpec.dokka
     get() = id("org.jetbrains.dokka") version Versions.dokka
-
-val PluginDependenciesSpec.`dependency-management`
-    get() = id("io.spring.dependency-management") version "1.0.6.RELEASE"
