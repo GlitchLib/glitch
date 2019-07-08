@@ -1,5 +1,5 @@
 object GlitchProject {
-    const val webUrl = "https://glitchlib.github.io" // TODO: glitchlib.io
+    const val webUrl = "https://glitchlib.io"
     const val repoSlug = "GlitchLib/Glitch"
     val githubUrl = "https://github.com/$repoSlug"
     val ciUrl = "https://travis-ci.com/$repoSlug"
