@@ -1,0 +1,87 @@
+site_name: Glitch
+repo_name: GlitchLib/Glitch
+repo_url: https://github.com/GlitchLib/glitch
+site_description: "Reactive API Wrapper for Twitch in Kotlin/JVM"
+site_author: Damian Staszewski
+remote_branch: gh-pages
+site_url: https://glitchlib.io/
+
+theme:
+  feature:
+    tabs: true
+  name: 'material'
+  favicon: 'assets/favicon.ico'
+  logo: 'assets/images/logo/white.svg'
+  palette:
+    primary: deep-purple
+    accent: purple
+
+extra_javascript:
+#  - https://kit.fontawesome.com/0d8cf63f77.js
+
+extra_css:
+  - assets/css/style.css
+
+plugins:
+  - macros
+
+markdown_extensions:
+  - admonition
+  - smarty
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.extrarawhtml
+  - tables
+  - markdown_fenced_code_tabs:
+      single_block_as_tab: true
+      template: default
+
+nav:
+  - 'Overview': index.md
+  - 'Getting Started':
+      - 'Welcome': getting-started.md
+      - 'Build Setup':
+          - 'Maven': getting-started/build-setup/maven.md
+          - 'Gradle': getting-started/build-setup/gradle.md
+      - 'Glossary': getting-started/glossary.md
+  - 'Getting Client ID and Secret': getting-client-id-and-secret.md
+  - 'Basic Tutorials':
+      - 'Client Initialization': basic-tutorials/client.md
+      - 'API (Kraken/Helix)': basic-tutorials/api.md
+      - 'Chat (TMI)': basic-tutorials/chat.md
+      - 'PubSub': basic-tutorials/pubsub.md
+      - 'WebSub': basic-tutorials/websub.md
+  - 'FAQ': FAQ.md
+  - 'Miscellaneous':
+      - 'Rate Limits': miscellaneous/rate-limits.md
+      - 'Reactive Streams': miscellaneous/reactive-streams.md
+      - 'Android Compatibility': miscellaneous/android-comaptibility.md
+      - 'Logging': miscellaneous/logging.md
+      - 'Bot Account': miscellaneous/bot-account.md
+  - 'Guidelines':
+      - 'Community Guidelines': guidelines/community.md
+      - 'IDE Setup':
+          - 'IntelliJ': guidelines/ide-setup/intellij.md
+          - 'Eclipse': guidelines/ide-setup/eclipse.md
+          - 'Netbeans': guidelines/ide-setup/netbeans.md
+  - 'API': /api
+  - 'Releases': https://github.com/GlitchLib/glitch/releases
+  - 'Discord': https://discord.gg/nJJ2fDM
+
+extra:
+  social:
+    - type: 'comment'
+      link: 'https://discord.gg/nJJ2fDM'
+    - type: 'github'
+      link: 'https://github.com/GlitchLib'

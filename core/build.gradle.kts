@@ -1,33 +1,24 @@
-import com.gorylenko.GitPropertiesPluginExtension
-
 plugins {
-    id("com.gorylenko.gradle-git-properties")
+    `git-properties`
 }
 
 dependencies {
-    compile("org.apache.commons:commons-collections4:4.3")
-
-    compile("com.squareup.okhttp3:okhttp:3.13.1")
-    compile("com.squareup.okhttp3:logging-interceptor:3.13.1")
-
-    compile("com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1") // GSON java.time serialization
-    compile("com.google.code.gson:gson:2.8.5")
-    compile("com.google.code.findbugs:jsr305:3.0.2")
-
-    compile("io.projectreactor:reactor-core")
-
-    testCompile("com.squareup.okhttp3:mockwebserver:3.13.1")
+    core()
+    `test-base`()
 }
-extensions.getByType<GitPropertiesPluginExtension>().apply {
+
+gitProperties {
+    gitPropertiesDir = "$buildDir/resources/main/io/glitchlib"
     keys = listOf(
-            "git.branch",
-            "git.commit.id",
-            "git.commit.id.abbrev",
-            "git.commit.id.describe"
+        "git.branch",
+        "git.commit.id",
+        "git.commit.id.abbrev",
+        "git.commit.id.describe"
     )
     dateFormatTimeZone = "GMT"
     customProperty("application.name", rootProject.name)
     customProperty("application.version", rootProject.version)
-    customProperty("application.url", ext.properties["project_url"])
+    customProperty("application.url", ext.properties["url.project"])
+    customProperty("application.git_url", "${ext.properties["url.github"]}.git")
     customProperty("application.description", rootProject.description)
 }

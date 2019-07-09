@@ -28,3 +28,7 @@ build/
 
 # Misc
 logs/
+*.log*
+local.properties
+docs/api/
+site/

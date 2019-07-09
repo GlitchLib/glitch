@@ -2,6 +2,7 @@ language: java
 jdk:
   - openjdk8
   - openjdk11
+  - openjdk12
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -14,12 +15,7 @@ cache:
 
 install: chmod +x ./gradlew
 
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-script: ./gradlew test
-after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+script: ./gradlew test -x javadoc
 
 jobs:
   include:
@@ -48,7 +44,7 @@ jobs:
     - stage: deploy
       name: "Create Release"
       jdk: openjdk8
-      script: ./gradlew publishRelease
+      script: ./gradlew release
       if: tag IS present
       deploy:
         provider: releases

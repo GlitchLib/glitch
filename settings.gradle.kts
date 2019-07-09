@@ -1,11 +1,8 @@
 rootProject.name = "glitch"
 
-include(
-        "auth:ktor", "auth:spring",
-        "auth:play", "auth:vertx",
-        "auth:akka", "auth:http4k"
-)
+// TODO Inject those libraries
+//include "auth:ktor", "auth:spring", "auth:play", "auth:vertx", "auth:akka", "auth:http4k"
 
-include("core", "chat", "kraken", "helix", "pubsub", "webhook")
+include(*moduleList)
 
 include("all", "bom")
