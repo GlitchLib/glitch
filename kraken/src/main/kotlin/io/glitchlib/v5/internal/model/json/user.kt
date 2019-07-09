@@ -1,6 +1,8 @@
 package io.glitchlib.v5.internal.model.json
 
+import com.google.gson.annotations.JsonAdapter
 import io.glitchlib.model.UserType
+import io.glitchlib.model.UserTypeAdapter
 import io.glitchlib.v5.model.json.AuthUser
 import io.glitchlib.v5.model.json.User
 import java.util.*
@@ -16,6 +18,7 @@ data class UserImpl(
         override val displayName: String,
         override val logo: String,
         override val username: String,
+        @JsonAdapter(UserTypeAdapter::class)
         override val userType: UserType,
         override val id: Long,
         override val createdAt: Date,
@@ -33,6 +36,7 @@ data class AuthUserImpl(
         override val displayName: String,
         override val logo: String,
         override val username: String,
+        @JsonAdapter(UserTypeAdapter::class)
         override val userType: UserType,
         override val id: Long,
         override val createdAt: Date,

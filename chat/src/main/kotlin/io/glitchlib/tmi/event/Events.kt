@@ -162,16 +162,15 @@ object Events {
     private fun doClearChat(event: IRCEvent, consumer: (IEvent) -> Unit) {
         val channel = event.middle[0].substring(1)
         val reason = Optional.ofNullable(event.tags["ban-reason"])
-
-        consumer(if (event.trailing != null) {
+        if (event.trailing != null) {
             if (event.tags.containsKey("ban-duration")) {
-                ChannelTimeoutEvent(event.client, channel, event.trailing, Duration.ofSeconds(event.tags.getLong("ban-duration")), reason)
+                consumer(ChannelTimeoutEvent(event.client, channel, event.trailing, Duration.ofSeconds(event.tags.getLong("ban-duration")), reason))
             } else {
-                ChannelBanEvent(event.client, channel, event.trailing, reason)
+                consumer(ChannelBanEvent(event.client, channel, event.trailing, reason))
             }
         } else {
-            ChannelClearChatEvent(event.client, channel)
-        })
+            consumer(ChannelClearChatEvent(event.client, channel))
+        }
     }
 
     private fun doHost(event: IRCEvent, consumer: (IEvent) -> Unit) {

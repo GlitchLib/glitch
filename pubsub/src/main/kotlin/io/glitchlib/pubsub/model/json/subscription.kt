@@ -1,7 +1,9 @@
 package io.glitchlib.pubsub.model.json
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import io.glitchlib.model.SubscriptionType
+import io.glitchlib.model.SubscriptionTypeAdapter
 import io.glitchlib.pubsub.model.SubscriptionContext
 import java.util.*
 
@@ -14,6 +16,7 @@ data class GiftSubscriptionMessage(
         override val channelId: Long,
         override val time: Date,
         @SerializedName("sub_plan")
+        @JsonAdapter(SubscriptionTypeAdapter::class)
         override val subscriptionType: SubscriptionType,
         @SerializedName("sub_plan_name")
         override val subscriptionName: String?,
@@ -35,6 +38,7 @@ data class SubscriptionMessage(
         override val channelId: Long,
         override val time: Date,
         @SerializedName("sub_plan")
+        @JsonAdapter(SubscriptionTypeAdapter::class)
         override val subscriptionType: SubscriptionType,
         @SerializedName("sub_plan_name")
         override val subscriptionName: String?,

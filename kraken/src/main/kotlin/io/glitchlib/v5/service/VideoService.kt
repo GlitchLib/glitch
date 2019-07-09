@@ -21,6 +21,9 @@ import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import io.reactivex.rxkotlin.zipWith
 import java.io.File
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import java.net.URLConnection
 
 class VideoService(client: GlitchClient) : AbstractKrakenService(client) {
 
@@ -42,19 +45,19 @@ class VideoService(client: GlitchClient) : AbstractKrakenService(client) {
      *
      * [file] is splitted into 5MB parts for creating a uploading [progress].
      * The [file] must be met requirements for successfully upload to the specific [channel][channelId]:
-     * * Must have AAC audio coded and H264 compression video codec
-     * * Bitrate must be up to 10Mb/s
-     * * Video size must be up to 1080p
-     * * Max frame-rate for uploaded video 60fps
+     * - Must have AAC audio coded and H264 compression video codec
+     * - Bitrate must be up to 10Mb/s
+     * - Video size must be up to 1080p
+     * - Max frame-rate for uploaded video 60fps
      *
-     * I do recommend use some 3rd party applications to manage those requirements above mentioned
+     * We do recommend use some 3rd party applications to manage those requirements above mentioned
      *
      * @param credential [Credential] with required scope: [Scope.CHANNEL_EDITOR] and access to specific [channel][channelId].
      * @param channelId Channel ID. Channel must be **Partner, Affiliate or Developer** to uploading video
      * @param title Video title - max 100 characters. **Will be trimmed.**
      * @param file Existed video file with supported extensions `*.mp4`, `*.avi`, `*.mov`, `*.flv`. Maximum file size is **10GB**
      * @param request additional parameters to this request
-     * @param progress your own custom upload progress
+     * @param progress your own custom upload progress. First parameter is a current uploaded part. Second parameter is all parameters
      * @return a completely successful uploaded video
      */
     fun uploadVideo(
@@ -63,7 +66,7 @@ class VideoService(client: GlitchClient) : AbstractKrakenService(client) {
             title: String,
             file: File,
             request: VideoUploadRequest.() -> Unit = {},
-            progress: (Int, Int) -> Unit = { actual, all -> }
+            progress: (Int, Int) -> Unit = { _, _ -> }
     ): Single<Video> =
             if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
                 Single.create<File> { file.check(it) }.zipWith(
@@ -82,8 +85,10 @@ class VideoService(client: GlitchClient) : AbstractKrakenService(client) {
                         val allParts = m.first.size
                         m.first.forEachIndexed { i, b ->
                             (client as GlitchClientImpl).http.put<Unit>(m.second.url) {
+                                addHeaders("Content-Length", file.readBytes().size.toString())
                                 addQueryParameters("part", (i + 1).toString())
                                 addQueryParameters("upload_token", m.second.token)
+                                setBody(b.toRequestBody(URLConnection.getFileNameMap().getContentTypeFor(file.toURI().toString()).toMediaType()))
                             }.completed.subscribe({
                                 progress(i, allParts)
                                 if (i == m.first.size - 1)

@@ -1,9 +1,11 @@
 package io.glitchlib.api.model
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import io.glitchlib.model.BroadcasterType
 import io.glitchlib.model.IDObject
 import io.glitchlib.model.UserType
+import io.glitchlib.model.UserTypeAdapter
 import java.util.*
 
 /**
@@ -21,6 +23,7 @@ data class User(
         val username: String,
         val offlineImageUrl: String,
         val profileImageUrl: String,
+        @JsonAdapter(UserTypeAdapter::class)
         val type: UserType,
         val viewCount: Long,
         val email: String?

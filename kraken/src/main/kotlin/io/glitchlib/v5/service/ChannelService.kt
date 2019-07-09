@@ -29,6 +29,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.cast
 import java.util.*
+import kotlin.math.abs
 
 class ChannelService internal constructor(client: GlitchClient) : AbstractKrakenService(client) {
     fun getChannel(credential: Credential) = if (credential.scopeCheck(Scope.CHANNEL_READ))
@@ -90,7 +91,7 @@ class ChannelService internal constructor(client: GlitchClient) : AbstractKraken
     fun startChannelCommercial(id: Long, credential: Credential, duration: Int) =
             if (credential.scopeCheck(Scope.CHANNEL_COMMERCIAL))
                 post<CommercialData>("/channels/$id/commercial") {
-                    setBody(mapOf("length" to (COMMERCIAL_DURATION.minBy { Math.abs(it - duration) } ?: 30).toString()))
+                    setBody(mapOf("length" to (COMMERCIAL_DURATION.minBy { abs(it - duration) } ?: 30).toString()))
                     addHeaders("Authorization", "OAuth ${credential.accessToken}")
                 }.bodySingle
             else scopeIsMissing<CommercialData>(Scope.CHANNEL_COMMERCIAL)
@@ -119,12 +120,12 @@ class ChannelService internal constructor(client: GlitchClient) : AbstractKraken
                 }.completed
             else scopeIsMissing<Unit>(Scope.CHANNEL_EDITOR).ignoreElement()
 
-    fun clearChannelCommunities(id: Long, credential: Credential, communityIds: Collection<UUID>) =
-            if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
-                delete<Unit>("/channels/$id/communities") {
-                    addHeaders("Authorization", "OAuth ${credential.accessToken}")
-                }.completed
-            else scopeIsMissing<Unit>(Scope.CHANNEL_EDITOR).ignoreElement()
+    fun clearChannelCommunities(id: Long, credential: Credential) =
+        if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
+            delete<Unit>("/channels/$id/communities") {
+                addHeaders("Authorization", "OAuth ${credential.accessToken}")
+            }.completed
+        else scopeIsMissing<Unit>(Scope.CHANNEL_EDITOR).ignoreElement()
 
     fun getCollections(id: Long, request: CollectionRequest.() -> Unit = {}) =
             get<CursorList<io.glitchlib.v5.model.json.Collection>>(

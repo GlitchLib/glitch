@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
  * @version %I%, %G%
  * @since 1.0
  */
-class ImplementationSerializerAdapter<T> : JsonSerializer<T>, JsonDeserializer<T> {
+class ImplementationSerializerAdapter<T : Any> : JsonSerializer<T>, JsonDeserializer<T> {
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, type: Type, context: JsonDeserializationContext): T {
         val realType = getTypedArgument(type)
@@ -28,19 +28,16 @@ class ImplementationSerializerAdapter<T> : JsonSerializer<T>, JsonDeserializer<T
             if (serializedClass.java.isAssignableFrom(realType)) {
                 return context.deserialize(json, serializedClass.java)
             }
-
         }
-
-        throw JsonParseException("Cannot deserialize interfaced implementation of " + realType.simpleName)
+        return context.deserialize(json, type)
     }
 
     override fun serialize(src: T, type: Type, context: JsonSerializationContext): JsonElement {
         return context.serialize(src, type)
     }
 
-    private fun getTypedArgument(type: Type): Class<T> {
-        return type as Class<T>
-    }
+    @Suppress("UNCHECKED_CAST")
+    private fun getTypedArgument(type: Type): Class<T> = type as Class<T>
 }
 
 /**

@@ -16,6 +16,7 @@ import io.glitchlib.internal.http.bodyFlowable
 import io.glitchlib.internal.http.bodySingle
 import io.glitchlib.model.ChatRoom
 import io.glitchlib.model.GlitchObject
+import io.glitchlib.model.ImplementationSerializerAdapter
 import io.glitchlib.model.OrdinalList
 import io.glitchlib.pubsub.Topic
 import io.glitchlib.pubsub.TopicInitializer
@@ -46,6 +47,7 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Ser
         registerTypeAdapter(GlitchClient::class.java, object : JsonDeserializer<GlitchClient> {
             override fun deserialize(s1: JsonElement, s2: Type, s3: JsonDeserializationContext) = this@GlitchClientImpl
         })
+        registerTypeAdapter(Any::class.java, ImplementationSerializerAdapter<Any>())
     }.create())
 
     private val _auth = AuthorizeImpl(this, builder.storage)

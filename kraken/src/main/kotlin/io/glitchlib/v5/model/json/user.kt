@@ -7,7 +7,7 @@ import io.glitchlib.model.SerializeTo
 import io.glitchlib.model.UserType
 import io.glitchlib.v5.internal.model.json.AuthUserImpl
 import io.glitchlib.v5.internal.model.json.UserImpl
-import java.util.*
+import java.util.Date
 
 /**
  *
@@ -55,9 +55,9 @@ interface AuthUser : User {
  * @since 1.0
  */
 data class UserFollow(
-        @SerializedName("channel")
-        override val data: Channel,
-        @SerializedName("notifications")
-        override val hasNotifications: Boolean,
-        override val createdAt: Date
+    @SerializedName("channel")
+    override val data: Channel,
+    @SerializedName("notifications")
+    override val hasNotifications: Boolean,
+    override val createdAt: Date
 ) : Follow<Channel>
