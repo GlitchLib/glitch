@@ -3,6 +3,7 @@ package io.glitchlib.internal
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import io.glitchlib.GlitchClient
 import io.glitchlib.GlitchUrl
 import io.glitchlib.IConfig
@@ -12,20 +13,21 @@ import io.glitchlib.auth.IAuthorize
 import io.glitchlib.auth.Scope
 import io.glitchlib.internal.auth.AuthorizeImpl
 import io.glitchlib.internal.http.HttpClient
+import io.glitchlib.internal.http.body
 import io.glitchlib.internal.http.bodyFlowable
 import io.glitchlib.internal.http.bodySingle
 import io.glitchlib.model.ChatRoom
-import io.glitchlib.model.GlitchObject
 import io.glitchlib.model.ImplementationSerializerAdapter
 import io.glitchlib.model.OrdinalList
 import io.glitchlib.pubsub.Topic
 import io.glitchlib.pubsub.TopicInitializer
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import java.lang.reflect.Type
 
-class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : ServiceMediator(), GlitchClient {
+class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : GlitchClient {
 
     override var settings: ConfigImpl = ConfigImpl(
         builder.clientId,
@@ -71,8 +73,6 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Ser
 
     override fun authorize(): IAuthorize = _auth
 
-    fun registerService(service: GlitchObject) = super.register(service)
-
     override fun getChatUser(id: Long): Single<GlobalUserState> =
         http.get<GlobalUserState>(GlitchUrl.KRAKEN.compose("/users/$id/chat")) {
             addHeaders("Accept", "application/vnd.twitchtv.v5+json")
@@ -80,6 +80,17 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Ser
 
     override fun getChatRooms(id: Long) =
         http.get<OrdinalList<ChatRoom>>(GlitchUrl.KRAKEN.compose("/chat/$id/rooms")).bodyFlowable
+
+    override fun getUserId(login: String): Maybe<Long> =
+        http.get<JsonObject>(GlitchUrl.HELIX.compose("/users?login=$login"))
+            .body.map { it.getAsJsonArray("data") }
+            .map {
+                if (it.size() == 0 || it.isJsonNull) {
+                    throw IllegalArgumentException("User not found: $login")
+                } else {
+                    it[0].asJsonObject.getAsJsonPrimitive("id").asLong
+                }
+            }
 
     private fun TopicInitializer.toRealTopic(): Single<Topic> =
         if (token != null) _auth.create(this.token).map {
@@ -91,9 +102,9 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Ser
 data class ConfigImpl internal constructor(
     override val clientId: String,
     override val clientSecret: String,
-    override val defaultScope: Collection<Scope>,
+    override val defaultScope: MutableCollection<Scope>,
     override var botUser: Credential?,
     override val topics: MutableCollection<Topic>,
-    override val channels: Collection<String>,
+    override val channels: MutableCollection<String>,
     override val isConnectionSecure: Boolean
 ) : IConfig

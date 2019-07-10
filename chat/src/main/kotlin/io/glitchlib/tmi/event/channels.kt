@@ -224,7 +224,7 @@ data class ChannelUserStateEvent(
         override val color: Color,
         override val userType: UserType,
         override val displayName: String
-) : ChannelUserState
+) : ChannelUserState, IEvent
 
 /**
  *

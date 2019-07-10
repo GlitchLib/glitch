@@ -14,12 +14,6 @@ plugins {
     shadow apply false
 }
 
-val bintrayUser = System.getenv("BINTRAY_USER") ?: findProperty("bintray.user").toString()
-val bintrayApiKey = System.getenv("BINTRAY_API_KEY") ?: findProperty("bintray.api_key").toString()
-val sonatypeUser = System.getenv("CENTRAL_USER") ?: findProject("central.user").toString()
-val sonatypePassword = System.getenv("CENTRAL_PASSWORD") ?: findProject("central.password").toString()
-
-
 allprojects {
     repositories {
         jcenter()

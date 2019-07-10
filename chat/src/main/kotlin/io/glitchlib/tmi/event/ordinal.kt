@@ -41,6 +41,6 @@ data class GlobalUserStateEvent(
         override val color: Color,
         override val userType: UserType,
         override val displayName: String
-) : GlobalUserState
+) : GlobalUserState, IEvent
 
 

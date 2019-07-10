@@ -11,6 +11,7 @@ import io.glitchlib.model.ChatRoom
 import io.glitchlib.pubsub.Topic
 import io.glitchlib.pubsub.TopicInitializer
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import okhttp3.OkHttpClient
 
@@ -27,6 +28,7 @@ interface GlitchClient {
 
     fun getChatRooms(credential: Credential) = getChatRooms(credential.id)
 
+    fun getUserId(login: String): Maybe<Long>
 
     class Builder internal constructor() {
         internal lateinit var clientId: String

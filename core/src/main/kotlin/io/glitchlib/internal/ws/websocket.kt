@@ -1,6 +1,7 @@
 package io.glitchlib.internal.ws
 
 import io.glitchlib.GlitchClient
+import io.glitchlib.internal.ConfigImpl
 import io.glitchlib.internal.GlitchClientImpl
 import io.glitchlib.model.CloseEvent
 import io.glitchlib.model.GlitchObject
@@ -19,7 +20,7 @@ import java.nio.channels.NotYetConnectedException
 import kotlin.reflect.KClass
 
 abstract class GlitchSocketObject(
-    internal val _client: GlitchClientImpl,
+    protected val _client: GlitchClientImpl,
     url: String,
     private val messageFormatter: (String) -> IEvent
 ) : GlitchObject {
@@ -29,10 +30,15 @@ abstract class GlitchSocketObject(
     private val request: Request = Request.Builder()
         .url(url).build()
 
+    protected val settings: ConfigImpl
+        get() = _client.settings
+
     protected val eventSubject: PublishSubject<IEvent> = PublishSubject.create()
 
+    val isConnected = ws != null
+
     fun connect(): Completable = Completable.create {
-        if (ws != null) it.onError(AlreadyConnectedException())
+        if (isConnected) it.onError(AlreadyConnectedException())
         else {
             _client.http.httpClient.newWebSocket(request, object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -60,7 +66,7 @@ abstract class GlitchSocketObject(
     }
 
     fun disconnect(): Completable = Completable.create {
-        if (ws == null) it.onError(NotYetConnectedException())
+        if (!isConnected) it.onError(NotYetConnectedException())
         else {
             ws!!.close(1000, "Disconnected")
         }
@@ -69,7 +75,7 @@ abstract class GlitchSocketObject(
     protected fun sendRaw(message: Publisher<String>): Completable = Observable.fromPublisher(message)
         .concatMapCompletable { m ->
             Completable.create {
-                if (ws == null) it.onError(NotYetConnectedException())
+                if (!isConnected) it.onError(NotYetConnectedException())
                 else {
                     this.ws!!.send(m)
                     it.onComplete()

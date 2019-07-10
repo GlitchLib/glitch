@@ -3,6 +3,9 @@ package io.glitchlib.tmi.event
 import io.glitchlib.model.Badge
 import io.glitchlib.model.IEvent
 import io.glitchlib.model.UserType
+import io.glitchlib.tmi.ChatRoom
+import io.glitchlib.tmi.ChatRoomUser
+import io.glitchlib.tmi.UserDM
 import java.awt.Color
 
 /**
@@ -67,7 +70,7 @@ interface IDChannel : IEvent {
  * @version %I%, %G%
  * @since 1.0
  */
-interface GlobalUserState : IEvent {
+interface GlobalUserState {
     val badges: Set<Badge>
     val color: Color
     val userType: UserType
@@ -110,26 +113,23 @@ interface IMessage : IDUser, IUser {
     val message: String?
 }
 
-// TODO: CHAT ROOMS
-///**
-// *
-// * @author Damian Staszewski [damian@stachuofficial.tv]
-// * @version %I%, %G%
-// * @since 1.0
-// */
-//interface IChatRoom : IChannel {
-//    val room: ChatRoomEntity
-//    override val channel: ChannelEntity
-//        get() = room.channel
-//}
-//
-///**
-// *
-// * @author Damian Staszewski [damian@stachuofficial.tv]
-// * @version %I%, %G%
-// * @since 1.0
-// */
-//interface IChatRoomUser : IChatRoom {
-//    val user: ChatRoomUserEntity
-//    val userDirect: UserEntity
-//}
+/**
+ *
+ * @author Damian Staszewski [damian@stachuofficial.tv]
+ * @version %I%, %G%
+ * @since 1.0
+ */
+interface IChatRoom : IChannel {
+    val room: ChatRoom
+}
+
+/**
+ *
+ * @author Damian Staszewski [damian@stachuofficial.tv]
+ * @version %I%, %G%
+ * @since 1.0
+ */
+interface IChatRoomUser : IChatRoom {
+    val user: ChatRoomUser
+    val userDirect: UserDM
+}
