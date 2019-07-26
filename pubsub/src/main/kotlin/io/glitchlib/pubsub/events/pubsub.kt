@@ -12,8 +12,8 @@ import io.glitchlib.pubsub.Topic
  * @since 1.0
  */
 data class PubSubEvent(
-        override val client: GlitchClient,
-        val data: JsonObject
+    override val client: GlitchClient,
+    val data: JsonObject
 ) : IEvent
 
 /**
@@ -23,7 +23,7 @@ data class PubSubEvent(
  * @since 1.0
  */
 data class ReconnectRequiredEvent(
-        override val client: GlitchClient
+    override val client: GlitchClient
 ) : IEvent
 
 /**
@@ -33,8 +33,8 @@ data class ReconnectRequiredEvent(
  * @since 1.0
  */
 data class SuccessfulResponseEvent(
-        override val client: GlitchClient,
-        val topic: Topic
+    override val client: GlitchClient,
+    val topic: Topic
 ) : IEvent
 
 /**
@@ -44,7 +44,7 @@ data class SuccessfulResponseEvent(
  * @since 1.0
  */
 data class ErrorResponseEvent(
-        override val client: GlitchClient,
-        val topic: Topic? = null,
-        val cause: Throwable
+    override val client: GlitchClient,
+    val topic: Topic? = null,
+    val cause: Throwable
 ) : IEvent

@@ -16,7 +16,7 @@ import io.glitchlib.v5.service.UserService
 import io.glitchlib.v5.service.VideoService
 
 class GlitchKraken(
-        override val client: GlitchClient
+    override val client: GlitchClient
 ) : GlitchObject {
 
     val bits

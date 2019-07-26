@@ -12,10 +12,10 @@ import io.glitchlib.pubsub.model.adapters.MessageTypeAdapter
  * @since 1.0
  */
 data class TopicRequest(
-        @JsonAdapter(MessageTypeAdapter::class)
-        override val type: MessageType,
-        val nonce: String,
-        val data: JsonObject
+    @JsonAdapter(MessageTypeAdapter::class)
+    override val type: MessageType,
+    val nonce: String,
+    val data: JsonObject
 ) : DataType
 
 /**
@@ -25,6 +25,6 @@ data class TopicRequest(
  * @since 1.0
  */
 data class SingleRequest(
-        @JsonAdapter(MessageTypeAdapter::class)
-        override val type: MessageType
+    @JsonAdapter(MessageTypeAdapter::class)
+    override val type: MessageType
 ) : DataType

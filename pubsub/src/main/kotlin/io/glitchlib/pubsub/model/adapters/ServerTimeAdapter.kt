@@ -8,7 +8,7 @@ import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import java.lang.reflect.Type
 import java.time.Instant
-import java.util.*
+import java.util.Date
 
 /**
  * @author Damian Staszewski [damian@stachuofficial.tv]

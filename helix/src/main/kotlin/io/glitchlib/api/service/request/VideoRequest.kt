@@ -7,7 +7,7 @@ import io.glitchlib.api.model.VideoSort
 import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
 import io.glitchlib.model.VideoType
-import java.util.*
+import java.util.Locale
 
 class VideoRequest : AbstractRequest {
     internal constructor(user: User) {

@@ -53,12 +53,13 @@ interface ChatRoom {
     fun toggleColor(color: String): Completable = send("/color $color")
 
     fun sendAction(message: String): Completable = send("/me $message")
-    fun slow(duration: Duration = Duration.ofSeconds(30)): Completable = slow(duration.toSeconds())
-    fun slow(duration: Long = 30): Completable = send("/slow${if (isSlow) "off" else " $duration"}")
+    fun slow(duration: Duration = Duration.ofSeconds(30)): Completable = slow(duration.seconds)
+    fun slow(duration: Long = 30): Completable = send("/slow $duration")
     fun slowOff(): Completable = send("/slowoff")
     fun r9k(): Completable = send("/r9kbeta")
     fun r9kOff(): Completable = send("/r9kbetaoff")
-    fun emoteOnly(): Completable = send("/emoteonly${if (isEmoteOnly) "off" else ""}")
+    fun emoteOnly(): Completable = send("/emoteonly")
+    fun emoteOnlyOff(): Completable = send("/emoteonloff")
 }
 
 interface ChatRoomUser : ChannelUserState {
@@ -67,7 +68,7 @@ interface ChatRoomUser : ChannelUserState {
     fun mod(): Completable
     fun ban(reason: String? = null): Completable
     fun timeout(seconds: Long, reason: String? = null): Completable
-    fun timeout(duration: Duration, reason: String? = null) = timeout(duration.toSeconds(), reason)
+    fun timeout(duration: Duration, reason: String? = null) = timeout(duration.seconds, reason)
     fun purge(reason: String? = null): Completable = timeout(1, reason)
     fun sendDM(message: String): Completable
 }

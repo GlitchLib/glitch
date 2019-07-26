@@ -7,10 +7,10 @@ package io.glitchlib.api.model
  * @since 1.0
  */
 data class UploadData(
-        val url: String
+    val url: String
 )
 
 data class Code(
-        val code: String,
-        val status: CodeStatus
+    val code: String,
+    val status: CodeStatus
 )

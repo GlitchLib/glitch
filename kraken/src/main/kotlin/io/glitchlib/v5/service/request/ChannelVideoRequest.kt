@@ -4,7 +4,8 @@ import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
 import io.glitchlib.model.VideoType
 import io.glitchlib.v5.model.VideoSort
-import java.util.*
+import java.util.Arrays
+import java.util.Locale
 
 class ChannelVideoRequest internal constructor() : AbstractRequest {
     private val videoType = mutableSetOf<VideoType>()

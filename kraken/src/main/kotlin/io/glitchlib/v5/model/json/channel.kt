@@ -7,7 +7,8 @@ import io.glitchlib.model.IDObject
 import io.glitchlib.model.SerializeTo
 import io.glitchlib.v5.internal.model.json.AuthChannelImpl
 import io.glitchlib.v5.internal.model.json.ChannelImpl
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 /**
  *
@@ -56,18 +57,18 @@ interface AuthChannel : Channel {
  * @since 1.0
  */
 data class ChannelFollow(
-        @SerializedName("user")
-        override val data: User,
-        @SerializedName("notifications")
-        override val hasNotifications: Boolean,
-        override val createdAt: Date
+    @SerializedName("user")
+    override val data: User,
+    @SerializedName("notifications")
+    override val hasNotifications: Boolean,
+    override val createdAt: Date
 ) : Follow<User>
 
 data class CommercialData(
-        @SerializedName("Length")
-        val length: Int,
-        @SerializedName("Message")
-        val message: String,
-        @SerializedName("RetryAfter")
-        val retryAfter: Int
+    @SerializedName("Length")
+    val length: Int,
+    @SerializedName("Message")
+    val message: String,
+    @SerializedName("RetryAfter")
+    val retryAfter: Int
 )

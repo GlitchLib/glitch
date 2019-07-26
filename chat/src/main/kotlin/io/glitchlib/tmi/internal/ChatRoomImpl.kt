@@ -1,7 +1,6 @@
 package io.glitchlib.tmi.internal
 
 import io.glitchlib.tmi.Channel
-import io.glitchlib.tmi.ChannelUser
 import io.glitchlib.tmi.ChatRoom
 import io.glitchlib.tmi.ChatRoomUser
 import io.glitchlib.tmi.MessageInterface

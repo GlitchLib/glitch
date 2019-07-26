@@ -18,14 +18,14 @@ class ChatService(client: GlitchClient) : AbstractKrakenService(client) {
         get() = get<OrdinalList<Emote>>("/chat/emoticons").bodyFlowable
 
     fun getChatBadges(id: Long) =
-            get<ChatBadges>("/chat/$id/badges").bodySingle
+        get<ChatBadges>("/chat/$id/badges").bodySingle
 
     fun getChatEmoteSets(vararg ids: Int) = getChatEmoteSets(ids.toList())
 
     fun getChatEmoteSets(ids: Collection<Int>) =
-            get<EmoteSets>("/chat/emoticon_images") {
-                addQueryParameters("emotesets", ids.joinToString(",") { it.toString() })
-            }.bodySingle
+        get<EmoteSets>("/chat/emoticon_images") {
+            addQueryParameters("emotesets", ids.joinToString(",") { it.toString() })
+        }.bodySingle
 
     fun getChatRooms(id: Long) = client.getChatRooms(id)
 

@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.lang.GroovyObject
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
-import java.util.*
+import java.util.Date
 
 plugins {
     dokka
@@ -127,16 +127,16 @@ subprojects {
 
                 val out = StringBuffer()
                 out.append("Total dependencies size:".padEnd(45))
-                        .append("${String.format(formatStr, size)} MiB\n\n")
+                    .append("${String.format(formatStr, size)} MiB\n\n")
 
                 configurations
-                        .default
-                        .get()
-                        .sortedBy { -it.length() }
-                        .forEach {
-                            out.append(it.name.padEnd(45))
-                                    .append("${String.format(formatStr, (it.length() / 1024))} KiB\n")
-                        }
+                    .default
+                    .get()
+                    .sortedBy { -it.length() }
+                    .forEach {
+                        out.append(it.name.padEnd(45))
+                            .append("${String.format(formatStr, (it.length() / 1024))} KiB\n")
+                    }
                 println(out)
             }
         }

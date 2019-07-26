@@ -5,12 +5,14 @@ import io.glitchlib.internal.http.AbstractRequest
 import io.glitchlib.internal.http.HttpRequest
 import io.glitchlib.v5.model.json.Game
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class VideoUploadRequest internal constructor(
-        private val credential: Credential,
-        private val channelId: Long,
-        private val title: String
+    private val credential: Credential,
+    private val channelId: Long,
+    private val title: String
 ) : AbstractRequest {
 
     private var description: String? = null

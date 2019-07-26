@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.`maven-publish`
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.version
 import org.gradle.plugin.use.PluginDependenciesSpec
@@ -22,3 +23,22 @@ val PluginDependenciesSpec.`git-properties`
 
 val PluginDependenciesSpec.dokka
     get() = id("org.jetbrains.dokka") version Versions.dokka
+
+fun PluginDependenciesSpec.basePlugins() {
+    `maven-publish`
+    bintray
+    dokka
+    artifactory
+    `kotlin-jvm`
+    shadow
+}
+
+fun PluginDependenciesSpec.baseWithAndroid() {
+    basePlugins()
+    id("com.android.library")
+}
+
+fun PluginDependenciesSpec.topPlugins() {
+    `maven-publish`
+    versions
+}

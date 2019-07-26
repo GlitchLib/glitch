@@ -6,7 +6,7 @@ import io.glitchlib.model.VideoType
 import io.glitchlib.v5.model.VideoPeriod
 import io.glitchlib.v5.model.VideoSort
 import io.glitchlib.v5.model.json.Game
-import java.util.*
+import java.util.Locale
 
 class TopVideosRequest internal constructor() : AbstractRequest {
     //    AbstractRequest<Video, Videos>(httpClient, Routes.Companion.get("/videos/top").newRequest()) {

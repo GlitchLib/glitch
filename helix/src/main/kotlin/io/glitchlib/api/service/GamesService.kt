@@ -11,21 +11,21 @@ import io.glitchlib.model.OrdinalList
 
 class GamesService(client: GlitchClient) : AbstractHelixService(client) {
     fun top(request: GameRequest.() -> Unit = {}) =
-            get<CursorList<Game>>("/games/top", GameRequest().apply(request)()).bodySingle
+        get<CursorList<Game>>("/games/top", GameRequest().apply(request)()).bodySingle
 
     fun get(vararg id: Long) = get(id = id.toSet())
 
     fun get(vararg name: String) = get(name = name.toSet())
 
     fun get(id: Collection<Long> = setOf(), name: Collection<String> = setOf()) =
-            get<OrdinalList<Game>>("/games") {
-                if (id.isNotEmpty()) {
-                    addQueryParameters("id", *id.toList().subList(0, 99).map(Long::toString).toTypedArray())
-                }
+        get<OrdinalList<Game>>("/games") {
+            if (id.isNotEmpty()) {
+                addQueryParameters("id", *id.toList().subList(0, 99).map(Long::toString).toTypedArray())
+            }
 
-                if (name.isNotEmpty()) {
-                    addQueryParameters("name", *name.toList().subList(0, 99).toTypedArray())
-                }
-            }.bodyFlowable
+            if (name.isNotEmpty()) {
+                addQueryParameters("name", *name.toList().subList(0, 99).toTypedArray())
+            }
+        }.bodyFlowable
 
 }

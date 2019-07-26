@@ -9,7 +9,10 @@ import io.glitchlib.model.UserType
 import io.glitchlib.tmi.MessageType
 import java.awt.Color
 import java.time.Duration
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.Optional
+import java.util.UUID
 
 /**
  * User has been joined to channel
@@ -19,9 +22,9 @@ import java.util.*
  * @since 1.0
  */
 data class UserJoinedChannelEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        override val username: String
+    override val client: GlitchClient,
+    override val channelName: String,
+    override val username: String
 ) : IChannelUser, IEvent
 
 /**
@@ -32,9 +35,9 @@ data class UserJoinedChannelEvent(
  * @since 1.0
  */
 data class UserLeavingChannelEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        override val username: String
+    override val client: GlitchClient,
+    override val channelName: String,
+    override val username: String
 ) : IChannelUser, IEvent
 
 /**
@@ -45,19 +48,19 @@ data class UserLeavingChannelEvent(
  * @since 1.0
  */
 data class ChannelMessageEvent(
-        override val client: GlitchClient,
-        override val id: UUID,
-        override val channelId: Long,
-        override val userId: Long,
-        override val badges: Set<Badge>,
-        override val color: Color,
-        override val userType: UserType,
-        override val displayName: String,
-        override val channelName: String,
-        override val username: String,
-        override val message: String?,
-        override val createdAt: Date,
-        val isActionMessage: Boolean = false
+    override val client: GlitchClient,
+    override val id: UUID,
+    override val channelId: Long,
+    override val userId: Long,
+    override val badges: Set<Badge>,
+    override val color: Color,
+    override val userType: UserType,
+    override val displayName: String,
+    override val channelName: String,
+    override val username: String,
+    override val message: String?,
+    override val createdAt: Date,
+    val isActionMessage: Boolean = false
 ) : IMessage, IChannelUser, ChannelUserState, IEvent, IDObject<UUID>, IDChannel
 
 
@@ -69,13 +72,13 @@ data class ChannelMessageEvent(
  * @since 1.0
  */
 data class ChannelMessageDeletedEvent(
-        override val client: GlitchClient,
-        override val id: UUID,
-        override val channelName: String,
-        override val userId: Long,
-        override val username: String,
-        override val message: String?,
-        val isActionMessage: Boolean = false
+    override val client: GlitchClient,
+    override val id: UUID,
+    override val channelName: String,
+    override val userId: Long,
+    override val username: String,
+    override val message: String?,
+    val isActionMessage: Boolean = false
 ) : IMessage, IChannelUser, IEvent, IDObject<UUID>
 
 /**
@@ -86,20 +89,20 @@ data class ChannelMessageDeletedEvent(
  * @since 1.0
  */
 data class ChannelBitsMessageEvent(
-        override val client: GlitchClient,
-        override val id: UUID,
-        override val channelId: Long,
-        override val userId: Long,
-        override val badges: Set<Badge>,
-        override val color: Color,
-        override val userType: UserType,
-        override val displayName: String,
-        override val channelName: String,
-        override val username: String,
-        override val message: String?,
-        override val createdAt: Date,
-        val bits: Int,
-        val isActionMessage: Boolean = false
+    override val client: GlitchClient,
+    override val id: UUID,
+    override val channelId: Long,
+    override val userId: Long,
+    override val badges: Set<Badge>,
+    override val color: Color,
+    override val userType: UserType,
+    override val displayName: String,
+    override val channelName: String,
+    override val username: String,
+    override val message: String?,
+    override val createdAt: Date,
+    val bits: Int,
+    val isActionMessage: Boolean = false
 ) : IMessage, IChannelUser, ChannelUserState, IDChannel, IEvent, IDObject<UUID>
 
 
@@ -111,17 +114,17 @@ data class ChannelBitsMessageEvent(
  * @since 1.0
  */
 data class SubscriptionEvent(
-        override val client: GlitchClient,
-        override val badges: Set<Badge>,
-        override val color: Color,
-        override val userType: UserType,
-        override val displayName: String,
-        override val channelName: String,
-        override val username: String,
-        val plan: SubscriptionType,
-        val continuouslyMonths: Int?,
-        val months: Int = 1,
-        val message: Optional<String> = Optional.empty()
+    override val client: GlitchClient,
+    override val badges: Set<Badge>,
+    override val color: Color,
+    override val userType: UserType,
+    override val displayName: String,
+    override val channelName: String,
+    override val username: String,
+    val plan: SubscriptionType,
+    val continuouslyMonths: Int?,
+    val months: Int = 1,
+    val message: Optional<String> = Optional.empty()
 ) : IChannelUser, ChannelUserState, IEvent
 
 /**
@@ -132,15 +135,15 @@ data class SubscriptionEvent(
  * @since 1.0
  */
 data class GiftSubEvent(
-        override val client: GlitchClient,
-        override val badges: Set<Badge>,
-        override val color: Color,
-        override val userType: UserType,
-        override val displayName: String,
-        override val channelName: String,
-        override val username: String,
-        val recipientUsername: String,
-        val recipientDisplayName: String
+    override val client: GlitchClient,
+    override val badges: Set<Badge>,
+    override val color: Color,
+    override val userType: UserType,
+    override val displayName: String,
+    override val channelName: String,
+    override val username: String,
+    val recipientUsername: String,
+    val recipientDisplayName: String
 ) : IChannelUser, ChannelUserState, IEvent
 
 /**
@@ -151,12 +154,12 @@ data class GiftSubEvent(
  * @since 1.0
  */
 data class AnonymousGiftSubEvent(
-        override val client: GlitchClient,
-        override val badges: Set<Badge>,
-        override val color: Color,
-        override val userType: UserType,
-        override val channelName: String,
-        val recipientUsername: String
+    override val client: GlitchClient,
+    override val badges: Set<Badge>,
+    override val color: Color,
+    override val userType: UserType,
+    override val channelName: String,
+    val recipientUsername: String
 ) : IChannel, ChannelUserState, IEvent {
     override val displayName = ""
 }
@@ -169,15 +172,15 @@ data class AnonymousGiftSubEvent(
  * @since 1.0
  */
 data class ChannelStateEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        override val channelId: Long,
-        val broadcasterLanguage: Locale?,
-        val isEmoteOnly: Boolean,
-        val follows: Int,
-        val isR9k: Boolean,
-        val slow: Int,
-        val isSubOnly: Boolean
+    override val client: GlitchClient,
+    override val channelName: String,
+    override val channelId: Long,
+    val broadcasterLanguage: Locale?,
+    val isEmoteOnly: Boolean,
+    val follows: Int,
+    val isR9k: Boolean,
+    val slow: Int,
+    val isSubOnly: Boolean
 ) : IEvent, IChannel, IDChannel {
     val isFollows = follows > -1
     val isSlow = slow > 0
@@ -191,11 +194,11 @@ data class ChannelStateEvent(
  * @since 1.0
  */
 data class ChannelStateChangedEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        override val channelId: Long,
-        val key: String,
-        val value: String?
+    override val client: GlitchClient,
+    override val channelName: String,
+    override val channelId: Long,
+    val key: String,
+    val value: String?
 ) : IEvent, IChannel, IDChannel
 
 /**
@@ -206,10 +209,10 @@ data class ChannelStateChangedEvent(
  * @since 1.0
  */
 data class ChannelNoticeEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        val messageType: MessageType,
-        val message: String
+    override val client: GlitchClient,
+    override val channelName: String,
+    val messageType: MessageType,
+    val message: String
 ) : IChannel, IEvent
 
 /**
@@ -219,11 +222,11 @@ data class ChannelNoticeEvent(
  * @since 1.0
  */
 data class ChannelUserStateEvent(
-        override val client: GlitchClient,
-        override val badges: Set<Badge>,
-        override val color: Color,
-        override val userType: UserType,
-        override val displayName: String
+    override val client: GlitchClient,
+    override val badges: Set<Badge>,
+    override val color: Color,
+    override val userType: UserType,
+    override val displayName: String
 ) : ChannelUserState, IEvent
 
 /**
@@ -233,11 +236,11 @@ data class ChannelUserStateEvent(
  * @since 1.0
  */
 data class ChannelTimeoutEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        val username: String,
-        val duration: Duration,
-        val reason: Optional<String> = Optional.empty()
+    override val client: GlitchClient,
+    override val channelName: String,
+    val username: String,
+    val duration: Duration,
+    val reason: Optional<String> = Optional.empty()
 ) : IChannel, IEvent
 
 /**
@@ -247,10 +250,10 @@ data class ChannelTimeoutEvent(
  * @since 1.0
  */
 data class ChannelBanEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        val username: String,
-        val reason: Optional<String> = Optional.empty()
+    override val client: GlitchClient,
+    override val channelName: String,
+    val username: String,
+    val reason: Optional<String> = Optional.empty()
 ) : IChannel, IEvent
 
 /**
@@ -260,8 +263,8 @@ data class ChannelBanEvent(
  * @since 1.0
  */
 data class ChannelClearChatEvent(
-        override val client: GlitchClient,
-        override val channelName: String
+    override val client: GlitchClient,
+    override val channelName: String
 ) : IChannel, IEvent
 
 /**
@@ -271,9 +274,9 @@ data class ChannelClearChatEvent(
  * @since 1.0
  */
 data class ChannelHostedEvent(
-        override val client: GlitchClient,
-        override val channelName: String,
-        val targetChannel: String?,
-        val views: Int,
-        val autoHost: Boolean = false
+    override val client: GlitchClient,
+    override val channelName: String,
+    val targetChannel: String?,
+    val views: Int,
+    val autoHost: Boolean = false
 ) : IEvent, IChannel

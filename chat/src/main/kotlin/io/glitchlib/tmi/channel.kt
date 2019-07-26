@@ -42,17 +42,19 @@ interface Channel {
     fun toggleColor(color: String): Completable = send("/color $color")
 
     fun sendAction(message: String): Completable = send("/me $message")
-    fun slow(duration: Duration = Duration.ofSeconds(30)): Completable = slow(duration.toSeconds())
-    fun slow(duration: Long = 30): Completable = send("/slow${if (isSlow) "off" else " $duration"}")
+    fun slow(duration: Duration = Duration.ofSeconds(30)): Completable = slow(duration.seconds)
+    fun slow(duration: Long = 30): Completable = send("/slow $duration")
     fun slowOff(): Completable = send("/slowoff")
     fun r9k(): Completable = send("/r9kbeta")
     fun r9kOff(): Completable = send("/r9kbetaoff")
-    fun emoteOnly(): Completable = send("/emoteonly${if (isEmoteOnly) "off" else ""}")
+    fun emoteOnly(): Completable = send("/emoteonly")
+    fun emoteOnlyOff(): Completable = send("/emoteonlyoff")
     fun subscribers(): Completable = send("/subscribers${if (isSubOnly) "off" else ""}")
+    fun subscribersOff(): Completable = send("/subscribersoff")
     fun followers(duration: Duration = Duration.ZERO): Completable = followers(duration.toMinutes())
     fun followers(duration: Long = 0L): Completable = send("/followers ${if (duration < 0) "10" else "$duration"}m")
     fun followersOff(): Completable = send("/followersoff")
-    fun commercial(duration: Duration = Duration.ofSeconds(30)): Completable = commercial(duration.toSeconds())
+    fun commercial(duration: Duration = Duration.ofSeconds(30)): Completable = commercial(duration.seconds)
     fun commercial(duration: Long = 30L): Completable =
         send("/commercial ${COMMERCIAL_DURATION.minBy { abs(it - duration) } ?: 30L}")
 
@@ -71,7 +73,7 @@ interface ChannelUser : ChannelUserState {
     fun vip(): Completable
     fun ban(reason: String? = null): Completable
     fun timeout(seconds: Long, reason: String? = null): Completable
-    fun timeout(duration: Duration, reason: String? = null) = timeout(duration.toSeconds(), reason)
+    fun timeout(duration: Duration, reason: String? = null) = timeout(duration.seconds, reason)
     fun purge(reason: String? = null): Completable = timeout(1, reason)
     fun sendDM(message: String): Completable
 }

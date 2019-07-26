@@ -10,6 +10,6 @@ import io.glitchlib.model.CursorList
 
 class WebhooksService(client: GlitchClient) : AbstractHelixService(client) {
     fun get(credential: AppCredential, request: WebhookRequest.() -> Unit = {}) =
-            get<CursorList<WebhookEndpoint>>("/webhooks/subscriptions", WebhookRequest(credential).apply(request)())
-                    .bodySingle
+        get<CursorList<WebhookEndpoint>>("/webhooks/subscriptions", WebhookRequest(credential).apply(request)())
+            .bodySingle
 }

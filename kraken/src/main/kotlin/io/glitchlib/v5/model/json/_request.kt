@@ -3,7 +3,7 @@ package io.glitchlib.v5.model.json
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import io.glitchlib.v5.model.GameNameSerializer
-import java.util.*
+import java.util.Locale
 
 /**
  *

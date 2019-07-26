@@ -91,14 +91,15 @@ class MessageInterface(client: GlitchClient) : GlitchSocketObject(
     fun join(chatRoom: io.glitchlib.model.ChatRoom): Single<ChatRoom> =
         Flowable.fromIterable(_chatRooms).filter { it.id == chatRoom.id }.firstElement()
             .switchIfEmpty(SingleSource<ChatRoom> { sink ->
-                sink.onSubscribe(sendJoin(chatRoom)
-                    .andThen(SingleSource<ChatRoom> {
-                        it.onSuccess(ChatRoomImpl(this, chatRoom))
-                    })
+                sink.onSubscribe(
+                    sendJoin(chatRoom)
+                        .andThen(SingleSource<ChatRoom> {
+                            it.onSuccess(ChatRoomImpl(this, chatRoom))
+                        })
 
-                    .doOnError {
-                        sink.onError(it)
-                    }.subscribe()
+                        .doOnError {
+                            sink.onError(it)
+                        }.subscribe()
                 )
             })
 

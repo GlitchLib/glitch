@@ -9,9 +9,9 @@ import io.reactivex.Flowable
 
 class BitsService internal constructor(client: GlitchClient) : AbstractKrakenService(client) {
     fun getCheermotes(channelId: Long? = null): Flowable<Cheermote> =
-            get<Cheermotes>("/bits/actions") {
-                if (channelId != null) {
-                    addQueryParameters("channel_id", channelId.toString())
-                }
-            }.bodyFlowable
+        get<Cheermotes>("/bits/actions") {
+            if (channelId != null) {
+                addQueryParameters("channel_id", channelId.toString())
+            }
+        }.bodyFlowable
 }

@@ -20,25 +20,25 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import io.reactivex.rxkotlin.zipWith
-import java.io.File
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.net.URLConnection
 
 class VideoService(client: GlitchClient) : AbstractKrakenService(client) {
 
     fun getTopVideos(request: TopVideosRequest.() -> Unit = {}) =
-            get<OrdinalList<Video>>("/videos/top", TopVideosRequest().apply(request)())
-                    .bodyFlowable
+        get<OrdinalList<Video>>("/videos/top", TopVideosRequest().apply(request)())
+            .bodyFlowable
 
 
     fun getVideo(id: Long) =
-            get<Video>("/videos/$id").bodySingle
+        get<Video>("/videos/$id").bodySingle
 
     fun getFollowedVideos(credential: Credential, request: FollowedVideosRequest.() -> Unit = {}) =
-            if (credential.scopeCheck(Scope.USER_READ))
-                get<OrdinalList<Video>>("/videos/followed", FollowedVideosRequest(credential).apply(request)()).bodyFlowable
-            else scopeIsMissing<Video>(Scope.USER_READ).toFlowable()
+        if (credential.scopeCheck(Scope.USER_READ))
+            get<OrdinalList<Video>>("/videos/followed", FollowedVideosRequest(credential).apply(request)()).bodyFlowable
+        else scopeIsMissing<Video>(Scope.USER_READ).toFlowable()
 
     /**
      * Start and return uploaded video to specific channel
@@ -61,60 +61,60 @@ class VideoService(client: GlitchClient) : AbstractKrakenService(client) {
      * @return a completely successful uploaded video
      */
     fun uploadVideo(
-            credential: Credential,
-            channelId: Long,
-            title: String,
-            file: File,
-            request: VideoUploadRequest.() -> Unit = {},
-            progress: (Int, Int) -> Unit = { _, _ -> }
+        credential: Credential,
+        channelId: Long,
+        title: String,
+        file: File,
+        request: VideoUploadRequest.() -> Unit = {},
+        progress: (Int, Int) -> Unit = { _, _ -> }
     ): Single<Video> =
-            if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
-                Single.create<File> { file.check(it) }.zipWith(
-                        post<VideoCreate>(
-                                "/videos",
-                                VideoUploadRequest(credential, channelId, title).apply(request)()
-                        ).bodySingle
-                ).map {
-                    Triple(
-                            file.readBytes().toList().chunked(5 * 1024 * 1024) { it.toByteArray() },
-                            it.second.upload,
-                            it.second.video.get("_id").asString.substring(1).toLong()
-                    )
-                }.flatMap { m ->
-                    Completable.create { sink ->
-                        val allParts = m.first.size
-                        m.first.forEachIndexed { i, b ->
-                            (client as GlitchClientImpl).http.put<Unit>(m.second.url) {
-                                addHeaders("Content-Length", file.readBytes().size.toString())
-                                addQueryParameters("part", (i + 1).toString())
-                                addQueryParameters("upload_token", m.second.token)
-                                setBody(b.toRequestBody(URLConnection.getFileNameMap().getContentTypeFor(file.toURI().toString()).toMediaType()))
-                            }.completed.subscribe({
-                                progress(i, allParts)
-                                if (i == m.first.size - 1)
-                                    sink.onComplete()
-                            }, sink::onError)
-                        }
-                    }.andThen((client as GlitchClientImpl).http.post<Unit>("${m.second.url}/complete") {
-                        addQueryParameters("upload_token", m.second.token)
-                    }.completed).andThen(getVideo(m.third))
-                }
-            else scopeIsMissing(Scope.CHANNEL_EDITOR)
+        if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
+            Single.create<File> { file.check(it) }.zipWith(
+                post<VideoCreate>(
+                    "/videos",
+                    VideoUploadRequest(credential, channelId, title).apply(request)()
+                ).bodySingle
+            ).map {
+                Triple(
+                    file.readBytes().toList().chunked(5 * 1024 * 1024) { it.toByteArray() },
+                    it.second.upload,
+                    it.second.video.get("_id").asString.substring(1).toLong()
+                )
+            }.flatMap { m ->
+                Completable.create { sink ->
+                    val allParts = m.first.size
+                    m.first.forEachIndexed { i, b ->
+                        (client as GlitchClientImpl).http.put<Unit>(m.second.url) {
+                            addHeaders("Content-Length", file.readBytes().size.toString())
+                            addQueryParameters("part", (i + 1).toString())
+                            addQueryParameters("upload_token", m.second.token)
+                            setBody(b.toRequestBody(URLConnection.getFileNameMap().getContentTypeFor(file.toURI().toString()).toMediaType()))
+                        }.completed.subscribe({
+                            progress(i, allParts)
+                            if (i == m.first.size - 1)
+                                sink.onComplete()
+                        }, sink::onError)
+                    }
+                }.andThen((client as GlitchClientImpl).http.post<Unit>("${m.second.url}/complete") {
+                    addQueryParameters("upload_token", m.second.token)
+                }.completed).andThen(getVideo(m.third))
+            }
+        else scopeIsMissing(Scope.CHANNEL_EDITOR)
 
     fun updateVideo(credential: Credential, id: Long, body: VideoBody.() -> Unit) =
-            if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
-                put<Video>("/videos/$id") {
-                    addHeaders("Authorization", "OAuth ${credential.accessToken}")
-                    setBody(VideoBody().apply(body))
-                }.bodySingle
-            else scopeIsMissing(Scope.CHANNEL_EDITOR)
+        if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
+            put<Video>("/videos/$id") {
+                addHeaders("Authorization", "OAuth ${credential.accessToken}")
+                setBody(VideoBody().apply(body))
+            }.bodySingle
+        else scopeIsMissing(Scope.CHANNEL_EDITOR)
 
     fun deleteVideo(credential: Credential, id: Long) =
-            if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
-                delete<Unit>("/videos/$id") {
-                    addHeaders("Authorization", "OAuth ${credential.accessToken}")
-                }.completed
-            else scopeIsMissing<Unit>(Scope.CHANNEL_EDITOR).ignoreElement()
+        if (credential.scopeCheck(Scope.CHANNEL_EDITOR))
+            delete<Unit>("/videos/$id") {
+                addHeaders("Authorization", "OAuth ${credential.accessToken}")
+            }.completed
+        else scopeIsMissing<Unit>(Scope.CHANNEL_EDITOR).ignoreElement()
 
 
     private fun File.check(sink: SingleEmitter<File>) {

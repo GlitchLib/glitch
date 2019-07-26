@@ -16,9 +16,9 @@ import io.glitchlib.pubsub.model.json.Following
  * @since 1.0
  */
 data class UnknownMessageEvent(
-        override val client: GlitchClient,
-        val rawTopic: String,
-        val message: JsonObject
+    override val client: GlitchClient,
+    val rawTopic: String,
+    val message: JsonObject
 ) : IEvent
 
 /**
@@ -28,9 +28,9 @@ data class UnknownMessageEvent(
  * @since 1.0
  */
 data class FollowEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: Following
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: Following
 ) : PubSubMessageEvent<Following>
 
 /**
@@ -40,9 +40,9 @@ data class FollowEvent(
  * @since 1.0
  */
 data class BitsEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: BitsMessage
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: BitsMessage
 ) : PubSubMessageEvent<BitsMessage>
 
 /**
@@ -52,9 +52,9 @@ data class BitsEvent(
  * @since 1.0
  */
 data class CommerceEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: Commerce
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: Commerce
 ) : PubSubMessageEvent<Commerce>
 
 /**
@@ -64,7 +64,7 @@ data class CommerceEvent(
  * @since 1.0
  */
 data class ChannelExtensionBroadcastEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: JsonArray
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: JsonArray
 ) : PubSubMessageEvent<JsonArray>

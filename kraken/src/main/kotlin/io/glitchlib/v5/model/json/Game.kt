@@ -9,10 +9,10 @@ import io.glitchlib.model.IDObject
  * @since 1.0
  */
 class Game(
-        override val id: Long,
-        val box: Image,
-        val gigantbombId: Long,
-        val logo: Image,
-        val name: String,
-        val popularity: Long
+    override val id: Long,
+    val box: Image,
+    val gigantbombId: Long,
+    val logo: Image,
+    val name: String,
+    val popularity: Long
 ) : IDObject<Long>

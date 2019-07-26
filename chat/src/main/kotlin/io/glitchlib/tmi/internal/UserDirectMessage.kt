@@ -20,6 +20,7 @@ class UserDirectMessage(
         get() = Flowable.fromIterable(tmi.channels.filter { (it as ChannelImpl)._users.containsKey(globalUserState.login) })
     override val assignableRooms: Flowable<ChatRoom>
         get() = Flowable.fromIterable(tmi.chatRooms.filter { (it as ChatRoomImpl)._users.containsKey(globalUserState.login) })
+
     override fun send(message: String): Completable =
         tmi.sendDM(globalUserState.login, message)
 

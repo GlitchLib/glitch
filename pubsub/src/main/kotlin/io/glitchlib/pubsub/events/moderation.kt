@@ -17,9 +17,9 @@ import io.glitchlib.pubsub.model.json.Unban
  * @since 1.0
  */
 class TimeoutUserEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: Timeout
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: Timeout
 ) : PubSubMessageEvent<Timeout>
 
 /**
@@ -29,9 +29,9 @@ class TimeoutUserEvent(
  * @since 1.0
  */
 class UnbanUserEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: Unban
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: Unban
 ) : PubSubMessageEvent<Unban>
 
 /**
@@ -41,9 +41,9 @@ class UnbanUserEvent(
  * @since 1.0
  */
 class HostEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: Host
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: Host
 ) : PubSubMessageEvent<Host>
 
 /**
@@ -53,9 +53,9 @@ class HostEvent(
  * @since 1.0
  */
 class SubscribersOnlyEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: ActivationByMod
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: ActivationByMod
 ) : PubSubMessageEvent<ActivationByMod>
 
 /**
@@ -65,9 +65,9 @@ class SubscribersOnlyEvent(
  * @since 1.0
  */
 class ClearChatEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: Moderator
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: Moderator
 ) : PubSubMessageEvent<Moderator>
 
 /**
@@ -77,9 +77,9 @@ class ClearChatEvent(
  * @since 1.0
  */
 class EmoteOnlyEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: ActivationByMod
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: ActivationByMod
 ) : PubSubMessageEvent<ActivationByMod>
 
 /**
@@ -89,9 +89,9 @@ class EmoteOnlyEvent(
  * @since 1.0
  */
 class Robot9000Event(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: ActivationByMod
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: ActivationByMod
 ) : PubSubMessageEvent<ActivationByMod>
 
 /**
@@ -101,9 +101,9 @@ class Robot9000Event(
  * @since 1.0
  */
 class BanUserEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: Ban
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: Ban
 ) : PubSubMessageEvent<Ban>
 
 /**
@@ -113,7 +113,7 @@ class BanUserEvent(
  * @since 1.0
  */
 class MessageDeleteEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: MessageDelete
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: MessageDelete
 ) : PubSubMessageEvent<MessageDelete>

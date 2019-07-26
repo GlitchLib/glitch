@@ -12,13 +12,13 @@ import io.glitchlib.model.OrdinalList
 
 class SubscriptionsService(client: GlitchClient) : AbstractHelixService(client) {
     fun get(credential: Credential, request: SubscriptionRequest.() -> Unit) =
-            get<CursorList<Subscribe>>("/subscriptions", SubscriptionRequest(credential).apply(request)()).bodySingle
+        get<CursorList<Subscribe>>("/subscriptions", SubscriptionRequest(credential).apply(request)()).bodySingle
 
     fun get(credential: Credential, vararg userId: Long) = get(credential, userId.toSet())
     fun get(credential: Credential, userId: Collection<Long>) =
-            get<OrdinalList<Subscribe>>("/subscriptions") {
-                addHeaders("Authorization", "Bearer ${credential.accessToken}")
-                addQueryParameters("broadcaster_id", credential.id.toString())
-                addQueryParameters("user_id", *userId.toList().subList(0, 99).map(Long::toString).toTypedArray())
-            }.bodyFlowable
+        get<OrdinalList<Subscribe>>("/subscriptions") {
+            addHeaders("Authorization", "Bearer ${credential.accessToken}")
+            addQueryParameters("broadcaster_id", credential.id.toString())
+            addQueryParameters("user_id", *userId.toList().subList(0, 99).map(Long::toString).toTypedArray())
+        }.bodyFlowable
 }

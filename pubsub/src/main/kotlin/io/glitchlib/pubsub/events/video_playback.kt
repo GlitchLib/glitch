@@ -13,9 +13,9 @@ import io.glitchlib.pubsub.model.json.ViewCount
  * @since 1.0
  */
 data class StreamUpEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: StreamUp
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: StreamUp
 ) : PubSubMessageEvent<StreamUp>
 
 /**
@@ -25,9 +25,9 @@ data class StreamUpEvent(
  * @since 1.0
  */
 data class StreamDownEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: StreamDown
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: StreamDown
 ) : PubSubMessageEvent<StreamDown>
 
 /**
@@ -37,7 +37,7 @@ data class StreamDownEvent(
  * @since 1.0
  */
 data class ViewCountEvent(
-        override val client: GlitchClient,
-        override val topic: Topic,
-        override val message: ViewCount
+    override val client: GlitchClient,
+    override val topic: Topic,
+    override val message: ViewCount
 ) : PubSubMessageEvent<ViewCount>

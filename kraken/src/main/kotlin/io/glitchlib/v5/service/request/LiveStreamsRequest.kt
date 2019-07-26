@@ -5,7 +5,8 @@ import io.glitchlib.internal.http.HttpRequest
 import io.glitchlib.v5.model.StreamType
 import io.glitchlib.v5.model.json.Channel
 import io.glitchlib.v5.model.json.Game
-import java.util.*
+import java.util.LinkedHashSet
+import java.util.Locale
 
 class LiveStreamsRequest internal constructor() : AbstractRequest {
     private val channel = LinkedHashSet<Channel>()

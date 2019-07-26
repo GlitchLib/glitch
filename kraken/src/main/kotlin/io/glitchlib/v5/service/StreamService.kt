@@ -21,30 +21,30 @@ import io.glitchlib.v5.service.request.LiveStreamsRequest
 class StreamService(client: GlitchClient) : AbstractKrakenService(client) {
 
     fun getLiveStreams(request: LiveStreamsRequest.() -> Unit = {}) =
-            get<OrdinalList<Stream>>("/streams", LiveStreamsRequest().apply(request)()).bodyFlowable
+        get<OrdinalList<Stream>>("/streams", LiveStreamsRequest().apply(request)()).bodyFlowable
 
     fun getFreaturedStreams(request: FeatureStreamsRequest.() -> Unit = {}) =
-            get<OrdinalList<FeatureStream>>("/streams/featured", FeatureStreamsRequest().apply(request)()).bodyFlowable
+        get<OrdinalList<FeatureStream>>("/streams/featured", FeatureStreamsRequest().apply(request)()).bodyFlowable
 
     fun getStreamByUser(id: Long, streamType: StreamType? = null) =
-            get<OrdinalList<Stream>>("/streams/$id") {
-                if (streamType != null) {
-                    addQueryParameters("stream_type", streamType.name.toLowerCase())
-                }
-            }.body.map { it.data[0] }
+        get<OrdinalList<Stream>>("/streams/$id") {
+            if (streamType != null) {
+                addQueryParameters("stream_type", streamType.name.toLowerCase())
+            }
+        }.body.map { it.data[0] }
 
     fun getStreamSummary(game: Game? = null) =
-            get<StreamSummary>("/streams/summary") {
-                if (game != null) {
-                    addQueryParameters("game", game.name)
-                }
-            }.bodySingle
+        get<StreamSummary>("/streams/summary") {
+            if (game != null) {
+                addQueryParameters("game", game.name)
+            }
+        }.bodySingle
 
     fun getFollowedStreams(credential: Credential, request: FollowedStreamRequest.() -> Unit = {}) =
-            if (credential.scopeCheck(Scope.USER_READ))
-                get<OrdinalList<Stream>>(
-                        "/streams/followed",
-                        FollowedStreamRequest(credential).apply(request)()
-                ).bodyFlowable
-            else scopeIsMissing<Stream>(Scope.USER_READ).toFlowable()
+        if (credential.scopeCheck(Scope.USER_READ))
+            get<OrdinalList<Stream>>(
+                "/streams/followed",
+                FollowedStreamRequest(credential).apply(request)()
+            ).bodyFlowable
+        else scopeIsMissing<Stream>(Scope.USER_READ).toFlowable()
 }
