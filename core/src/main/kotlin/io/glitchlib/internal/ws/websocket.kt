@@ -35,7 +35,8 @@ abstract class GlitchSocketObject(
 
     protected val eventSubject: PublishSubject<IEvent> = PublishSubject.create()
 
-    val isConnected = ws != null
+    val isConnected: Boolean
+            get() = ws != null
 
     fun connect(): Completable = Completable.create {
         if (isConnected) it.onError(AlreadyConnectedException())
@@ -68,7 +69,13 @@ abstract class GlitchSocketObject(
     fun disconnect(): Completable = Completable.create {
         if (!isConnected) it.onError(NotYetConnectedException())
         else {
-            ws!!.close(1000, "Disconnected")
+            try {
+                ws!!.close(1000, "Disconnected")
+            } catch (e: Exception) {
+                it.onError(e)
+            } finally {
+                it.onComplete()
+            }
         }
     }
 

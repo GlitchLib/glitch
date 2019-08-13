@@ -23,6 +23,7 @@ import io.glitchlib.pubsub.Topic
 import io.glitchlib.pubsub.TopicInitializer
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import java.lang.reflect.Type
@@ -30,13 +31,15 @@ import java.lang.reflect.Type
 class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : GlitchClient {
 
     override var settings: ConfigImpl = ConfigImpl(
-        builder.clientId,
-        builder.clientSecret,
-        builder.defaultScope,
-        null,
-        LinkedHashSet(50),
-        builder.channels,
-        builder.isConnectionSecure
+            builder.clientId,
+            builder.clientSecret,
+            builder.defaultScope,
+            null,
+            LinkedHashSet(50),
+            builder.channels,
+            builder.isConnectionSecure,
+            builder.subscribeScheduler,
+            builder.observerScheduler
     )
 
     val http = HttpClient(builder.httpClient.apply {
@@ -50,7 +53,7 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Gli
             override fun deserialize(s1: JsonElement, s2: Type, s3: JsonDeserializationContext) = this@GlitchClientImpl
         })
         registerTypeAdapter(Any::class.java, ImplementationSerializerAdapter<Any>())
-    }.create())
+    }.create(), builder.observerScheduler, builder.subscribeScheduler)
 
     private val _auth = AuthorizeImpl(this, builder.storage)
 
@@ -63,11 +66,11 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Gli
 
         if (builder.topics.isNotEmpty()) {
             Flowable.fromIterable(builder.topics)
-                .flatMap { topic ->
-                    topic.toRealTopic().toFlowable()
-                }.subscribe {
-                    this.settings.topics += it
-                }
+                    .flatMap { topic ->
+                        topic.toRealTopic().toFlowable()
+                    }.subscribe {
+                        this.settings.topics += it
+                    }
         }
     }
 
@@ -100,11 +103,13 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Gli
 
 
 data class ConfigImpl internal constructor(
-    override val clientId: String,
-    override val clientSecret: String,
-    override val defaultScope: MutableCollection<Scope>,
-    override var botUser: Credential?,
-    override val topics: MutableCollection<Topic>,
-    override val channels: MutableCollection<String>,
-    override val isConnectionSecure: Boolean
+        override val clientId: String,
+        override val clientSecret: String,
+        override val defaultScope: MutableCollection<Scope>,
+        override var botUser: Credential?,
+        override val topics: MutableCollection<Topic>,
+        override val channels: MutableCollection<String>,
+        override val isConnectionSecure: Boolean,
+        override val subscribeScheduler: Scheduler,
+        override val observerScheduler: Scheduler
 ) : IConfig

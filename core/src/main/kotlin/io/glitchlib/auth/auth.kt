@@ -21,7 +21,9 @@ interface IAuthorize : GlitchObject {
 
     fun krakenValidateApp(credential: AppCredential): Single<AppKraken>
 
-    fun createAppToken(): Single<AppCredential>
+    fun createAppToken(vararg scope: Scope = emptyArray()): Single<AppCredential> = createAppToken(scope.toSet())
+
+    fun createAppToken(scope: Set<Scope> = emptySet()): Single<AppCredential>
 
     fun create(token: Token): Single<Credential>
 
@@ -34,10 +36,13 @@ interface IAuthorize : GlitchObject {
     fun revoke(credential: AppCredential): Completable
 
     interface IStorage {
+        var appCredential: AppCredential
+        fun isEmpty(): Boolean
         operator fun get(id: Long): Maybe<Credential>
         fun add(credential: Credential): Completable
         fun delete(id: Long): Completable
         fun deleteIf(condition: (Credential) -> Boolean): Completable
+        fun drop(): Completable
     }
 }
 

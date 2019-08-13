@@ -4,8 +4,19 @@ import io.glitchlib.GlitchException
 import io.reactivex.Completable
 import io.reactivex.Maybe
 
-class CachedStorage internal constructor(private val credentials: MutableCollection<Credential> = mutableSetOf()) :
-    IAuthorize.IStorage {
+class CachedStorage internal constructor(
+    private val credentials: MutableCollection<Credential> = mutableSetOf()
+) : IAuthorize.IStorage {
+    private var _app: AppCredential? = null
+
+    override var appCredential: AppCredential
+        get() = checkNotNull(_app) { "Applicaction Credential is not register" }
+        set(value) {
+            _app = value
+        }
+
+    override fun isEmpty() = credentials.isEmpty()
+
     override fun get(id: Long): Maybe<Credential> = Maybe.create {
         val cred = credentials.firstOrNull { it.id == id }
         if (cred != null)
@@ -46,5 +57,13 @@ class CachedStorage internal constructor(private val credentials: MutableCollect
         }
         if (!completed)
             sink.onError(GlitchException("Current condition doesn't even catch existing requirements."))
+    }
+
+    override fun drop(): Completable = Completable.create {
+        if (_app == null) it.onError(NullPointerException("App Credentials is already cleared"))
+        else {
+            _app = null
+            it.onComplete()
+        }
     }
 }

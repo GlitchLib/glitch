@@ -12,7 +12,9 @@ import io.glitchlib.pubsub.Topic
 import io.glitchlib.pubsub.TopicInitializer
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.Scheduler
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 
 interface GlitchClient {
@@ -41,6 +43,8 @@ interface GlitchClient {
         internal var storage = DEFAULT_STORAGE
         internal val gson = GsonBuilder()
         internal val httpClient = OkHttpClient.Builder()
+        internal var subscribeScheduler: Scheduler = Schedulers.io()
+        internal var observerScheduler: Scheduler = Schedulers.computation()
         internal var isConnectionSecure: Boolean = true
 
         fun clientId(clientId: String) = apply {
@@ -75,6 +79,15 @@ interface GlitchClient {
             this.isConnectionSecure = connectionSecure
         }
 
+
+        fun subscribeScheduler(subscribeScheduler: Scheduler) = apply {
+            this.subscribeScheduler = subscribeScheduler
+        }
+
+        fun observerScheduler(observerScheduler: Scheduler) = apply {
+            this.observerScheduler = observerScheduler
+        }
+
         fun build(): GlitchClient = GlitchClientImpl(this)
     }
 
@@ -82,6 +95,7 @@ interface GlitchClient {
         @JvmStatic
         fun builder() = Builder()
 
+        @GlitchDsl
         operator fun invoke(builder: Builder.() -> Unit) = builder().apply(builder).build()
     }
 }
@@ -94,4 +108,6 @@ interface IConfig {
     val topics: Collection<Topic>
     val channels: Collection<String>
     val isConnectionSecure: Boolean
+    val subscribeScheduler: Scheduler
+    val observerScheduler: Scheduler
 }
