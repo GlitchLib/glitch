@@ -9,8 +9,6 @@ fun DependencyHandler.core() {
     add("compile", "com.squareup.okhttp3:okhttp:${Versions.okhttp}")
     add("compile", "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}")
     add("compile", "com.google.code.gson:gson:${Versions.gson}")
-
-    add("compile", "com.google.guava:guava:${Versions.guava}")
 }
 
 fun DependencyHandler.base() {

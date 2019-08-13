@@ -1,7 +1,11 @@
 package io.glitchlib
 
 import io.glitchlib.auth.CachedStorage
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.Properties
+
+@DslMarker
+annotation class GlitchDsl
 
 private val gitProperties = Properties().apply {
     load(GlitchClient::class.java.getResourceAsStream("git.properties"))
@@ -20,13 +24,11 @@ internal val DEFAULT_STORAGE = CachedStorage()
 
 typealias GlitchException = RuntimeException
 
-enum class GlitchUrl(private val baseUrl: String) {
-    KRAKEN(GlitchUrl.API.baseUrl + "/kraken"),
-    HELIX(GlitchUrl.API.baseUrl + "/helix"),
-    API("https://api.twitch.tv"),
-    ID("https://id.twitch.tv/ouath2");
-
-    fun compose(endpoint: String): String = "$baseUrl${if (endpoint.startsWith("/")) endpoint else "/$endpoint"}"
+object URL {
+    val API = "https://api.twitch.tv".toHttpUrl()
+    val OAUTH = "https://id.twitch.tv/ouath2".toHttpUrl()
+    val KRAKEN = API.newBuilder().addPathSegment("kraken").build()
+    val HELIX = API.newBuilder().addPathSegment("helix").build()
 }
 
 /**

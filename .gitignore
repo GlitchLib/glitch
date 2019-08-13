@@ -32,3 +32,4 @@ logs/
 local.properties
 docs/api/
 site/
+.env
