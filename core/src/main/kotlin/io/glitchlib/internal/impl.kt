@@ -5,8 +5,8 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import io.glitchlib.GlitchClient
-import io.glitchlib.GlitchUrl
 import io.glitchlib.IConfig
+import io.glitchlib.URL
 import io.glitchlib.auth.Credential
 import io.glitchlib.auth.GlobalUserState
 import io.glitchlib.auth.IAuthorize
@@ -74,28 +74,28 @@ class GlitchClientImpl internal constructor(builder: GlitchClient.Builder) : Gli
     override fun authorize(): IAuthorize = _auth
 
     override fun getChatUser(id: Long): Single<GlobalUserState> =
-        http.get<GlobalUserState>(GlitchUrl.KRAKEN.compose("/users/$id/chat")) {
-            addHeaders("Accept", "application/vnd.twitchtv.v5+json")
-        }.bodySingle
+            http.get<GlobalUserState>(URL.KRAKEN.newBuilder().addPathSegments("users/$id/chat").build()) {
+                addHeaders("Accept", "application/vnd.twitchtv.v5+json")
+            }.bodySingle
 
     override fun getChatRooms(id: Long) =
-        http.get<OrdinalList<ChatRoom>>(GlitchUrl.KRAKEN.compose("/chat/$id/rooms")).bodyFlowable
+            http.get<OrdinalList<ChatRoom>>(URL.KRAKEN.newBuilder().addPathSegments("chat/$id/rooms").build()).bodyFlowable
 
     override fun getUserId(login: String): Maybe<Long> =
-        http.get<JsonObject>(GlitchUrl.HELIX.compose("/users?login=$login"))
-            .body.map { it.getAsJsonArray("data") }
-            .map {
-                if (it.size() == 0 || it.isJsonNull) {
-                    throw IllegalArgumentException("User not found: $login")
-                } else {
-                    it[0].asJsonObject.getAsJsonPrimitive("id").asLong
-                }
-            }
+            http.get<JsonObject>(URL.HELIX.newBuilder().addPathSegments("users").setQueryParameter("login", login).build())
+                    .body.map { it.getAsJsonArray("data") }
+                    .map {
+                        if (it.size() == 0 || it.isJsonNull) {
+                            throw IllegalArgumentException("User not found: $login")
+                        } else {
+                            it[0].asJsonObject.getAsJsonPrimitive("id").asLong
+                        }
+                    }
 
     private fun TopicInitializer.toRealTopic(): Single<Topic> =
-        if (token != null) _auth.create(this.token).map {
-            return@map this.toTopic(it)
-        } else Single.just(this.toTopic(null))
+            if (token != null) _auth.create(this.token).map {
+                return@map this.toTopic(it)
+            } else Single.just(this.toTopic(null))
 }
 
 

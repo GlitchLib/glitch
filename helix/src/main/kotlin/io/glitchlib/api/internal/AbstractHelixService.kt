@@ -1,7 +1,7 @@
 package io.glitchlib.api.internal
 
 import io.glitchlib.GlitchClient
-import io.glitchlib.GlitchUrl
+import io.glitchlib.URL
 import io.glitchlib.internal.AbstractService
 import io.glitchlib.internal.GlitchClientImpl
 import io.glitchlib.internal.http.HttpMethod
@@ -13,12 +13,14 @@ abstract class AbstractHelixService internal constructor(client: GlitchClient) :
         method: HttpMethod,
         endpoint: String,
         request: HttpRequest.() -> Unit = {}
-    ) =
-        (client as GlitchClientImpl).http.exchange<T>(
-            HttpRequest(GlitchUrl.HELIX.compose(endpoint), method)
-                .addHeaders("Client-ID", client.settings.clientId)
-                .apply(request)
-        )
+    ) = (client as GlitchClientImpl).http.exchange<T>(
+        HttpRequest(URL.HELIX.newBuilder()
+            .addPathSegments(
+                endpoint.let { if (it[0] == '/') it.substring(1) else it }
+            ).build(), method)
+            .addHeaders("Client-ID", client.settings.clientId)
+            .apply(request)
+    )
 
     protected inline fun <reified T> get(endpoint: String, request: HttpRequest.() -> Unit = {}) =
         exchange<T>(HttpMethod.GET, endpoint, request)

@@ -1,7 +1,7 @@
 package io.glitchlib.v5.internal
 
 import io.glitchlib.GlitchClient
-import io.glitchlib.GlitchUrl
+import io.glitchlib.URL
 import io.glitchlib.internal.AbstractService
 import io.glitchlib.internal.GlitchClientImpl
 import io.glitchlib.internal.http.HttpMethod
@@ -14,7 +14,7 @@ abstract class AbstractKrakenService internal constructor(client: GlitchClient) 
         request: HttpRequest.() -> Unit = {}
     ) =
         (client as GlitchClientImpl).http.exchange<T>(
-            HttpRequest(GlitchUrl.KRAKEN.compose(endpoint), method)
+            HttpRequest(URL.KRAKEN, method)
                 .addHeaders("Client-ID", client.settings.clientId)
                 .addHeaders("Accept", "application/vnd.twitchtv.v5+json")
                 .apply(request)

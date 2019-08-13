@@ -1,7 +1,7 @@
 package io.glitchlib.internal.auth
 
 import com.google.gson.JsonObject
-import io.glitchlib.GlitchUrl
+import io.glitchlib.URL
 import io.glitchlib.auth.AccessToken
 import io.glitchlib.auth.AppAccessToken
 import io.glitchlib.auth.AppCredential
@@ -10,6 +10,7 @@ import io.glitchlib.auth.AppValidate
 import io.glitchlib.auth.Credential
 import io.glitchlib.auth.IAuthorize
 import io.glitchlib.auth.Kraken
+import io.glitchlib.auth.Scope
 import io.glitchlib.auth.Token
 import io.glitchlib.auth.Validate
 import io.glitchlib.internal.GlitchClientImpl
@@ -37,13 +38,19 @@ class AuthorizeImpl(
     override fun krakenValidateApp(credential: AppCredential): Single<AppKraken> =
         krakenValidateApp(credential.accessToken)
 
-    override fun createAppToken() =
-        client.http.post<AppAccessToken>(GlitchUrl.ID.compose("/token")) {
+    override fun createAppToken(scope: Set<Scope>) =
+        client.http.post<AppAccessToken>(URL.OAUTH.newBuilder().addPathSegment("token").build()) {
+            val scopes = (client.settings.defaultScope + scope)
             addQueryParameters("client_id", client.settings.clientId)
             addQueryParameters("client_secret", client.settings.clientSecret)
+            if (scopes.isNotEmpty()) {
+                addQueryParameters("scope", scopes.joinToString("+"))
+            }
             addQueryParameters("grant_type", "client_credentials")
         }.bodySingle.flatMap {
             krakenValidateApp(it.accessToken).map { k -> AppCredential(it, k) }
+        }.doOnSuccess {
+            storage.appCredential = it
         }
 
     override fun create(token: Token): Single<Credential> =
@@ -60,7 +67,7 @@ class AuthorizeImpl(
         }
 
     override fun create(redirectUri: String, code: String): Single<Credential> =
-        client.http.post<AccessToken>(GlitchUrl.ID.compose("/token")) {
+        client.http.post<AccessToken>(URL.OAUTH.newBuilder().addPathSegment("token").build()) {
             addQueryParameters("client_id", client.settings.clientId)
             addQueryParameters("client_secret", client.settings.clientSecret)
             addQueryParameters("grant_type", "authorization_code")
@@ -85,30 +92,33 @@ class AuthorizeImpl(
             }
 
     override fun revoke(credential: AppCredential): Completable = revoke(credential.clientId, credential.accessToken)
+        .doFinally {
+            storage.drop().subscribe()
+        }
 
     private fun validate(token: String) =
-        client.http.get<Validate>(GlitchUrl.ID.compose("/validate")) {
+        client.http.get<Validate>(URL.OAUTH.newBuilder().addPathSegment("validate").build()) {
             addHeaders("Authorization", "OAuth $token")
         }.bodySingle
 
     private fun validateApp(accessToken: String) =
-        client.http.get<AppValidate>(GlitchUrl.ID.compose("/validate")) {
+        client.http.get<AppValidate>(URL.OAUTH.newBuilder().addPathSegment("validate").build()) {
             addHeaders("Authorization", "OAuth $accessToken")
         }.bodySingle
 
     private fun krakenValidate(token: String) =
-        client.http.get<JsonObject>(GlitchUrl.KRAKEN.compose("/")) {
+        client.http.get<JsonObject>(URL.KRAKEN) {
             addHeaders("Authorization", "OAuth $token")
         }.bodySingle.map { client.http.gson.fromJson(it.get("token"), Kraken::class.java) }
 
 
     private fun krakenValidateApp(accessToken: String) =
-        client.http.get<JsonObject>(GlitchUrl.KRAKEN.compose("/")) {
+        client.http.get<JsonObject>(URL.KRAKEN) {
             addHeaders("Authorization", "OAuth $accessToken")
         }.bodySingle.map { client.http.gson.fromJson(it.get("token"), AppKraken::class.java) }
 
     private fun refresh(refreshToken: String) =
-        client.http.post<AccessToken>(GlitchUrl.ID.compose("/token")) {
+        client.http.post<AccessToken>(URL.OAUTH.newBuilder().addPathSegment("token").build()) {
             addQueryParameters("client_id", client.settings.clientId)
             addQueryParameters("client_secret", client.settings.clientSecret)
             addQueryParameters("grant_type", "refresh_token")
@@ -124,7 +134,7 @@ class AuthorizeImpl(
         }.doOnSuccess { storage.add(it).subscribe() }
 
     private fun revoke(clientId: String, accessToken: String) =
-        client.http.post<Unit>(GlitchUrl.ID.compose("/revoke")) {
+        client.http.post<Unit>(URL.OAUTH.newBuilder().addPathSegment("revoke").build()) {
             addQueryParameters("client_id", clientId)
             addQueryParameters("token", accessToken)
         }.completed
