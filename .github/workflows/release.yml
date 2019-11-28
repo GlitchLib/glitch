@@ -1,0 +1,42 @@
+# Using created GitHub Tag to publishing into publishing platform
+name: Release Publication
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Gradle Cache
+        id: gradle-cache
+        uses: actions/cache@v1.0.0
+        with:
+          path: ~/.gradle/caches
+          key: jdk8-gradle-${{ hashFiles('**/build.gradle.kts') }}
+          restore-keys: |
+            jdk8-gradle-
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Get current tag name
+        id: tags
+        uses: WyriHaximus/github-action-get-previous-tag@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Final Test before release
+        run: |
+          chmod +x ./gradlew
+          ./gradlew test
+      - name: Deploy version ${{ steps.tags.outputs.tag }}
+        if: success()
+        env:
+          BINTRAY_USER: stachu540
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bintrayUpload --version=${{ steps.tags.outputs.tag }}

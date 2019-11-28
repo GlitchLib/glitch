@@ -1,0 +1,29 @@
+name: Test Unit - Push
+
+on: [push]
+
+jobs:
+  test:
+    runs-on:  [ubuntu-latest]
+    strategy:
+      matrix:
+        jvm: [8, 11, 12]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Gradle Cache
+      id: gradle-cache
+      uses: actions/cache@v1.0.0
+      with:
+        path: ~/.gradle/caches
+        key: jdk${{ matrix.jvm }}-gradle-${{ hashFiles('**/build.gradle.kts') }}
+        restore-keys: |
+          jdk${{ matrix.jvm }}-gradle-
+    - name: Set up JDK ${{ matrix.jvm }}
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.jvm }}
+    - name: Gradle Test
+      run: |
+        chmod +x ./gradlew
+        ./gradlew test -x javadoc
