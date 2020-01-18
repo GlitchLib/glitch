@@ -1,6 +1,6 @@
 Thank you for considering to help us on this project. This guidelines presents: 
 * **[How to configure your IDE](#how-to-configure-your-ide)**
-* **[How to contribute to Twitch4J](#how-to-contribute-to-twitch4j)**
+* **[How to contribute to Glitch](#how-to-contribute-to-glitch)**
 
 ## How to configure your IDE
 Configuring IDE is important to starting contribute. We do like preferred use [IntelliJ IDEA](https://www.jetbrains.com/idea/). 
@@ -105,7 +105,7 @@ To get started we need first a [Gradle Support](http://plugins.netbeans.org/plug
 	
 Now IDE will automatically finds a Gradle project and will execute tasks for preparing project to start coding. No configuration of Annotation processing, no more adding Lombok plugins stuffs like. Everything is on the Gradle Plugin.
 
-## How to contribute to Twitch4J
+## How to contribute to Glitch
 Of course you can contribute to our repository in 2 ways:
 * Creating Issue
 * Create Pull Request
