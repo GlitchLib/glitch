@@ -1,3 +1,5 @@
+> No more maintained!
+
 <p align="center"><a href="https://glitchlib.github.io"><img src="https://glitchlib.github.io/img/glitch-mug-typo.svg" height="200"></a></p>
 <p align="center">
     <a href="https://bintray.com/stachu540/GlitchLib/Glitch/_latestVersion"><img src="https://api.bintray.com/packages/stachu540/GlitchLib/Glitch/images/download.svg" alt="Download"></a>
